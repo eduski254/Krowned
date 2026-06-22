@@ -9,6 +9,15 @@ const publicPaths = [
   "/forgot-password",
   "/reset-password",
   "/auth/callback",
+  "/explore",
+  "/b",
+  "/book",
+  "/c",
+  "/how-it-works",
+  "/for-professionals",
+  "/contact",
+  "/privacy",
+  "/terms",
 ];
 
 function isPublicPath(pathname: string) {
