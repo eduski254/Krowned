@@ -1,0 +1,96 @@
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { EmptyState } from "@/components/dashboard/empty-state";
+import { Calendar } from "lucide-react";
+
+export default async function BusinessCalendarPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: business } = await supabase
+    .from("businesses")
+    .select("id")
+    .eq("owner_id", user.id)
+    .maybeSingle();
+
+  if (!business) redirect("/dashboard/business");
+
+  // Fetch upcoming bookings for the next 30 days
+  const now = new Date();
+  const thirtyDays = new Date(now);
+  thirtyDays.setDate(thirtyDays.getDate() + 30);
+
+  const { data: bookings } = await supabase
+    .from("bookings")
+    .select(
+      "id, starts_at, ends_at, status, services(name), staff(display_name), clients:client_id(full_name)",
+    )
+    .eq("business_id", business.id)
+    .gte("starts_at", now.toISOString())
+    .lte("starts_at", thirtyDays.toISOString())
+    .order("starts_at", { ascending: true })
+    .limit(100);
+
+  return (
+    <div>
+      <h1 className="mb-6 text-2xl font-bold text-foreground">
+        Calendar &amp; Bookings
+      </h1>
+
+      {bookings && bookings.length > 0 ? (
+        <div className="space-y-3">
+          {bookings.map((b) => (
+            <div
+              key={b.id}
+              className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p className="font-medium text-foreground">
+                  {(b.services as unknown as { name: string } | null)?.name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {(b.clients as unknown as { full_name: string } | null)?.full_name ?? "Client"}
+                  {" — "}
+                  {(b.staff as unknown as { display_name: string } | null)?.display_name ?? "Unassigned"}
+                </p>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <span className="text-foreground">
+                  {new Date(b.starts_at).toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                  })}{" "}
+                  {new Date(b.starts_at).toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                    b.status === "confirmed"
+                      ? "bg-success/10 text-success"
+                      : b.status === "cancelled"
+                        ? "bg-destructive/10 text-destructive"
+                        : "bg-primary/10 text-primary"
+                  }`}
+                >
+                  {b.status}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          icon={Calendar}
+          title="No upcoming bookings"
+          description="When clients book your services, they'll appear here."
+        />
+      )}
+    </div>
+  );
+}

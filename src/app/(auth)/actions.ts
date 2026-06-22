@@ -43,7 +43,6 @@ export async function signup(
         full_name,
         account_type, // stored in raw_user_meta_data for post-signup routing
       },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
     },
   });
 
@@ -51,7 +50,7 @@ export async function signup(
     return { error: error.message };
   }
 
-  redirect("/verify-email");
+  redirect("/dashboard");
 }
 
 export async function login(

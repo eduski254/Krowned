@@ -8,7 +8,6 @@ const publicPaths = [
   "/signup",
   "/forgot-password",
   "/reset-password",
-  "/verify-email",
   "/auth/callback",
 ];
 
@@ -61,7 +60,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Redirect authenticated users away from auth pages (except reset-password)
-  if (user && ["/login", "/signup", "/forgot-password", "/verify-email"].some(
+  if (user && ["/login", "/signup", "/forgot-password"].some(
     (p) => pathname === p,
   )) {
     const url = request.nextUrl.clone();

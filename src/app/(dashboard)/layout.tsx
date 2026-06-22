@@ -1,6 +1,29 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { logout } from "../(auth)/actions";
+import { redirect } from "next/navigation";
+import { getUserRole } from "@/lib/roles";
+import { Sidebar } from "@/components/dashboard/sidebar";
+import { Topbar } from "@/components/dashboard/topbar";
+import {
+  clientNav,
+  businessNav,
+  staffNav,
+  adminNav,
+} from "@/components/dashboard/nav-config";
+import type { AppRole } from "@/lib/roles";
+
+const navMap: Record<AppRole, typeof clientNav> = {
+  client: clientNav,
+  business_owner: businessNav,
+  staff: staffNav,
+  super_admin: adminNav,
+};
+
+const roleLabels: Record<AppRole, string> = {
+  client: "Client",
+  business_owner: "Business Owner",
+  staff: "Staff",
+  super_admin: "Super Admin",
+};
 
 export default async function DashboardLayout({
   children,
@@ -12,32 +35,22 @@ export default async function DashboardLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) redirect("/login");
+
+  const role = await getUserRole(supabase, user.id);
+  const navItems = navMap[role];
   const fullName =
-    user?.user_metadata?.full_name ?? user?.email ?? "User";
+    user.user_metadata?.full_name ?? user.email ?? "User";
 
   return (
-    <div className="min-h-full">
-      <nav className="border-b border-border bg-background">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <Link href="/dashboard" className="text-xl font-extrabold text-primary">
-            Zawadi
-          </Link>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{fullName}</span>
-            <form action={logout}>
-              <button
-                type="submit"
-                className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted"
-              >
-                Log out
-              </button>
-            </form>
-          </div>
-        </div>
-      </nav>
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {children}
-      </main>
+    <div className="flex h-full min-h-screen">
+      <Sidebar items={navItems} role={roleLabels[role]} />
+      <div className="flex flex-1 flex-col">
+        <Topbar userName={fullName} navItems={navItems} />
+        <main className="flex-1 overflow-y-auto bg-background p-4 sm:p-6 lg:p-8">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

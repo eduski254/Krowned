@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Jost, Montserrat } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const jost = Jost({
@@ -30,7 +31,9 @@ export default function RootLayout({
       lang="en"
       className={`${jost.variable} ${montserrat.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }
