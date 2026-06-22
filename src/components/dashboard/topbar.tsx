@@ -2,7 +2,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileNav } from "./mobile-nav";
 import { logout } from "@/app/(auth)/actions";
 import { Bell } from "lucide-react";
-import type { NavItem } from "./sidebar";
+import type { NavItem } from "./nav-config";
 
 export function Topbar({
   userName,

@@ -3,13 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
-import type { LucideIcon } from "lucide-react";
-
-export type NavItem = {
-  label: string;
-  href: string;
-  icon: LucideIcon;
-};
+import type { NavItem } from "./nav-config";
+import { iconMap } from "./icon-map";
 
 export function Sidebar({
   items,
@@ -37,7 +32,7 @@ export function Sidebar({
                 item.href !== "/dashboard/staff" &&
                 item.href !== "/dashboard/admin" &&
                 pathname.startsWith(item.href));
-            const Icon = item.icon;
+            const Icon = iconMap[item.icon];
             return (
               <li key={item.href}>
                 <Link
@@ -49,7 +44,7 @@ export function Sidebar({
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
-                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  {Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
                   {item.label}
                 </Link>
               </li>

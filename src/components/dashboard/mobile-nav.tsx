@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import { Menu, X } from "lucide-react";
-import type { NavItem } from "./sidebar";
+import type { NavItem } from "./nav-config";
+import { iconMap } from "./icon-map";
 
 export function MobileNav({ items }: { items: NavItem[] }) {
   const [open, setOpen] = useState(false);
@@ -53,7 +54,7 @@ export function MobileNav({ items }: { items: NavItem[] }) {
                       item.href !== "/dashboard/staff" &&
                       item.href !== "/dashboard/admin" &&
                       pathname.startsWith(item.href));
-                  const Icon = item.icon;
+                  const Icon = iconMap[item.icon];
                   return (
                     <li key={item.href}>
                       <Link
@@ -66,7 +67,7 @@ export function MobileNav({ items }: { items: NavItem[] }) {
                             : "text-muted-foreground hover:bg-muted hover:text-foreground",
                         )}
                       >
-                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        {Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
                         {item.label}
                       </Link>
                     </li>

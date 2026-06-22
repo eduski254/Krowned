@@ -205,9 +205,46 @@ async function main() {
   });
   console.log("  ✓ Active Premium subscription");
 
-  // 7. Services (4 across different categories)
-  console.log("\n7. Creating services...");
+  // 7. Clean slate for business-scoped data (correct FK order)
+  console.log("\n7. Cleaning existing test data for business...");
+  // Delete in reverse FK order to avoid constraint violations
+  const { data: existingStaff } = await supabase
+    .from("staff")
+    .select("id")
+    .eq("business_id", businessId);
+  const existingStaffIds = existingStaff?.map((s) => s.id) ?? [];
+
+  if (existingStaffIds.length > 0) {
+    // Clean staff-dependent data
+    await supabase.from("schedule_exceptions").delete().in("staff_id", existingStaffIds);
+    await supabase.from("staff_schedules").delete().in("staff_id", existingStaffIds);
+    await supabase.from("staff_services").delete().in("staff_id", existingStaffIds);
+  }
+
+  // Clean booking-dependent data
+  const { data: existingBookings } = await supabase
+    .from("bookings")
+    .select("id")
+    .eq("business_id", businessId);
+  const existingBookingIds = existingBookings?.map((b) => b.id) ?? [];
+
+  if (existingBookingIds.length > 0) {
+    await supabase.from("reviews").delete().in("booking_id", existingBookingIds);
+    await supabase.from("payments").delete().in("booking_id", existingBookingIds);
+    await supabase.from("bookings").delete().eq("business_id", businessId);
+  }
+  // Also clean client bookings that reference this business
+  await supabase.from("bookings").delete().eq("client_id", clientId);
+
+  if (existingStaffIds.length > 0) {
+    await supabase.from("staff").delete().eq("business_id", businessId);
+  }
   await supabase.from("services").delete().eq("business_id", businessId);
+  await supabase.from("favorites").delete().eq("business_id", businessId);
+  console.log("  ✓ Cleaned existing test data");
+
+  // 8. Services (4 across different categories)
+  console.log("\n8. Creating services...");
 
   const servicesData = [
     {
@@ -263,9 +300,8 @@ async function main() {
   if (svcErr) throw new Error(`Services insert failed: ${svcErr.message}`);
   console.log(`  ✓ ${services.length} services created`);
 
-  // 8. Staff member
-  console.log("\n8. Creating staff member...");
-  await supabase.from("staff").delete().eq("business_id", businessId);
+  // 9. Staff member
+  console.log("\n9. Creating staff member...");
 
   const { data: staffRow, error: staffErr } = await supabase
     .from("staff")
@@ -283,9 +319,8 @@ async function main() {
   if (staffErr) throw new Error(`Staff insert failed: ${staffErr.message}`);
   console.log(`  ✓ Staff: ${ACCOUNTS.staff.full_name} (${staffRow.id})`);
 
-  // 9. Staff-service capability mapping (2 services)
-  console.log("\n9. Mapping staff to services...");
-  await supabase.from("staff_services").delete().eq("staff_id", staffRow.id);
+  // 10. Staff-service capability mapping (2 services)
+  console.log("\n10. Mapping staff to services...");
   const blowout = services.find((s) => s.name === "Signature Blowout")!;
   const braids = services.find((s) => s.name === "Braids & Cornrows")!;
   await supabase.from("staff_services").insert([
@@ -294,9 +329,8 @@ async function main() {
   ]);
   console.log(`  ✓ Mapped to: Signature Blowout, Braids & Cornrows`);
 
-  // 10. Staff weekly schedule (Mon-Fri 9-17)
-  console.log("\n10. Setting staff schedule...");
-  await supabase.from("staff_schedules").delete().eq("staff_id", staffRow.id);
+  // 11. Staff weekly schedule (Mon-Fri 9-17)
+  console.log("\n11. Setting staff schedule...");
   const staffSchedule = [1, 2, 3, 4, 5].map((day) => ({
     staff_id: staffRow.id,
     day_of_week: day,
@@ -306,9 +340,8 @@ async function main() {
   await supabase.from("staff_schedules").insert(staffSchedule);
   console.log("  ✓ Mon-Fri 09:00-17:00");
 
-  // 11. Schedule exception (vacation next week)
-  console.log("\n11. Adding schedule exception...");
-  await supabase.from("schedule_exceptions").delete().eq("staff_id", staffRow.id);
+  // 12. Schedule exception (vacation next week)
+  console.log("\n12. Adding schedule exception...");
   await supabase.from("schedule_exceptions").insert({
     staff_id: staffRow.id,
     starts_at: futureDate(7, 0),
@@ -318,9 +351,8 @@ async function main() {
   });
   console.log("  ✓ Vacation block in 7-9 days");
 
-  // 12. Client bookings (1 past completed, 1 upcoming confirmed)
-  console.log("\n12. Creating bookings...");
-  await supabase.from("bookings").delete().eq("client_id", clientId);
+  // 13. Client bookings (1 past completed, 1 upcoming confirmed)
+  console.log("\n13. Creating bookings...");
 
   const pastBooking = {
     client_id: clientId,
@@ -364,10 +396,9 @@ async function main() {
   if (bookErr) throw new Error(`Bookings insert failed: ${bookErr.message}`);
   console.log(`  ✓ ${bookings.length} bookings (1 completed, 1 upcoming)`);
 
-  // 13. Payment for the past booking
-  console.log("\n13. Creating payment record...");
+  // 14. Payment for the past booking
+  console.log("\n14. Creating payment record...");
   const completedBookingId = bookings.find((b) => b.status === "completed")!.id;
-  await supabase.from("payments").delete().eq("booking_id", completedBookingId);
   await supabase.from("payments").insert({
     booking_id: completedBookingId,
     stripe_payment_intent_id: "pi_test_seed_blowout_001",
@@ -379,9 +410,8 @@ async function main() {
   });
   console.log("  ✓ Payment: $50.00 (incl. $5.00 tip)");
 
-  // 14. Review on the completed booking
-  console.log("\n14. Creating review...");
-  await supabase.from("reviews").delete().eq("booking_id", completedBookingId);
+  // 15. Review on the completed booking
+  console.log("\n15. Creating review...");
   await supabase.from("reviews").insert({
     booking_id: completedBookingId,
     client_id: clientId,
@@ -393,8 +423,8 @@ async function main() {
   });
   console.log("  ✓ 5-star review published");
 
-  // 15. Favorite
-  console.log("\n15. Adding favorite...");
+  // 16. Favorite
+  console.log("\n16. Adding favorite...");
   await supabase
     .from("favorites")
     .upsert(
