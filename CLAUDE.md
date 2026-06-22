@@ -4,6 +4,21 @@
 
 You are building **Zawadi**, a beauty & wellness booking marketplace (a from-scratch rebuild of an existing WordPress/Listeo+Booknetic site onto a modern stack). Read this file fully before writing code. The authoritative data model lives in `docs/zawadi-schema.md` — always defer to it.
 
+## Project Status (keep this updated)
+**DONE**
+- Project scaffolded (Next.js + TypeScript + Tailwind), pushed to GitHub.
+- `CLAUDE.md` + `docs/zawadi-schema.md` (authoritative 24-table model) in place.
+- Supabase CLI linked; DB live with all 24 tables, enums, RLS enabled, seed data (Free/Premium plans + service categories). Types at `src/lib/database.types.ts`.
+- Supabase clients exist: `src/lib/supabase/{client,server,admin}.ts`.
+- Design-reference system: `.claude/skills/zawadi-frontend/` (brand tokens + inspiration folder).
+- ~5 commits pushed.
+
+**NOT BUILT YET** (don't build unless the task says so)
+- Auth, dashboards, public pages, booking engine, payments, messaging.
+
+## Frontend / UI work — read the design skill first
+Before writing or editing **any** UI (pages, components, styling, theming), consult **`.claude/skills/zawadi-frontend/`** — read its `SKILL.md` and `tokens.css`, and check `inspiration/` for visual reference. Use Eddie's brand tokens, not default/generic styling. Brand tokens are currently PLACEHOLDERS pending Eddie's real values.
+
 ## Stack
 - **Next.js** (App Router, TypeScript, Tailwind, `src/` dir, import alias `@/*`)
 - **Supabase** — Postgres, Auth, Realtime, Row-Level Security, Storage
