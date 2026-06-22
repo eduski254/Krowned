@@ -28,12 +28,12 @@ The tokens live in **`src/app/globals.css`** — that is the single source of tr
 Surfaces/text: `background`, `foreground`, `card`, `card-foreground`, `popover`, `muted`, `muted-foreground`, `border`, `input`, `ring`
 Brand: `primary` (+`-foreground`), `secondary` (+`-foreground`), `accent` (+`-foreground`)
 Status: `destructive`, `success`, `warning`, `info`
-Brand scale (for gradients/one-offs): `brand-deep`, `brand-dark`, `brand`, `brand-light`, `brand-lavender`, `brand-coral`, `brand-pink`
+Brand scale (for gradients/one-offs): `brand-deep`, `brand-dark`, `brand`, `brand-light`, `brand-lavender`, `brand-teal`, `brand-coral`, `brand-pink`
 Gradient: `.bg-gradient-hero`
 Fonts: `font-heading` (Futura→Jost), `font-body` (Montserrat)
 Radius: `rounded-sm/md/lg/xl` (base 10px); pills use `rounded-full`
 
-> ⚠️ The color values in globals.css are **approximated from the brand mockups + style guide** and marked `VERIFY`. When Eddie supplies the official brand hex codes, they get swapped in globals.css — nothing in components should need to change, because components only reference tokens.
+> ⚠️ The core palette is now the **official Zawadi brand colors**: Royal Violet `#5604ad` (primary), Lavender Glow `#9e8ed4` (secondary), Midnight Slate `#2e3043` (dark surface / ink), Teal Horizon `#3b9bbb` (accent). A few derived/supporting values (neutrals, the warm coral gradient tail from the mockups) remain marked `VERIFY` in globals.css. When Eddie confirms those, they get swapped — components never change, because they only reference tokens.
 
 ## Typography
 

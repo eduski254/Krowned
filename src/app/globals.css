@@ -26,29 +26,35 @@
 :root {
   --radius: 0.625rem; /* 10px base; pills use rounded-full */
 
-  /* Surfaces & text */
-  --background: #ffffff;          /* VERIFY page base (white) */
-  --foreground: #171221;          /* VERIFY near-black ink, slight purple warmth */
-  --card: #ffffff;                /* VERIFY card surface */
-  --card-foreground: #171221;
-  --popover: #ffffff;
-  --popover-foreground: #171221;
-  --muted: #f5f3fa;               /* VERIFY light section bg (faint lavender-gray) */
-  --muted-foreground: #6b6577;    /* VERIFY secondary text */
-  --border: #e9e4f2;              /* VERIFY hairline border (purple-tinted) */
-  --input: #e9e4f2;
-  --ring: #7c3aed;                /* focus ring = primary */
+  /* Official Zawadi palette:
+     Royal Violet  #5604ad  (primary)
+     Lavender Glow #9e8ed4  (secondary)
+     Midnight Slate #2e3043 (dark surface / deep text)
+     Teal Horizon  #3b9bbb  (accent) */
 
-  /* Brand — purple primary */
-  --primary: #7c3aed;             /* VERIFY signature violet (buttons, links, icons) */
+  /* Surfaces & text */
+  --background: #ffffff;          /* page base (white) */
+  --foreground: #2e3043;          /* Midnight Slate as near-black ink */
+  --card: #ffffff;                /* card surface */
+  --card-foreground: #2e3043;
+  --popover: #ffffff;
+  --popover-foreground: #2e3043;
+  --muted: #f5f3fb;               /* light section bg (faint lavender-gray, tuned to palette) */
+  --muted-foreground: #6c6b7e;    /* muted slate-violet secondary text */
+  --border: #e8e4f1;              /* hairline border (lavender-tinted) */
+  --input: #e8e4f1;
+  --ring: #5604ad;                /* focus ring = primary */
+
+  /* Brand — Royal Violet primary */
+  --primary: #5604ad;             /* Royal Violet */
   --primary-foreground: #ffffff;
 
-  /* Brand — lavender secondary surface */
-  --secondary: #ede7fb;           /* VERIFY light lavender (chips, soft fills) */
-  --secondary-foreground: #5b21b6;/* VERIFY deep violet text on lavender */
+  /* Brand — Lavender Glow secondary surface */
+  --secondary: #ece8f7;           /* light lavender fill (derived from Lavender Glow) */
+  --secondary-foreground: #4a0496;/* deep violet text on lavender */
 
-  /* Brand — teal accent (used sparingly) */
-  --accent: #14b8a6;              /* VERIFY teal accent */
+  /* Brand — Teal Horizon accent (used sparingly) */
+  --accent: #3b9bbb;              /* Teal Horizon */
   --accent-foreground: #ffffff;
 
   /* Status */
@@ -59,21 +65,23 @@
   --info: #2563eb;
 
   /* Brand scale (for gradients, ramps, deliberate one-offs) */
-  --brand-deep: #4c1d95;          /* VERIFY footer / darkest purple */
-  --brand-dark: #6d28d9;          /* VERIFY gradient start */
-  --brand: #7c3aed;               /* VERIFY core */
-  --brand-light: #a78bfa;
-  --brand-lavender: #ede7fb;
-  --brand-coral: #f5a97f;         /* VERIFY warm gradient tail */
-  --brand-pink: #e26fa8;          /* VERIFY gradient mid warm */
+  --brand-deep: #3d0479;          /* darkest violet (footer) — derived from Royal Violet */
+  --brand-dark: #5604ad;          /* Royal Violet */
+  --brand: #6a1fc0;               /* slightly lifted violet for gradient mid */
+  --brand-light: #9e8ed4;         /* Lavender Glow */
+  --brand-lavender: #ece8f7;
+  --brand-teal: #3b9bbb;          /* Teal Horizon */
+  --brand-coral: #f5a97f;         /* VERIFY warm gradient tail (in mockups, not in core palette) */
+  --brand-pink: #e26fa8;          /* VERIFY gradient mid warm (from mockups) */
 
-  /* Signature hero/CTA gradient (purple → warm coral, ~120°) */
+  /* Signature hero/CTA gradient (Royal Violet → Lavender → warm coral, ~120°).
+     Warm tail (pink/coral) is from the landing mockup; VERIFY against brand. */
   --gradient-hero: linear-gradient(
     120deg,
-    #6d28d9 0%,
-    #7c3aed 28%,
-    #a855f7 50%,
-    #e26fa8 76%,
+    #4a0496 0%,
+    #5604ad 26%,
+    #7d3fc9 48%,
+    #e26fa8 78%,
     #f5a97f 100%
   );
 
@@ -88,24 +96,24 @@
    SEMANTIC TOKENS — DARK (.dark on <html>)
    --------------------------------------------------------------------------- */
 .dark {
-  --background: #0d0b12;          /* VERIFY near-black, slight purple */
-  --foreground: #f5f3fa;
-  --card: #16121e;
-  --card-foreground: #f5f3fa;
-  --popover: #16121e;
-  --popover-foreground: #f5f3fa;
-  --muted: #1a1622;
-  --muted-foreground: #a29db0;
-  --border: #2a2435;
-  --input: #2a2435;
-  --ring: #8b5cf6;
+  --background: #2e3043;          /* Midnight Slate — true dark base */
+  --foreground: #f5f3fb;
+  --card: #363849;                /* lifted slate for cards */
+  --card-foreground: #f5f3fb;
+  --popover: #363849;
+  --popover-foreground: #f5f3fb;
+  --muted: #383a4d;
+  --muted-foreground: #a8a6ba;
+  --border: #44475c;
+  --input: #44475c;
+  --ring: #9e8ed4;
 
-  --primary: #8b5cf6;             /* slightly brighter on dark for contrast */
+  --primary: #7d3fc9;             /* lifted Royal Violet for contrast on slate */
   --primary-foreground: #ffffff;
-  --secondary: #221c30;
-  --secondary-foreground: #c4b5fd;
-  --accent: #2dd4bf;
-  --accent-foreground: #0d0b12;
+  --secondary: #3a3550;
+  --secondary-foreground: #c9bdec;
+  --accent: #3b9bbb;              /* Teal Horizon */
+  --accent-foreground: #0d0f18;
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
@@ -113,19 +121,20 @@
   --warning: #fbbf24;
   --info: #60a5fa;
 
-  --brand-deep: #4c1d95;
-  --brand-dark: #6d28d9;
-  --brand: #8b5cf6;
-  --brand-light: #c4b5fd;
-  --brand-lavender: #221c30;
+  --brand-deep: #3d0479;
+  --brand-dark: #5604ad;
+  --brand: #7d3fc9;
+  --brand-light: #9e8ed4;
+  --brand-lavender: #3a3550;
+  --brand-teal: #3b9bbb;
   --brand-coral: #f5a97f;
   --brand-pink: #e26fa8;
 
   --gradient-hero: linear-gradient(
     120deg,
-    #5b21b6 0%,
-    #6d28d9 30%,
-    #9333ea 52%,
+    #3d0479 0%,
+    #5604ad 30%,
+    #7d3fc9 52%,
     #d8568f 78%,
     #ec9a72 100%
   );
@@ -169,6 +178,7 @@
   --color-brand: var(--brand);
   --color-brand-light: var(--brand-light);
   --color-brand-lavender: var(--brand-lavender);
+  --color-brand-teal: var(--brand-teal);
   --color-brand-coral: var(--brand-coral);
   --color-brand-pink: var(--brand-pink);
 
