@@ -1,6 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { removeStaff } from "../actions";
+import { removeWeeklySlotForStaff } from "../../../staff/schedule/actions";
+import { StaffScheduleForm } from "./schedule-form";
+
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default async function StaffDetailPage({
   params,
@@ -30,20 +34,20 @@ export default async function StaffDetailPage({
 
   if (!staffMember) notFound();
 
-  // Get assigned services
-  const { data: staffServices } = await supabase
-    .from("staff_services")
-    .select("service_id, services(name)")
-    .eq("staff_id", id);
+  const [staffServicesRes, schedulesRes] = await Promise.all([
+    supabase
+      .from("staff_services")
+      .select("service_id, services(name)")
+      .eq("staff_id", id),
+    supabase
+      .from("staff_schedules")
+      .select("id, day_of_week, start_time, end_time")
+      .eq("staff_id", id)
+      .order("day_of_week"),
+  ]);
 
-  // Get staff's schedules
-  const { data: schedules } = await supabase
-    .from("staff_schedules")
-    .select("day_of_week, start_time, end_time")
-    .eq("staff_id", id)
-    .order("day_of_week");
-
-  const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const staffServices = staffServicesRes.data;
+  const schedules = schedulesRes.data;
 
   return (
     <div>
@@ -114,19 +118,31 @@ export default async function StaffDetailPage({
           )}
         </div>
 
-        {/* Schedule */}
+        {/* Schedule — now with management */}
         <div className="rounded-xl border border-border bg-card p-6">
           <h2 className="text-lg font-semibold text-foreground">Schedule</h2>
           {schedules && schedules.length > 0 ? (
-            <div className="mt-3 space-y-1">
+            <div className="mt-3 space-y-2">
               {schedules.map((s) => (
-                <div key={s.day_of_week} className="flex justify-between text-sm">
+                <div key={s.id} className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">
                     {DAY_NAMES[s.day_of_week]}
                   </span>
-                  <span className="text-foreground">
-                    {s.start_time?.slice(0, 5)} — {s.end_time?.slice(0, 5)}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-foreground">
+                      {s.start_time?.slice(0, 5)} — {s.end_time?.slice(0, 5)}
+                    </span>
+                    <form action={removeWeeklySlotForStaff}>
+                      <input type="hidden" name="slot_id" value={s.id} />
+                      <input type="hidden" name="staff_id" value={id} />
+                      <button
+                        type="submit"
+                        className="text-xs text-destructive hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </form>
+                  </div>
                 </div>
               ))}
             </div>
@@ -135,6 +151,7 @@ export default async function StaffDetailPage({
               No schedule set.
             </p>
           )}
+          <StaffScheduleForm staffId={id} />
         </div>
 
         {/* Remove */}
