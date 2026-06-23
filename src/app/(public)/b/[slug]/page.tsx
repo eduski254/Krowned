@@ -93,7 +93,7 @@ export default async function BusinessProfilePage({
         </div>
         {isBookable && (
           <Link
-            href={`/book/${business.booking_link_token}`}
+            href={`/book/${business.booking_link_token}?source=marketplace`}
             className="self-start rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
           >
             Book Now

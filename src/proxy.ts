@@ -21,6 +21,9 @@ const publicPaths = [
 ];
 
 function isPublicPath(pathname: string) {
+  // API routes handle their own auth
+  if (pathname.startsWith("/api/")) return true;
+
   return publicPaths.some(
     (p) => pathname === p || pathname.startsWith(p + "/"),
   );
