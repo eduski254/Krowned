@@ -197,7 +197,7 @@ export function BookingFlow({
           <div className="mt-4 inline-block rounded-xl border border-border bg-card px-6 py-4 text-left">
             <p className="font-medium text-foreground">{selectedService?.name}</p>
             <p className="text-sm text-muted-foreground">
-              {formatDisplayDate(selectedDate!)} at {selectedSlot.localTime} ({slotsTimezone.replace(/_/g, " ")})
+              {formatDisplayDate(selectedDate!)} at {formatTime12h(selectedSlot.localTime)} ({slotsTimezone.replace(/_/g, " ")})
             </p>
             <p className="text-sm text-muted-foreground">
               with {selectedSlot.staffName}
@@ -387,7 +387,7 @@ export function BookingFlow({
                           : "border-border bg-card text-foreground hover:border-primary hover:bg-primary/5"
                       }`}
                     >
-                      {slot.localTime}
+                      {formatTime12h(slot.localTime)}
                     </button>
                   ))}
                 </div>
@@ -413,7 +413,7 @@ export function BookingFlow({
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Date & Time</span>
               <span className="text-sm font-medium text-foreground">
-                {formatDisplayDate(selectedDate!)} at {selectedSlot.localTime}
+                {formatDisplayDate(selectedDate!)} at {formatTime12h(selectedSlot.localTime)}
               </span>
             </div>
             <div className="flex justify-between">
@@ -644,4 +644,13 @@ function formatDateLocal(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+function formatTime12h(time24: string): string {
+  const [hStr, mStr] = time24.split(":");
+  let h = parseInt(hStr, 10);
+  const suffix = h >= 12 ? "PM" : "AM";
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return `${h}:${mStr} ${suffix}`;
 }
