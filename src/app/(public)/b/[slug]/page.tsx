@@ -134,11 +134,21 @@ export default async function BusinessProfilePage({
                         <span>{s.payment_option}</span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-foreground">
-                        {(s.price_amount / 100).toFixed(2)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{s.currency?.toUpperCase()}</p>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-lg font-semibold text-foreground">
+                          {(s.price_amount / 100).toFixed(2)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{s.currency?.toUpperCase()}</p>
+                      </div>
+                      {isBookable && (
+                        <Link
+                          href={`/book/${business.booking_link_token}?source=marketplace&service=${s.id}`}
+                          className="shrink-0 rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                        >
+                          Book
+                        </Link>
+                      )}
                     </div>
                   </div>
                 ))}

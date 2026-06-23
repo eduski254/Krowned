@@ -9,10 +9,10 @@ export default async function BookingPage({
   searchParams,
 }: {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ source?: string }>;
+  searchParams: Promise<{ source?: string; service?: string }>;
 }) {
   const { token } = await params;
-  const { source: sourceParam } = await searchParams;
+  const { source: sourceParam, service: serviceParam } = await searchParams;
   const bookingSource: "marketplace" | "direct_link" =
     sourceParam === "marketplace" ? "marketplace" : "direct_link";
   const supabase = await createClient();
@@ -94,6 +94,7 @@ export default async function BookingPage({
           services={services ?? []}
           staffMembers={staffMembers ?? []}
           source={bookingSource}
+          preselectedServiceId={serviceParam}
         />
       </div>
     </div>

@@ -41,6 +41,7 @@ interface Props {
   services: Service[];
   staffMembers: StaffMember[];
   source: "direct_link" | "marketplace";
+  preselectedServiceId?: string;
 }
 
 export function BookingFlow({
@@ -52,12 +53,17 @@ export function BookingFlow({
   services,
   staffMembers,
   source,
+  preselectedServiceId,
 }: Props) {
   // Step state
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(preselectedServiceId ? 2 : 1);
 
   // Selections
-  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
+    preselectedServiceId && services.some((s) => s.id === preselectedServiceId)
+      ? preselectedServiceId
+      : null,
+  );
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<SlotData | null>(null);
