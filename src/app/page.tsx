@@ -2,7 +2,21 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/public/header";
 import { Footer } from "@/components/public/footer";
-import { Star, Search, Calendar, CheckCircle, MapPin, ArrowRight } from "lucide-react";
+import {
+  Star, Search, Calendar, CheckCircle, MapPin, ArrowRight,
+  Scissors, Sparkles, Palette, Droplet, Leaf, Heart, Home,
+  type LucideIcon,
+} from "lucide-react";
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  scissors: Scissors,
+  sparkles: Sparkles,
+  palette: Palette,
+  droplet: Droplet,
+  leaf: Leaf,
+  heart: Heart,
+  home: Home,
+};
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -81,9 +95,10 @@ export default async function HomePage() {
                 href={`/c/${cat.slug}`}
                 className="group relative flex flex-col items-center justify-center rounded-xl border border-border bg-card p-8 text-center transition-shadow hover:shadow-lg"
               >
-                {cat.icon && (
-                  <span className="text-3xl mb-3">{cat.icon}</span>
-                )}
+                {cat.icon && CATEGORY_ICONS[cat.icon] && (() => {
+                  const Icon = CATEGORY_ICONS[cat.icon];
+                  return <Icon className="h-8 w-8 mb-3 text-primary" />;
+                })()}
                 <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                   {cat.name}
                 </h3>
