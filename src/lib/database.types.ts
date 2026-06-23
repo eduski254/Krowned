@@ -49,6 +49,7 @@ export type Database = {
           created_at: string
           currency: string
           ends_at: string
+          hold_expires_at: string | null
           id: string
           payment_method: Database["public"]["Enums"]["payment_method"]
           platform_fee_amount: number
@@ -71,6 +72,7 @@ export type Database = {
           created_at?: string
           currency: string
           ends_at: string
+          hold_expires_at?: string | null
           id?: string
           payment_method: Database["public"]["Enums"]["payment_method"]
           platform_fee_amount?: number
@@ -93,6 +95,7 @@ export type Database = {
           created_at?: string
           currency?: string
           ends_at?: string
+          hold_expires_at?: string | null
           id?: string
           payment_method?: Database["public"]["Enums"]["payment_method"]
           platform_fee_amount?: number
@@ -218,6 +221,7 @@ export type Database = {
           subscription_status:
             | Database["public"]["Enums"]["subscription_status"]
             | null
+          timezone: string
           trial_ends_at: string | null
           updated_at: string
           verification_status: Database["public"]["Enums"]["verification_status"]
@@ -257,6 +261,7 @@ export type Database = {
           subscription_status?:
             | Database["public"]["Enums"]["subscription_status"]
             | null
+          timezone?: string
           trial_ends_at?: string | null
           updated_at?: string
           verification_status?: Database["public"]["Enums"]["verification_status"]
@@ -296,6 +301,7 @@ export type Database = {
           subscription_status?:
             | Database["public"]["Enums"]["subscription_status"]
             | null
+          timezone?: string
           trial_ends_at?: string | null
           updated_at?: string
           verification_status?: Database["public"]["Enums"]["verification_status"]
@@ -1280,11 +1286,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_staff_of: { Args: { business_id: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
+      reserve_booking_slot: {
+        Args: {
+          p_business_id: string
+          p_client_id: string
+          p_client_note?: string
+          p_currency: string
+          p_ends_at: string
+          p_hold_minutes?: number
+          p_payment_method: Database["public"]["Enums"]["payment_method"]
+          p_platform_fee: number
+          p_service_amount: number
+          p_service_id: string
+          p_source: Database["public"]["Enums"]["booking_source"]
+          p_staff_chosen: boolean
+          p_staff_id: string
+          p_starts_at: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       booking_source: "marketplace" | "direct_link" | "manual"
       booking_status:
+        | "pending_hold"
         | "pending"
         | "confirmed"
         | "in_progress"
@@ -1445,6 +1472,7 @@ export const Constants = {
     Enums: {
       booking_source: ["marketplace", "direct_link", "manual"],
       booking_status: [
+        "pending_hold",
         "pending",
         "confirmed",
         "in_progress",
