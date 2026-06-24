@@ -655,7 +655,7 @@ function BookingConfirmation({
         <div className="flex flex-col items-center rounded-xl border border-border bg-card p-5">
           <div className="rounded-lg bg-white p-3">
             <QRCodeSVG
-              value={bookingRef}
+              value={`${typeof window !== "undefined" ? window.location.origin : ""}/checkin/${bookingId}`}
               size={120}
               level="M"
               includeMargin={false}
@@ -870,11 +870,39 @@ function deriveBookingRef(bookingId: string): string {
 }
 
 /** Format a Date to ICS YYYYMMDDTHHMMSSZ format (UTC) */
-function toICSDate(date: Date): string {
+function toICSDateUTC(date: Date): string {
   return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 }
 
-/** Generate a VCALENDAR .ics Blob */
+/**
+ * Format a UTC Date into a local YYYYMMDDTHHMMSS string for a given IANA timezone.
+ * Uses Intl.DateTimeFormat for DST-correct conversion.
+ */
+function toICSDateLocal(date: Date, tz: string): string {
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  const parts = fmt.formatToParts(date);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "00";
+  return `${get("year")}${get("month")}${get("day")}T${get("hour")}${get("minute")}${get("second")}`;
+}
+
+/**
+ * Generate a VCALENDAR .ics Blob.
+ *
+ * Timezone handling: DTSTART/DTEND use TZID parameter with the business
+ * timezone (IANA name) and local-time values. A VTIMEZONE block is included
+ * with the TZID so that compliant calendar apps (Apple, Google, Outlook)
+ * resolve the correct UTC offset automatically. This ensures the event
+ * lands at the right local time regardless of the user's own timezone.
+ */
 function generateICS({
   title,
   start,
@@ -891,22 +919,36 @@ function generateICS({
   description?: string;
 }): Blob {
   const uid = `${start.getTime()}-${Math.random().toString(36).slice(2)}@zawadi.com`;
+  const localStart = toICSDateLocal(start, timezone);
+  const localEnd = toICSDateLocal(end, timezone);
+
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Zawadi//Booking//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
+    // Minimal VTIMEZONE — the TZID is an IANA name, which all modern
+    // calendar apps resolve natively. The STANDARD block is a fallback
+    // for strict parsers that require a VTIMEZONE definition.
+    "BEGIN:VTIMEZONE",
+    `TZID:${timezone}`,
+    "BEGIN:STANDARD",
+    `DTSTART:19700101T000000`,
+    "TZOFFSETFROM:+0000",
+    "TZOFFSETTO:+0000",
+    `TZNAME:${timezone}`,
+    "END:STANDARD",
+    "END:VTIMEZONE",
     "BEGIN:VEVENT",
-    `DTSTART:${toICSDate(start)}`,
-    `DTEND:${toICSDate(end)}`,
+    `DTSTART;TZID=${timezone}:${localStart}`,
+    `DTEND;TZID=${timezone}:${localEnd}`,
     `SUMMARY:${escapeICS(title)}`,
     `UID:${uid}`,
-    `DTSTAMP:${toICSDate(new Date())}`,
+    `DTSTAMP:${toICSDateUTC(new Date())}`,
   ];
   if (location) lines.push(`LOCATION:${escapeICS(location)}`);
   if (description) lines.push(`DESCRIPTION:${escapeICS(description)}`);
-  // Store the business timezone as a note (ICS DTSTART is UTC)
   lines.push(`X-WR-TIMEZONE:${timezone}`);
   lines.push("STATUS:CONFIRMED");
   lines.push("END:VEVENT");

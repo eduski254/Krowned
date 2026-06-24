@@ -44,6 +44,7 @@ export type Database = {
           business_id: string
           cancellation_reason: string | null
           cancelled_by: string | null
+          checked_in_at: string | null
           client_id: string
           client_note: string | null
           created_at: string
@@ -67,6 +68,7 @@ export type Database = {
           business_id: string
           cancellation_reason?: string | null
           cancelled_by?: string | null
+          checked_in_at?: string | null
           client_id: string
           client_note?: string | null
           created_at?: string
@@ -90,6 +92,7 @@ export type Database = {
           business_id?: string
           cancellation_reason?: string | null
           cancelled_by?: string | null
+          checked_in_at?: string | null
           client_id?: string
           client_note?: string | null
           created_at?: string
