@@ -6,15 +6,21 @@ You are building **Zawadi**, a beauty & wellness booking marketplace (a from-scr
 
 ## Project Status (keep this updated)
 **DONE**
-- Project scaffolded (Next.js + TypeScript + Tailwind), pushed to GitHub.
-- `CLAUDE.md` + `docs/zawadi-schema.md` (authoritative 24-table model) in place.
-- Supabase CLI linked; DB live with all 24 tables, enums, RLS enabled, seed data (Free/Premium plans + service categories). Types at `src/lib/database.types.ts`.
-- Supabase clients exist: `src/lib/supabase/{client,server,admin}.ts`.
-- Design-reference system: `.claude/skills/zawadi-frontend/` (brand tokens + inspiration folder).
-- ~5 commits pushed.
+- Live database: 24 tables, 13 enums, RLS policies, seeded at scale (20 businesses, ~50 clients, ~120 bookings, reviews, favorites). Types at `src/lib/database.types.ts`.
+- Design system in brand: Royal Violet / Lavender / Midnight Slate / Teal, Jost + Montserrat, light + dark themes, all semantic tokens.
+- Auth + role-based routing (client, business owner, staff, super admin). Middleware in `src/proxy.ts`.
+- All dashboards + public site: 41 pages (admin, business, staff, client dashboards; homepage, explore, business profiles, booking, how-it-works, for-professionals, contact, privacy, terms).
+- Services / staff / schedule management (business dashboard).
+- Booking availability engine: 30-min slots, business-timezone aware (DST-safe), 1hr lead time, 60-day window, "any available" auto-assign (lightest-loaded), transactional double-booking guard via `pg_advisory_xact_lock`, 10-min `pending_hold` mechanism. Verified end-to-end.
+- Admin data tables (`DataTable` component): search, column sort, pagination (20/page), CSV + PDF export (`jspdf` + `jspdf-autotable`). Applied to businesses, users, bookings.
+- Admin category management: CRUD, reorder, Lucide icon picker (shared `src/lib/category-icons.ts` map), super-admin-only, delete guarded by service-in-use check.
+- Quick fixes: category icons render as Lucide components, 12h AM/PM time display, per-service "Book" buttons on business profile.
 
-**NOT BUILT YET** (don't build unless the task says so)
-- Auth, dashboards, public pages, booking engine, payments, messaging.
+**NOT DONE / NEXT** (in priority order — don't build unless the task says so)
+1. **Stripe** — booking flow currently confirms as a STUB (no payment). Need: Payment Intents (prepay), Connect Express (vendor payouts), Billing (Free→Premium subscription, 14-day trial). `// REVIEW` markers in `booking-flow.tsx` and `actions.ts` where payment plugs in. Also: guest checkout + auto-account-creation, elevated confirmation page (add-to-calendar .ics, QR code, booking ref). Requires Resend for transactional email.
+2. **Analytics dashboards with charts** (admin overview + finance) — best after Stripe so there's real transaction data.
+3. **Live / fuzzy search-as-you-type** on `/explore`.
+4. **CMS** (deferred to v2).
 
 ## Frontend / UI work — read the design skill first
 Before writing or editing **any** UI (pages, components, styling, theming), consult **`.claude/skills/zawadi-frontend/`** — read its `SKILL.md` and `tokens.css`, and check `inspiration/` for visual reference. Use Eddie's brand tokens, not default/generic styling. Brand tokens are currently PLACEHOLDERS pending Eddie's real values.
