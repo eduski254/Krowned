@@ -153,3 +153,8 @@ export async function logout(message?: string) {
     : "/login";
   redirect(url);
 }
+
+/** Form-action-compatible logout (no params). Use in <form action={logoutAction}>. */
+export async function logoutAction() {
+  await logout();
+}

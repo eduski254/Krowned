@@ -1,6 +1,6 @@
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileNav } from "./mobile-nav";
-import { logout } from "@/app/(auth)/actions";
+import { logoutAction } from "@/app/(auth)/actions";
 import { Bell } from "lucide-react";
 import type { NavItem } from "./nav-config";
 
@@ -23,7 +23,7 @@ export function Topbar({
         <span className="hidden text-sm font-medium text-foreground sm:block">
           {userName}
         </span>
-        <form action={() => logout()}>
+        <form action={logoutAction}>
           <button
             type="submit"
             className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted"

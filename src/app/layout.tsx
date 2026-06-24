@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Jost, Montserrat } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider, ThemeScript } from "@/components/theme-provider";
 import "./globals.css";
 
 const jost = Jost({
@@ -33,13 +33,7 @@ export default function RootLayout({
       className={`${jost.variable} ${montserrat.variable} h-full antialiased`}
     >
       <head>
-        <script
-          suppressHydrationWarning
-          type={typeof window === "undefined" ? "text/javascript" : "text/plain"}
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`,
-          }}
-        />
+        <ThemeScript />
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>{children}</ThemeProvider>

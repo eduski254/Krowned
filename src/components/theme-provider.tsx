@@ -24,6 +24,23 @@ export function useTheme() {
   return useContext(ThemeContext);
 }
 
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`;
+
+/**
+ * Inline script that sets the .dark class before first paint.
+ * Must be a Client Component so typeof window check works on both
+ * server (text/javascript → executes) and client (text/plain → React ignores).
+ */
+export function ThemeScript() {
+  return (
+    <script
+      suppressHydrationWarning
+      type={typeof window === "undefined" ? "text/javascript" : "text/plain"}
+      dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }}
+    />
+  );
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window === "undefined") return "light";
