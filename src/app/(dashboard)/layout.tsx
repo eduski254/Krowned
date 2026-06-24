@@ -9,6 +9,7 @@ import {
   staffNav,
   adminNav,
 } from "@/components/dashboard/nav-config";
+import { IdleTimeout } from "@/components/idle-timeout";
 import type { AppRole } from "@/lib/roles";
 
 const navMap: Record<AppRole, typeof clientNav> = {
@@ -44,6 +45,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-full min-h-screen">
+      <IdleTimeout />
       <Sidebar items={navItems} role={roleLabels[role]} />
       <div className="flex flex-1 flex-col">
         <Topbar userName={fullName} navItems={navItems} />

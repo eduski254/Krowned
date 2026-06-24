@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Search, MapPin, Star, Grid3X3, List } from "lucide-react";
+import { Search, MapPin, Star } from "lucide-react";
+import { FavoriteButton } from "@/components/favorite-button";
 
 export default async function ExplorePage({
   searchParams,
@@ -57,6 +58,19 @@ export default async function ExplorePage({
       ratingMap.set(r.business_id, { sum: r.rating, count: 1 });
     }
   });
+
+  // Get current user's favorites (if logged in)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const favSet = new Set<string>();
+  if (user) {
+    const { data: favs } = await supabase
+      .from("favorites")
+      .select("business_id")
+      .eq("client_id", user.id);
+    favs?.forEach((f) => favSet.add(f.business_id));
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -124,11 +138,19 @@ export default async function ExplorePage({
                 <Link
                   key={biz.id}
                   href={`/b/${biz.slug}`}
-                  className="group rounded-xl border border-border bg-card transition-shadow hover:shadow-lg"
+                  className="group relative rounded-xl border border-border bg-card transition-shadow hover:shadow-lg"
                 >
                   {/* Card header */}
                   <div className="p-5">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="absolute right-3 top-3 z-10">
+                        <FavoriteButton
+                          businessId={biz.id}
+                          initialFavorited={favSet.has(biz.id)}
+                          isLoggedIn={!!user}
+                          size="sm"
+                        />
+                      </div>
                       {biz.logo_url ? (
                         <img
                           src={biz.logo_url}

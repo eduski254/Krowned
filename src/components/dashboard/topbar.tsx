@@ -23,7 +23,7 @@ export function Topbar({
         <span className="hidden text-sm font-medium text-foreground sm:block">
           {userName}
         </span>
-        <form action={logout}>
+        <form action={() => logout()}>
           <button
             type="submit"
             className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted"

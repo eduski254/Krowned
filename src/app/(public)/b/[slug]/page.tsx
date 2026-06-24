@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Star, Clock, MapPin, Phone, Mail, Calendar } from "lucide-react";
+import { Star, Clock, MapPin, Phone, Mail } from "lucide-react";
+import { FavoriteButton } from "@/components/favorite-button";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -62,6 +63,21 @@ export default async function BusinessProfilePage({
   const plan = business.plans as unknown as { tier: string; features: Record<string, unknown> } | null;
   const isBookable = plan?.tier === "premium" && ["trialing", "active"].includes(business.subscription_status ?? "");
 
+  // Check if current user has favorited this business
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  let isFavorited = false;
+  if (user) {
+    const { data: fav } = await supabase
+      .from("favorites")
+      .select("id")
+      .eq("client_id", user.id)
+      .eq("business_id", business.id)
+      .maybeSingle();
+    isFavorited = !!fav;
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
@@ -75,9 +91,16 @@ export default async function BusinessProfilePage({
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-              {business.name}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+                {business.name}
+              </h1>
+              <FavoriteButton
+                businessId={business.id}
+                initialFavorited={isFavorited}
+                isLoggedIn={!!user}
+              />
+            </div>
             <p className="text-muted-foreground">
               {(business.service_categories as unknown as { name: string } | null)?.name}
               {business.city && ` — ${business.city}`}

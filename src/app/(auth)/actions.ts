@@ -144,8 +144,12 @@ export async function resetPassword(
   redirect("/login?message=Password+updated.+Please+log+in.");
 }
 
-export async function logout() {
+export async function logout(message?: string) {
   const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/login");
+  // scope: 'global' revokes all sessions (all devices), ensuring a full signout
+  await supabase.auth.signOut({ scope: "global" });
+  const url = message
+    ? `/login?message=${encodeURIComponent(message)}`
+    : "/login";
+  redirect(url);
 }
