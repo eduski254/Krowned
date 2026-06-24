@@ -2,21 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/public/header";
 import { Footer } from "@/components/public/footer";
-import {
-  Star, Search, Calendar, CheckCircle, MapPin, ArrowRight,
-  Scissors, Sparkles, Palette, Droplet, Leaf, Heart, Home,
-  type LucideIcon,
-} from "lucide-react";
-
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  scissors: Scissors,
-  sparkles: Sparkles,
-  palette: Palette,
-  droplet: Droplet,
-  leaf: Leaf,
-  heart: Heart,
-  home: Home,
-};
+import { Star, Search, Calendar, CheckCircle, MapPin, ArrowRight } from "lucide-react";
+import { CATEGORY_ICONS } from "@/lib/category-icons";
 
 export default async function HomePage() {
   const supabase = await createClient();
