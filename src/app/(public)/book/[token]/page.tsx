@@ -20,7 +20,7 @@ export default async function BookingPage({
   const { data: business } = await supabase
     .from("businesses")
     .select(
-      "id, name, slug, timezone, charges_enabled, plans(tier, features), subscription_status",
+      "id, name, slug, timezone, charges_enabled, address, city, plans(tier, features), subscription_status",
     )
     .eq("booking_link_token", token)
     .eq("is_published", true)
@@ -93,6 +93,7 @@ export default async function BookingPage({
           chargesEnabled={business.charges_enabled}
           services={services ?? []}
           staffMembers={staffMembers ?? []}
+          businessAddress={[business.address, business.city].filter(Boolean).join(", ")}
           source={bookingSource}
           preselectedServiceId={serviceParam}
         />

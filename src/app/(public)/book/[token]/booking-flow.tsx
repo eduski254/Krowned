@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
-import { Clock, Calendar, ChevronLeft, ChevronRight, Loader2, AlertCircle, CheckCircle2, User } from "lucide-react";
+import { useState, useEffect, useTransition, useMemo } from "react";
+import { Clock, Calendar, ChevronLeft, ChevronRight, Loader2, AlertCircle, CheckCircle2, User, CalendarPlus, MapPin, ArrowRight, Copy, Check } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { holdBookingSlot, confirmBooking } from "@/lib/booking/actions";
 
 interface Service {
@@ -36,6 +37,7 @@ interface Props {
   businessId: string;
   businessName: string;
   businessSlug: string;
+  businessAddress?: string;
   timezone: string;
   chargesEnabled: boolean;
   services: Service[];
@@ -48,6 +50,7 @@ export function BookingFlow({
   businessId,
   businessName,
   businessSlug,
+  businessAddress,
   timezone,
   chargesEnabled,
   services,
@@ -189,42 +192,17 @@ export function BookingFlow({
   // ── Booking confirmed screen ────────────────────────────────────
   if (bookingResult?.success) {
     return (
-      <div className="text-center py-12">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success/10">
-          <CheckCircle2 className="h-8 w-8 text-success" />
-        </div>
-        <h2 className="text-2xl font-bold text-foreground font-heading">
-          Booking confirmed!
-        </h2>
-        <p className="mt-2 text-muted-foreground">
-          Your appointment at {businessName} has been booked.
-        </p>
-        {selectedSlot && (
-          <div className="mt-4 inline-block rounded-xl border border-border bg-card px-6 py-4 text-left">
-            <p className="font-medium text-foreground">{selectedService?.name}</p>
-            <p className="text-sm text-muted-foreground">
-              {formatDisplayDate(selectedDate!)} at {formatTime12h(selectedSlot.localTime)} ({slotsTimezone.replace(/_/g, " ")})
-            </p>
-            <p className="text-sm text-muted-foreground">
-              with {selectedSlot.staffName}
-            </p>
-            <p className="mt-2 text-sm font-semibold text-foreground">
-              {formatPrice(selectedService?.price_amount ?? 0, selectedService?.currency ?? "USD")}
-              {paymentMethod === "pay_at_store" && (
-                <span className="ml-2 text-muted-foreground font-normal">— pay at store</span>
-              )}
-            </p>
-          </div>
-        )}
-        <div className="mt-6">
-          <a
-            href={`/b/${businessSlug}`}
-            className="inline-block rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-          >
-            Back to {businessName}
-          </a>
-        </div>
-      </div>
+      <BookingConfirmation
+        bookingId={bookingResult.bookingId!}
+        businessName={businessName}
+        businessSlug={businessSlug}
+        businessAddress={businessAddress}
+        timezone={slotsTimezone}
+        service={selectedService!}
+        slot={selectedSlot!}
+        date={selectedDate!}
+        paymentMethod={paymentMethod}
+      />
     );
   }
 
@@ -521,6 +499,230 @@ export function BookingFlow({
   );
 }
 
+// ── Booking Confirmation ──────────────────────────────────────────
+
+function BookingConfirmation({
+  bookingId,
+  businessName,
+  businessSlug,
+  businessAddress,
+  timezone,
+  service,
+  slot,
+  date,
+  paymentMethod,
+}: {
+  bookingId: string;
+  businessName: string;
+  businessSlug: string;
+  businessAddress?: string;
+  timezone: string;
+  service: Service;
+  slot: SlotData;
+  date: string;
+  paymentMethod: "prepay" | "pay_at_store";
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const bookingRef = useMemo(() => deriveBookingRef(bookingId), [bookingId]);
+
+  const startDt = new Date(slot.start);
+  const endDt = new Date(startDt.getTime() + service.duration_minutes * 60_000);
+
+  const icsBlob = useMemo(
+    () => generateICS({
+      title: `${service.name} @ ${businessName}`,
+      start: startDt,
+      end: endDt,
+      timezone,
+      location: businessAddress,
+      description: `Booking ref: ${bookingRef}\nWith: ${slot.staffName}\nService: ${service.name} (${service.duration_minutes} min)\nTotal: ${formatPrice(service.price_amount, service.currency)}${paymentMethod === "pay_at_store" ? " — pay at store" : ""}`,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [bookingId],
+  );
+
+  const googleCalUrl = useMemo(
+    () => buildGoogleCalUrl({
+      title: `${service.name} @ ${businessName}`,
+      start: startDt,
+      end: endDt,
+      location: businessAddress,
+      description: `Booking ref: ${bookingRef}. With ${slot.staffName}.`,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [bookingId],
+  );
+
+  const mapsUrl = businessAddress
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(businessAddress)}`
+    : null;
+
+  // REVIEW: When Stripe is integrated, show payment receipt details here
+  // (transaction ID, amount charged, last-4 of card). For prepay bookings,
+  // the receipt will come from Stripe; for pay-at-store, show "Pay at venue."
+
+  // REVIEW: When Resend (email) is integrated, trigger a confirmation email
+  // from the server action that calls confirmBooking(). The email should
+  // include: booking ref, .ics attachment, QR code image, and business contact.
+
+  const copyRef = () => {
+    navigator.clipboard.writeText(bookingRef);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="py-8">
+      {/* Success icon + heading */}
+      <div className="text-center">
+        <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-success/10">
+          <CheckCircle2 className="h-10 w-10 text-success" />
+        </div>
+        <h2 className="text-2xl font-bold text-foreground font-heading sm:text-3xl">
+          You&apos;re all set!
+        </h2>
+        <p className="mt-2 text-muted-foreground">
+          Your appointment at <span className="font-medium text-foreground">{businessName}</span> is confirmed.
+        </p>
+      </div>
+
+      {/* Booking summary card */}
+      <div className="mt-8 rounded-xl border border-border bg-card overflow-hidden">
+        {/* Ref header */}
+        <div className="flex items-center justify-between bg-muted px-5 py-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Booking reference</span>
+            <span className="font-mono text-sm font-bold text-foreground tracking-wider">{bookingRef}</span>
+          </div>
+          <button
+            onClick={copyRef}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
+            aria-label="Copy reference"
+          >
+            {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+          </button>
+        </div>
+
+        {/* Details */}
+        <div className="px-5 py-4 space-y-3">
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">Service</span>
+            <span className="text-sm font-medium text-foreground">{service.name}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">Date & Time</span>
+            <span className="text-sm font-medium text-foreground">
+              {formatDisplayDate(date)} at {formatTime12h(slot.localTime)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">Timezone</span>
+            <span className="text-sm text-foreground">{timezone.replace(/_/g, " ")}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">Professional</span>
+            <span className="text-sm font-medium text-foreground">{slot.staffName}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">Duration</span>
+            <span className="text-sm text-foreground">{service.duration_minutes} min</span>
+          </div>
+          {businessAddress && (
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Location</span>
+              <span className="text-sm text-foreground text-right max-w-[60%]">{businessAddress}</span>
+            </div>
+          )}
+          <hr className="border-border" />
+          <div className="flex justify-between">
+            <span className="font-medium text-foreground">Total</span>
+            <div className="text-right">
+              <span className="font-semibold text-foreground">
+                {formatPrice(service.price_amount, service.currency)}
+              </span>
+              {paymentMethod === "pay_at_store" && (
+                <p className="text-xs text-muted-foreground mt-0.5">Pay at venue</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* QR code + calendar row */}
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        {/* QR code */}
+        <div className="flex flex-col items-center rounded-xl border border-border bg-card p-5">
+          <div className="rounded-lg bg-white p-3">
+            <QRCodeSVG
+              value={bookingRef}
+              size={120}
+              level="M"
+              includeMargin={false}
+            />
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground text-center">
+            Show this at your appointment
+          </p>
+        </div>
+
+        {/* Add to calendar */}
+        <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-5">
+          <p className="text-sm font-medium text-foreground mb-1">Add to calendar</p>
+          <a
+            href={URL.createObjectURL(icsBlob)}
+            download={`zawadi-booking-${bookingRef}.ics`}
+            className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+          >
+            <CalendarPlus className="h-4 w-4 text-primary" />
+            Download .ics
+            <span className="ml-auto text-xs text-muted-foreground">Apple / Outlook</span>
+          </a>
+          <a
+            href={googleCalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+          >
+            <Calendar className="h-4 w-4 text-primary" />
+            Google Calendar
+            <ArrowRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+          </a>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="mt-8 space-y-3">
+        <a
+          href="/dashboard/bookings"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          View my bookings
+        </a>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {mapsUrl && (
+            <a
+              href={mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            >
+              <MapPin className="h-4 w-4 text-primary" />
+              Get directions
+            </a>
+          )}
+          <a
+            href={`/b/${businessSlug}`}
+            className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+          >
+            Back to {businessName}
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Mini Calendar ─────────────────────────────────────────────────
 
 function MiniCalendar({
@@ -659,4 +861,84 @@ function formatTime12h(time24: string): string {
   if (h === 0) h = 12;
   else if (h > 12) h -= 12;
   return `${h}:${mStr} ${suffix}`;
+}
+
+/** Derive a short human-readable booking ref from UUID (8 chars, uppercased) */
+function deriveBookingRef(bookingId: string): string {
+  // Take first 8 hex chars of UUID, uppercase
+  return "ZW-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
+}
+
+/** Format a Date to ICS YYYYMMDDTHHMMSSZ format (UTC) */
+function toICSDate(date: Date): string {
+  return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+}
+
+/** Generate a VCALENDAR .ics Blob */
+function generateICS({
+  title,
+  start,
+  end,
+  timezone,
+  location,
+  description,
+}: {
+  title: string;
+  start: Date;
+  end: Date;
+  timezone: string;
+  location?: string;
+  description?: string;
+}): Blob {
+  const uid = `${start.getTime()}-${Math.random().toString(36).slice(2)}@zawadi.com`;
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Zawadi//Booking//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `DTSTART:${toICSDate(start)}`,
+    `DTEND:${toICSDate(end)}`,
+    `SUMMARY:${escapeICS(title)}`,
+    `UID:${uid}`,
+    `DTSTAMP:${toICSDate(new Date())}`,
+  ];
+  if (location) lines.push(`LOCATION:${escapeICS(location)}`);
+  if (description) lines.push(`DESCRIPTION:${escapeICS(description)}`);
+  // Store the business timezone as a note (ICS DTSTART is UTC)
+  lines.push(`X-WR-TIMEZONE:${timezone}`);
+  lines.push("STATUS:CONFIRMED");
+  lines.push("END:VEVENT");
+  lines.push("END:VCALENDAR");
+  return new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+}
+
+function escapeICS(text: string): string {
+  return text.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+}
+
+/** Build a Google Calendar "add event" URL */
+function buildGoogleCalUrl({
+  title,
+  start,
+  end,
+  location,
+  description,
+}: {
+  title: string;
+  start: Date;
+  end: Date;
+  location?: string;
+  description?: string;
+}): string {
+  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: title,
+    dates: `${fmt(start)}/${fmt(end)}`,
+  });
+  if (location) params.set("location", location);
+  if (description) params.set("details", description);
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
