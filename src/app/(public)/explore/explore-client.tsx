@@ -10,8 +10,9 @@ import {
 } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Star, Map as MapIcon, List } from "lucide-react";
+import { Search, MapPin, Map as MapIcon, List } from "lucide-react";
 import { FavoriteButton } from "@/components/favorite-button";
+import { StarRating } from "@/components/star-rating";
 import type { ExploreBusiness } from "@/lib/explore/actions";
 import { searchByBounds } from "@/lib/explore/actions";
 
@@ -352,19 +353,7 @@ const BusinessCard = forwardRef<
       )}
 
       <div className="mt-4 flex items-center justify-between">
-        {biz.avgRating ? (
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 fill-warning text-warning" />
-            <span className="text-sm font-medium text-foreground">
-              {biz.avgRating.toFixed(1)}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              ({biz.reviewCount})
-            </span>
-          </div>
-        ) : (
-          <span className="text-xs text-muted-foreground">No reviews yet</span>
-        )}
+        <StarRating value={biz.avgRating} count={biz.reviewCount} />
         <span className="text-sm font-medium text-primary">View &rarr;</span>
       </div>
     </Link>

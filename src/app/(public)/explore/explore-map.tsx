@@ -10,7 +10,7 @@ import {
 } from "@vis.gl/react-google-maps";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
-import { Star } from "lucide-react";
+import { StarRating } from "@/components/star-rating";
 import Link from "next/link";
 import type { ExploreBusiness } from "@/lib/explore/actions";
 
@@ -190,17 +190,9 @@ function MapContent({
             {selectedBiz.categoryName && (
               <p className="text-xs text-gray-500">{selectedBiz.categoryName}</p>
             )}
-            {selectedBiz.avgRating && (
-              <div className="mt-1 flex items-center gap-1">
-                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                <span className="text-xs font-medium text-gray-700">
-                  {selectedBiz.avgRating.toFixed(1)}
-                </span>
-                <span className="text-xs text-gray-500">
-                  ({selectedBiz.reviewCount})
-                </span>
-              </div>
-            )}
+            <div className="mt-1">
+              <StarRating value={selectedBiz.avgRating} count={selectedBiz.reviewCount} size="xs" />
+            </div>
             <Link
               href={`/b/${selectedBiz.slug}`}
               className="mt-2 inline-block text-xs font-semibold text-purple-600 hover:underline"

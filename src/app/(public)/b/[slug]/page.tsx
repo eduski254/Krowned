@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Suspense, lazy } from "react";
-import { Star, Clock, MapPin, Phone, Mail, Home } from "lucide-react";
+import { Clock, MapPin, Phone, Mail, Home, Star } from "lucide-react";
+import { StarRating } from "@/components/star-rating";
 import { FavoriteButton } from "@/components/favorite-button";
 import { PhotoGallery } from "./photo-gallery";
 
@@ -123,13 +124,9 @@ export default async function BusinessProfilePage({
               {(business.service_categories as unknown as { name: string } | null)?.name}
               {business.city && ` — ${business.city}`}
             </p>
-            {avgRating && (
-              <div className="mt-1 flex items-center gap-1">
-                <Star className="h-4 w-4 fill-warning text-warning" />
-                <span className="text-sm font-medium text-foreground">{avgRating}</span>
-                <span className="text-sm text-muted-foreground">({reviews.length} reviews)</span>
-              </div>
-            )}
+            <div className="mt-1">
+              <StarRating value={avgRating ? parseFloat(avgRating) : null} count={reviews.length} />
+            </div>
           </div>
         </div>
         {isBookable && (
