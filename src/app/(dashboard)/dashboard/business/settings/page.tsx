@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { VisibilityToggle } from "./visibility-toggle";
+import { HoursEditor } from "./hours-editor";
 
 export default async function BusinessSettingsPage() {
   const supabase = await createClient();
@@ -16,6 +17,12 @@ export default async function BusinessSettingsPage() {
     .maybeSingle();
 
   if (!business) redirect("/dashboard/business");
+
+  const { data: hours } = await supabase
+    .from("business_hours")
+    .select("day_of_week, open_time, close_time")
+    .eq("business_id", business.id)
+    .order("day_of_week");
 
   return (
     <div>
@@ -50,10 +57,12 @@ export default async function BusinessSettingsPage() {
           <h2 className="text-lg font-semibold text-foreground">
             Business Hours
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Set your opening hours so staff schedules compute correctly.
+          <p className="mb-4 text-sm text-muted-foreground">
+            Set your opening hours. Staff schedules and the booking engine
+            use these as the outer boundary — slots are only available
+            during these hours.
           </p>
-          {/* // REVIEW: Business hours editor */}
+          <HoursEditor businessId={business.id} initialHours={hours ?? []} />
         </div>
       </div>
     </div>
