@@ -36,18 +36,9 @@ export function ExploreMap({
     west: number;
   }) => void;
 }) {
-  // Compute initial center from businesses
-  const center =
-    businesses.length > 0
-      ? {
-          lat:
-            businesses.reduce((s, b) => s + (b.latitude ?? 0), 0) /
-            businesses.length,
-          lng:
-            businesses.reduce((s, b) => s + (b.longitude ?? 0), 0) /
-            businesses.length,
-        }
-      : DEFAULT_CENTER;
+  // Always open on Nairobi — businesses span multiple countries,
+  // so averaging coordinates would center on the ocean.
+  const center = DEFAULT_CENTER;
 
   return (
     <APIProvider apiKey={API_KEY}>
