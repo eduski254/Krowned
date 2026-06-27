@@ -8,7 +8,7 @@ import { CATEGORY_ICONS } from "@/lib/category-icons";
 // REVIEW: Replace with a real licensed image before launch.
 // Swap this single constant to change the homepage hero background.
 const HERO_BG_IMAGE =
-  "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1920&q=80";
+  "https://images.unsplash.com/photo-1585747860019-8e8ef3e7e8e0?auto=format&fit=crop&w=1920&q=80";
 
 export default async function HomePage() {
   const supabase = await createClient();
