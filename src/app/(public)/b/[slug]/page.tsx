@@ -1,8 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Star, Clock, MapPin, Phone, Mail } from "lucide-react";
+import { Suspense, lazy } from "react";
+import { Star, Clock, MapPin, Phone, Mail, Home } from "lucide-react";
 import { FavoriteButton } from "@/components/favorite-button";
+import { PhotoGallery } from "./photo-gallery";
+
+const BusinessMiniMap = lazy(() =>
+  import("./business-mini-map").then((m) => ({ default: m.BusinessMiniMap })),
+);
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -62,6 +68,13 @@ export default async function BusinessProfilePage({
 
   const plan = business.plans as unknown as { tier: string; features: Record<string, unknown> } | null;
   const isBookable = plan?.tier === "premium" && ["trialing", "active"].includes(business.subscription_status ?? "");
+
+  const hasCoords =
+    business.latitude != null &&
+    business.longitude != null &&
+    (business.latitude !== 0 || business.longitude !== 0);
+  const hasMapKey = !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const galleryPhotos = (business.gallery as string[] | null) ?? [];
 
   // Check if current user has favorited this business
   const {
@@ -127,6 +140,14 @@ export default async function BusinessProfilePage({
       {/* Description */}
       {business.description && (
         <p className="mt-6 text-foreground">{business.description}</p>
+      )}
+
+      {/* Photo Gallery */}
+      {galleryPhotos.length > 0 && (
+        <section className="mt-6">
+          {/* // REVIEW: When photo uploads are built, they should write URLs to business.gallery (jsonb array) */}
+          <PhotoGallery photos={galleryPhotos} />
+        </section>
       )}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
@@ -282,22 +303,47 @@ export default async function BusinessProfilePage({
             </div>
           )}
 
-          {/* Gallery */}
-          {business.gallery && (business.gallery as string[]).length > 0 && (
+          {/* Location */}
+          {hasCoords && hasMapKey ? (
             <div className="rounded-xl border border-border bg-card p-6">
-              <h3 className="font-semibold text-foreground">Gallery</h3>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                {(business.gallery as string[]).slice(0, 4).map((url, i) => (
-                  <img
-                    key={i}
-                    src={url}
-                    alt=""
-                    className="aspect-square rounded-lg object-cover"
+              <h3 className="font-semibold text-foreground">Location</h3>
+              {business.address && (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {[business.address, business.city, business.country]
+                    .filter(Boolean)
+                    .join(", ")}
+                </p>
+              )}
+              <div className="mt-3">
+                <Suspense
+                  fallback={
+                    <div className="flex h-[250px] items-center justify-center rounded-lg bg-muted">
+                      <p className="text-sm text-muted-foreground">Loading map...</p>
+                    </div>
+                  }
+                >
+                  <BusinessMiniMap
+                    lat={business.latitude!}
+                    lng={business.longitude!}
+                    name={business.name}
                   />
-                ))}
+                </Suspense>
               </div>
             </div>
-          )}
+          ) : !hasCoords ? (
+            <div className="rounded-xl border border-border bg-card p-6">
+              <h3 className="font-semibold text-foreground">Location</h3>
+              <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                <Home className="h-4 w-4 shrink-0" />
+                <span>Mobile / At-home service</span>
+              </div>
+              {business.city && (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Serving {[business.city, business.country].filter(Boolean).join(", ")}
+                </p>
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

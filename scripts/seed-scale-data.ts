@@ -184,6 +184,71 @@ const BIZ_TEMPLATES: BizTemplate[] = [
   },
 ];
 
+// Unsplash placeholder gallery photos per category (landscape, relevant to service type)
+const GALLERY_PHOTOS: Record<string, string[]> = {
+  "hair-barber": [
+    "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1521590832167-7228fcb0c124?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1622288432450-277d0fef5ed6?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1562004760-aceed7bb0fe3?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&h=600&fit=crop",
+  ],
+  "nails-beauty": [
+    "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1457972729786-0411a3b2b626?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&h=600&fit=crop",
+  ],
+  "makeup-glam": [
+    "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1583241800698-e8ab01830a07?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1457972851104-2d51b303a0b2?w=800&h=600&fit=crop",
+  ],
+  "skincare-aesthetics": [
+    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1552693673-1bf958298935?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1629196914168-3a2db17ac40c?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=800&h=600&fit=crop",
+  ],
+  "spa-massage": [
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1540555700478-4be289fbec6d?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?w=800&h=600&fit=crop",
+  ],
+  "fitness-wellness": [
+    "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop",
+  ],
+  "at-home-mobile": [
+    "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&h=600&fit=crop",
+  ],
+};
+
 // Staff titles per category
 const STAFF_TITLES: Record<string, string[]> = {
   "hair-barber": ["Hair Stylist", "Barber", "Braiding Specialist", "Colorist"],
@@ -558,6 +623,7 @@ async function main() {
         is_featured: def.isFeatured,
         featured_until: def.isFeatured ? futureDate(60, 0) : null,
         amenities: JSON.stringify(pickN(AMENITIES_POOL, randInt(2, 5))),
+        gallery: JSON.stringify(pickN(GALLERY_PHOTOS[def.template.category] ?? [], randInt(5, 8))),
       })
       .select("id")
       .single();
