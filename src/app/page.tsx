@@ -5,6 +5,11 @@ import { Footer } from "@/components/public/footer";
 import { Star, Search, Calendar, CheckCircle, MapPin, ArrowRight } from "lucide-react";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
 
+// REVIEW: Replace with a real licensed image before launch.
+// Swap this single constant to change the homepage hero background.
+const HERO_BG_IMAGE =
+  "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1920&q=80";
+
 export default async function HomePage() {
   const supabase = await createClient();
 
@@ -28,13 +33,27 @@ export default async function HomePage() {
     <div className="flex min-h-full flex-col">
       <PublicHeader />
 
-      {/* Hero */}
-      <section className="bg-gradient-hero px-4 py-20 text-center text-primary-foreground sm:py-28">
-        <div className="mx-auto max-w-3xl">
-          <h1 className="text-4xl font-heading font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+      {/* Hero — full viewport with background image + gradient overlay */}
+      <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden text-center">
+        {/* Background image */}
+        <img
+          src={HERO_BG_IMAGE}
+          alt=""
+          loading="eager"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+        />
+        {/* Brand gradient overlay (~40% opacity — photo shows through) */}
+        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
+        {/* Extra scrim for text legibility */}
+        <div className="absolute inset-0 bg-black/20" />
+
+        {/* Content */}
+        <div className="relative z-10 mx-auto max-w-3xl px-4 py-20 sm:py-28">
+          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-5xl lg:text-6xl">
             Beauty &amp; wellness, booked effortlessly
           </h1>
-          <p className="mt-6 text-lg opacity-90">
+          <p className="mt-6 text-lg text-white/90 drop-shadow-sm">
             Discover top professionals near you. Book in seconds. Grow your business with Zawadi.
           </p>
 
@@ -42,7 +61,7 @@ export default async function HomePage() {
           <form
             action="/explore"
             method="GET"
-            className="mx-auto mt-10 flex max-w-xl flex-col gap-2 rounded-xl bg-background/95 p-2 shadow-lg sm:flex-row"
+            className="mx-auto mt-10 flex max-w-xl flex-col gap-2 rounded-xl bg-background/95 p-2 shadow-lg backdrop-blur-sm sm:flex-row"
           >
             <div className="flex flex-1 items-center gap-2 rounded-lg bg-background px-3 py-2">
               <Search className="h-4 w-4 text-muted-foreground" />
