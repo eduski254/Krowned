@@ -111,22 +111,26 @@ export default async function BusinessDashboardPage() {
           label="Total Bookings"
           value={totalBookings.toString()}
           icon={Calendar}
+          href="/dashboard/business/calendar"
         />
         <StatCard
           label="Active Staff"
           value={activeStaff.toString()}
           icon={Users}
+          href="/dashboard/business/staff"
         />
         <StatCard
           label="Avg Rating"
           value={avgRating}
           icon={Star}
           trend={`${totalReviews} reviews`}
+          href="/dashboard/business/reviews"
         />
         <StatCard
           label="Total Earnings"
           value={`${(totalEarnings / 100).toFixed(2)}`}
           icon={DollarSign}
+          href="/dashboard/business/earnings"
         />
       </div>
 

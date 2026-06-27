@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 
 export function StatCard({
@@ -5,14 +6,16 @@ export function StatCard({
   value,
   icon: Icon,
   trend,
+  href,
 }: {
   label: string;
   value: string;
   icon: LucideIcon;
   trend?: string;
+  href?: string;
 }) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-6">
+  const content = (
+    <>
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-muted-foreground">{label}</span>
         <div className="rounded-lg bg-primary/10 p-2">
@@ -23,6 +26,22 @@ export function StatCard({
       {trend && (
         <p className="mt-1 text-xs text-muted-foreground">{trend}</p>
       )}
-    </div>
+    </>
   );
+
+  const baseClasses =
+    "rounded-xl border border-border bg-card p-6 transition-all";
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={`${baseClasses} block hover:border-primary/30 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-ring`}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={baseClasses}>{content}</div>;
 }
