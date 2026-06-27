@@ -39,10 +39,15 @@ export default async function HomePage() {
           </p>
 
           {/* Hero search bar */}
-          <div className="mx-auto mt-10 flex max-w-xl flex-col gap-2 rounded-xl bg-background/95 p-2 shadow-lg sm:flex-row">
+          <form
+            action="/explore"
+            method="GET"
+            className="mx-auto mt-10 flex max-w-xl flex-col gap-2 rounded-xl bg-background/95 p-2 shadow-lg sm:flex-row"
+          >
             <div className="flex flex-1 items-center gap-2 rounded-lg bg-background px-3 py-2">
               <Search className="h-4 w-4 text-muted-foreground" />
               <input
+                name="q"
                 type="text"
                 placeholder="What service are you looking for?"
                 className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
@@ -51,18 +56,19 @@ export default async function HomePage() {
             <div className="flex flex-1 items-center gap-2 rounded-lg bg-background px-3 py-2">
               <MapPin className="h-4 w-4 text-muted-foreground" />
               <input
+                name="city"
                 type="text"
                 placeholder="Location"
                 className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
               />
             </div>
-            <Link
-              href="/explore"
+            <button
+              type="submit"
               className="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
             >
               Search
-            </Link>
-          </div>
+            </button>
+          </form>
         </div>
       </section>
 
@@ -76,7 +82,7 @@ export default async function HomePage() {
             Find exactly what you need
           </p>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {categories.map((cat) => (
+            {categories.filter((cat) => cat.slug !== "new-category").map((cat) => (
               <Link
                 key={cat.id}
                 href={`/explore?category=${cat.slug}`}
@@ -127,13 +133,13 @@ export default async function HomePage() {
                         {biz.name.charAt(0)}
                       </div>
                     )}
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                        <h3 className="truncate font-semibold text-foreground group-hover:text-primary transition-colors">
                           {biz.name}
                         </h3>
                         {biz.is_featured && (
-                          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                          <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                             Featured
                           </span>
                         )}
@@ -143,6 +149,9 @@ export default async function HomePage() {
                       </p>
                     </div>
                   </div>
+                  <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                    View profile <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
                 </Link>
               ))}
             </div>

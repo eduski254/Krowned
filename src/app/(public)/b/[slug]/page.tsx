@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Suspense, lazy } from "react";
-import { Clock, MapPin, Phone, Mail, Home, Star } from "lucide-react";
+import { Clock, MapPin, Phone, Mail, Home, Star, ArrowLeft } from "lucide-react";
 import { StarRating } from "@/components/star-rating";
 import { FavoriteButton } from "@/components/favorite-button";
 import { PhotoGallery } from "./photo-gallery";
@@ -99,6 +99,15 @@ export default async function BusinessProfilePage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Back link */}
+      <Link
+        href="/explore"
+        className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to results
+      </Link>
+
       {/* Header */}
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
         <div className="flex items-center gap-4">
@@ -177,7 +186,13 @@ export default async function BusinessProfilePage({
                           <Clock className="h-3 w-3" />
                           {s.duration_minutes} min
                         </span>
-                        <span>{s.payment_option}</span>
+                        <span>
+                          {s.payment_option === "both"
+                            ? "Pay online or in-store"
+                            : s.payment_option === "prepay"
+                              ? "Pay online"
+                              : "Pay in-store"}
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -289,21 +304,22 @@ export default async function BusinessProfilePage({
           </div>
 
           {/* Hours */}
-          {hours.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-6">
-              <h3 className="font-semibold text-foreground">Business Hours</h3>
-              <div className="mt-3 space-y-1">
-                {hours.map((h) => (
-                  <div key={h.day_of_week} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{DAY_NAMES[h.day_of_week]}</span>
-                    <span className="text-foreground">
-                      {h.open_time?.slice(0, 5)} — {h.close_time?.slice(0, 5)}
+          <div className="rounded-xl border border-border bg-card p-6">
+            <h3 className="font-semibold text-foreground">Business Hours</h3>
+            <div className="mt-3 space-y-1">
+              {DAY_NAMES.map((dayName, dayIdx) => {
+                const h = hours.find((hr) => hr.day_of_week === dayIdx);
+                return (
+                  <div key={dayIdx} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{dayName}</span>
+                    <span className={h ? "text-foreground" : "text-muted-foreground"}>
+                      {h ? `${h.open_time?.slice(0, 5)} — ${h.close_time?.slice(0, 5)}` : "Closed"}
                     </span>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
-          )}
+          </div>
 
           {/* Location */}
           {hasCoords && hasMapKey ? (

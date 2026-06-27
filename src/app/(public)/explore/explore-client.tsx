@@ -84,15 +84,12 @@ export function ExploreClient({
     setHighlightedId(id);
   }, []);
 
-  const handleFilterSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const fd = new FormData(e.currentTarget);
-      const q = (fd.get("q") as string) || "";
-      const city = (fd.get("city") as string) || "";
-      const category = (fd.get("category") as string) || "";
-      filtersRef.current = { q, city, category };
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
+  const pushFilters = useCallback(
+    (q: string, city: string, category: string) => {
+      filtersRef.current = { q, city, category };
       const sp = new URLSearchParams();
       if (q) sp.set("q", q);
       if (city) sp.set("city", city);
@@ -101,6 +98,33 @@ export function ExploreClient({
     },
     [router],
   );
+
+  const handleFilterSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      const fd = new FormData(e.currentTarget);
+      pushFilters(
+        (fd.get("q") as string) || "",
+        (fd.get("city") as string) || "",
+        (fd.get("category") as string) || "",
+      );
+    },
+    [pushFilters],
+  );
+
+  const handleLiveChange = useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      if (!formRef.current) return;
+      const fd = new FormData(formRef.current);
+      pushFilters(
+        (fd.get("q") as string) || "",
+        (fd.get("city") as string) || "",
+        (fd.get("category") as string) || "",
+      );
+    }, 400);
+  }, [pushFilters]);
 
   // Businesses with valid coordinates (for map pins)
   const mappable = businesses.filter(
@@ -112,6 +136,7 @@ export function ExploreClient({
       {/* Filters bar */}
       <div className="border-b border-border bg-background px-4 py-3 sm:px-6">
         <form
+          ref={formRef}
           onSubmit={handleFilterSubmit}
           className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row"
         >
@@ -122,6 +147,7 @@ export function ExploreClient({
               type="text"
               defaultValue={initialFilters.q}
               placeholder="Search businesses..."
+              onChange={handleLiveChange}
               className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
             />
           </div>
@@ -132,16 +158,18 @@ export function ExploreClient({
               type="text"
               defaultValue={initialFilters.city}
               placeholder="City"
+              onChange={handleLiveChange}
               className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
             />
           </div>
           <select
             name="category"
             defaultValue={initialFilters.category}
+            onChange={handleLiveChange}
             className="rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground"
           >
             <option value="">All categories</option>
-            {categories.map((c) => (
+            {categories.filter((c) => c.slug !== "new-category").map((c) => (
               <option key={c.id} value={c.slug}>
                 {c.name}
               </option>

@@ -4,7 +4,7 @@ import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 import { Navigation } from "lucide-react";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
-const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? "zawadi-explore-map";
+const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? "DEMO_MAP_ID";
 
 export function BusinessMiniMap({
   lat,

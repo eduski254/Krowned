@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 export function PhotoGallery({ photos }: { photos: string[] }) {
@@ -17,6 +17,17 @@ export function PhotoGallery({ photos }: { photos: string[] }) {
   }, []);
 
   const showLightbox = lightboxIdx !== null;
+
+  useEffect(() => {
+    if (!showLightbox) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxIdx(null);
+      if (e.key === "ArrowLeft" && lightboxIdx! > 0) setLightboxIdx(lightboxIdx! - 1);
+      if (e.key === "ArrowRight" && lightboxIdx! < photos.length - 1) setLightboxIdx(lightboxIdx! + 1);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [showLightbox, lightboxIdx, photos.length]);
 
   return (
     <>
@@ -37,6 +48,15 @@ export function PhotoGallery({ photos }: { photos: string[] }) {
                 src={url}
                 alt={`Photo ${i + 1}`}
                 loading="lazy"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  target.style.display = "none";
+                  target.parentElement?.classList.add("bg-muted", "flex", "items-center", "justify-center");
+                  const span = document.createElement("span");
+                  span.className = "text-xs text-muted-foreground";
+                  span.textContent = "Image unavailable";
+                  target.parentElement?.appendChild(span);
+                }}
                 className="h-48 w-72 object-cover rounded-xl sm:h-56 sm:w-80 hover:scale-105 transition-transform"
               />
             </button>

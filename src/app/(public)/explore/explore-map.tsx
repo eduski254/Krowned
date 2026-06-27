@@ -15,7 +15,7 @@ import Link from "next/link";
 import type { ExploreBusiness } from "@/lib/explore/actions";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
-const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? "zawadi-explore-map";
+const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? "DEMO_MAP_ID";
 
 // Default center: Nairobi
 const DEFAULT_CENTER = { lat: -1.2921, lng: 36.8219 };
