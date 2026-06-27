@@ -9,8 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.6.2",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.2",
+    "@vis.gl/react-google-maps": "^1.8.3",
     "clsx": "^2.1.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",

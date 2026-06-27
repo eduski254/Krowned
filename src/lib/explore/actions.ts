@@ -1,22 +1,41 @@
-import { createClient } from "@/lib/supabase/server";
-import { ExploreClient } from "./explore-client";
-import type { ExploreBusiness } from "@/lib/explore/actions";
+"use server";
 
-export default async function ExplorePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string; category?: string; city?: string }>;
-}) {
-  const params = await searchParams;
+import { createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+
+const boundsSchema = z.object({
+  north: z.number(),
+  south: z.number(),
+  east: z.number(),
+  west: z.number(),
+  q: z.string().optional(),
+  category: z.string().optional(),
+});
+
+export type ExploreBusiness = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  logo_url: string | null;
+  city: string | null;
+  country: string | null;
+  is_featured: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  categoryName: string | null;
+  avgRating: number | null;
+  reviewCount: number;
+  isFavorited: boolean;
+};
+
+export async function searchByBounds(input: z.infer<typeof boundsSchema>) {
+  const parsed = boundsSchema.safeParse(input);
+  if (!parsed.success) return { businesses: [] as ExploreBusiness[] };
+
+  const { north, south, east, west, q, category } = parsed.data;
   const supabase = await createClient();
 
-  // Fetch categories for filter
-  const { data: categories } = await supabase
-    .from("service_categories")
-    .select("id, name, slug")
-    .order("sort_order");
-
-  // Build business query
   let query = supabase
     .from("businesses")
     .select(
@@ -24,24 +43,26 @@ export default async function ExplorePage({
     )
     .eq("is_published", true)
     .eq("verification_status", "verified")
+    .gte("latitude", south)
+    .lte("latitude", north)
+    .gte("longitude", west)
+    .lte("longitude", east)
     .order("is_featured", { ascending: false });
 
-  if (params.q) {
-    query = query.ilike("name", `%${params.q}%`);
-  }
-  if (params.city) {
-    query = query.ilike("city", `%${params.city}%`);
-  }
-  if (params.category) {
-    const matchingCat = categories?.find((c) => c.slug === params.category);
-    if (matchingCat) {
-      query = query.eq("primary_category_id", matchingCat.id);
-    }
+  if (q) query = query.ilike("name", `%${q}%`);
+
+  if (category) {
+    const { data: cats } = await supabase
+      .from("service_categories")
+      .select("id")
+      .eq("slug", category)
+      .maybeSingle();
+    if (cats) query = query.eq("primary_category_id", cats.id);
   }
 
   const { data: businesses } = await query.limit(100);
 
-  // Get average ratings
+  // Reviews
   const { data: reviewStats } = await supabase
     .from("reviews")
     .select("business_id, rating")
@@ -58,7 +79,7 @@ export default async function ExplorePage({
     }
   });
 
-  // Get current user's favorites (if logged in)
+  // Favorites
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -71,7 +92,7 @@ export default async function ExplorePage({
     favs?.forEach((f) => favSet.add(f.business_id));
   }
 
-  const serialized: ExploreBusiness[] = (businesses ?? []).map((biz) => {
+  const result: ExploreBusiness[] = (businesses ?? []).map((biz) => {
     const stats = ratingMap.get(biz.id);
     return {
       id: biz.id,
@@ -93,17 +114,5 @@ export default async function ExplorePage({
     };
   });
 
-  return (
-    <ExploreClient
-      businesses={serialized}
-      categories={categories ?? []}
-      initialFilters={{
-        q: params.q ?? "",
-        category: params.category ?? "",
-        city: params.city ?? "",
-      }}
-      isLoggedIn={!!user}
-      hasMapKey={!!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-    />
-  );
+  return { businesses: result };
 }
