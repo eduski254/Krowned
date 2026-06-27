@@ -10,7 +10,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Map as MapIcon, List } from "lucide-react";
+import { Search, MapPin, Map as MapIcon, List, LayoutList, LayoutGrid } from "lucide-react";
 import { FavoriteButton } from "@/components/favorite-button";
 import { StarRating } from "@/components/star-rating";
 import type { ExploreBusiness } from "@/lib/explore/actions";
@@ -39,6 +39,7 @@ export function ExploreClient({
   const [businesses, setBusinesses] = useState(initialBusinesses);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [mobileMapOpen, setMobileMapOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [boundsChanged, setBoundsChanged] = useState(false);
   const [isPending, startTransition] = useTransition();
   const boundsRef = useRef<{
@@ -159,29 +160,77 @@ export function ExploreClient({
       <div className="relative flex flex-1 overflow-hidden">
         {/* List panel */}
         <div
-          className={`flex-1 overflow-y-auto p-4 sm:p-6 lg:w-1/2 lg:flex-none ${
-            mobileMapOpen ? "hidden lg:block" : ""
-          }`}
+          className={`flex-1 overflow-y-auto p-4 sm:p-6 ${
+            viewMode === "list" ? "lg:w-1/2 lg:flex-none" : ""
+          } ${mobileMapOpen ? "hidden lg:block" : ""}`}
         >
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               {businesses.length} result{businesses.length !== 1 ? "s" : ""}
             </p>
-            {/* Mobile map toggle */}
-            {hasMapKey && (
-              <button
-                type="button"
-                onClick={() => setMobileMapOpen(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted lg:hidden"
-              >
-                <MapIcon className="h-4 w-4" />
-                Map
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {/* View toggle — desktop only */}
+              <div className="hidden rounded-lg border border-border p-0.5 lg:flex">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className={`rounded-md p-1.5 transition-colors ${
+                    viewMode === "list"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  aria-label="List view"
+                  aria-pressed={viewMode === "list"}
+                >
+                  <LayoutList className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("grid")}
+                  className={`rounded-md p-1.5 transition-colors ${
+                    viewMode === "grid"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  aria-label="Grid view"
+                  aria-pressed={viewMode === "grid"}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </button>
+              </div>
+              {/* Mobile map toggle */}
+              {hasMapKey && (
+                <button
+                  type="button"
+                  onClick={() => setMobileMapOpen(true)}
+                  className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted lg:hidden"
+                >
+                  <MapIcon className="h-4 w-4" />
+                  Map
+                </button>
+              )}
+              {/* Show map button when in grid view (desktop) */}
+              {hasMapKey && viewMode === "grid" && (
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className="hidden items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted lg:flex"
+                >
+                  <MapIcon className="h-4 w-4" />
+                  Show Map
+                </button>
+              )}
+            </div>
           </div>
 
           {businesses.length > 0 ? (
-            <div className="space-y-4">
+            <div
+              className={
+                viewMode === "grid"
+                  ? "grid grid-cols-1 gap-4 sm:grid-cols-2"
+                  : "space-y-4"
+              }
+            >
               {businesses.map((biz) => (
                 <BusinessCard
                   key={biz.id}
@@ -208,13 +257,15 @@ export function ExploreClient({
           )}
         </div>
 
-        {/* Map panel — desktop: always visible, mobile: toggle */}
+        {/* Map panel — desktop: visible in list mode, mobile: toggle */}
         {hasMapKey && (
           <div
             className={`${
               mobileMapOpen
                 ? "absolute inset-0 z-20"
-                : "hidden lg:block lg:w-1/2"
+                : viewMode === "grid"
+                  ? "hidden"
+                  : "hidden lg:block lg:w-1/2"
             }`}
           >
             {/* Mobile back button */}
@@ -261,7 +312,7 @@ export function ExploreClient({
         )}
 
         {/* No API key fallback */}
-        {!hasMapKey && (
+        {!hasMapKey && viewMode === "list" && (
           <div className="hidden items-center justify-center border-l border-border bg-muted lg:flex lg:w-1/2">
             <p className="text-sm text-muted-foreground">
               Map unavailable — API key not configured.
