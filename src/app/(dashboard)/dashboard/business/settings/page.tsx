@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Settings } from "lucide-react";
+import { VisibilityToggle } from "./visibility-toggle";
 
 export default async function BusinessSettingsPage() {
   const supabase = await createClient();
@@ -25,11 +25,13 @@ export default async function BusinessSettingsPage() {
 
       <div className="max-w-xl space-y-6">
         <div className="rounded-xl border border-border bg-card p-6">
-          <h2 className="text-lg font-semibold text-foreground">Visibility</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Your business is currently{" "}
-            <strong>{business.is_published ? "published" : "unpublished"}</strong>.
-          </p>
+          <h2 className="mb-3 text-lg font-semibold text-foreground">
+            Directory Visibility
+          </h2>
+          <VisibilityToggle
+            businessId={business.id}
+            isPublished={business.is_published ?? false}
+          />
         </div>
 
         <div className="rounded-xl border border-border bg-card p-6">
