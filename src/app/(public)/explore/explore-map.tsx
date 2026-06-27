@@ -15,6 +15,7 @@ import Link from "next/link";
 import type { ExploreBusiness } from "@/lib/explore/actions";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? "zawadi-explore-map";
 
 // Default center: Nairobi
 const DEFAULT_CENTER = { lat: -1.2921, lng: 36.8219 };
@@ -46,9 +47,11 @@ export function ExploreMap({
         className="h-full w-full"
         defaultCenter={center}
         defaultZoom={DEFAULT_ZOOM}
-        mapId="zawadi-explore-map"
+        mapId={MAP_ID}
         gestureHandling="greedy"
-        disableDefaultUI={false}
+        disableDefaultUI
+        zoomControl
+        fullscreenControl
         clickableIcons={false}
       >
         <MapContent
