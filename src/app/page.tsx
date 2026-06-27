@@ -79,7 +79,7 @@ export default async function HomePage() {
             {categories.map((cat) => (
               <Link
                 key={cat.id}
-                href={`/c/${cat.slug}`}
+                href={`/explore?category=${cat.slug}`}
                 className="group relative flex flex-col items-center justify-center rounded-xl border border-border bg-card p-8 text-center transition-shadow hover:shadow-lg"
               >
                 {cat.icon && CATEGORY_ICONS[cat.icon] && (() => {
