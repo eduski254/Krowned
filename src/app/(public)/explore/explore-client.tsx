@@ -160,9 +160,9 @@ export function ExploreClient({
       <div className="relative flex flex-1 overflow-hidden">
         {/* List panel */}
         <div
-          className={`flex-1 overflow-y-auto p-4 sm:p-6 ${
-            viewMode === "list" ? "lg:w-1/2 lg:flex-none" : ""
-          } ${mobileMapOpen ? "hidden lg:block" : ""}`}
+          className={`flex-1 overflow-y-auto p-4 sm:p-6 lg:w-1/2 lg:flex-none ${
+            mobileMapOpen ? "hidden lg:block" : ""
+          }`}
         >
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
@@ -209,17 +209,6 @@ export function ExploreClient({
                   Map
                 </button>
               )}
-              {/* Show map button when in grid view (desktop) */}
-              {hasMapKey && viewMode === "grid" && (
-                <button
-                  type="button"
-                  onClick={() => setViewMode("list")}
-                  className="hidden items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted lg:flex"
-                >
-                  <MapIcon className="h-4 w-4" />
-                  Show Map
-                </button>
-              )}
             </div>
           </div>
 
@@ -263,9 +252,7 @@ export function ExploreClient({
             className={`${
               mobileMapOpen
                 ? "absolute inset-0 z-20"
-                : viewMode === "grid"
-                  ? "hidden"
-                  : "hidden lg:block lg:w-1/2"
+                : "hidden lg:block lg:w-1/2"
             }`}
           >
             {/* Mobile back button */}
@@ -312,7 +299,7 @@ export function ExploreClient({
         )}
 
         {/* No API key fallback */}
-        {!hasMapKey && viewMode === "list" && (
+        {!hasMapKey && (
           <div className="hidden items-center justify-center border-l border-border bg-muted lg:flex lg:w-1/2">
             <p className="text-sm text-muted-foreground">
               Map unavailable — API key not configured.
