@@ -50,7 +50,7 @@ export default async function BusinessProfilePage({
       .order("day_of_week"),
     supabase
       .from("reviews")
-      .select("id, rating, comment, created_at, clients:client_id(full_name)")
+      .select("id, rating, comment, created_at, clients:client_id(full_name), review_responses(body, created_at)")
       .eq("business_id", business.id)
       .eq("status", "published")
       .order("created_at", { ascending: false })
@@ -267,6 +267,20 @@ export default async function BusinessProfilePage({
                     <p className="mt-1 text-xs text-muted-foreground">
                       {new Date(r.created_at).toLocaleDateString()}
                     </p>
+                    {/* Owner response */}
+                    {(() => {
+                      const responses = r.review_responses as unknown as { body: string; created_at: string }[] | null;
+                      const resp = responses?.[0];
+                      if (!resp) return null;
+                      return (
+                        <div className="mt-3 rounded-lg bg-muted px-4 py-3">
+                          <p className="text-xs font-semibold text-foreground">
+                            Owner response
+                          </p>
+                          <p className="mt-1 text-sm text-foreground">{resp.body}</p>
+                        </div>
+                      );
+                    })()}
                   </div>
                 ))}
               </div>

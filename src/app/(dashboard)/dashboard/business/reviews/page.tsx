@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { EmptyState } from "@/components/dashboard/empty-state";
-import { Star } from "lucide-react";
+import { Star, MessageSquare } from "lucide-react";
 
 export default async function BusinessReviewsPage() {
   const supabase = await createClient();
@@ -27,58 +28,85 @@ export default async function BusinessReviewsPage() {
     .order("created_at", { ascending: false })
     .limit(50);
 
+  // Get response status for each review
+  const reviewIds = (reviews ?? []).map((r) => r.id);
+  const { data: responses } = reviewIds.length > 0
+    ? await supabase
+        .from("review_responses")
+        .select("review_id")
+        .in("review_id", reviewIds)
+    : { data: [] };
+
+  const respondedSet = new Set((responses ?? []).map((r) => r.review_id));
+
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold text-foreground">Reviews</h1>
 
       {reviews && reviews.length > 0 ? (
         <div className="space-y-4">
-          {reviews.map((r) => (
-            <div
-              key={r.id}
-              className="rounded-xl border border-border bg-card p-4"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-foreground">
-                    {(r.clients as unknown as { full_name: string } | null)?.full_name ?? "Anonymous"}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Staff: {(r.staff as unknown as { display_name: string } | null)?.display_name ?? "—"}
-                  </p>
+          {reviews.map((r) => {
+            const hasResponse = respondedSet.has(r.id);
+            return (
+              <Link
+                key={r.id}
+                href={`/dashboard/business/reviews/${r.id}`}
+                className="group block rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground group-hover:text-primary transition-colors">
+                      {(r.clients as unknown as { full_name: string } | null)?.full_name ?? "Anonymous"}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Staff: {(r.staff as unknown as { display_name: string } | null)?.display_name ?? "—"}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                          i < r.rating
+                            ? "fill-warning text-warning"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-4 w-4 ${
-                        i < r.rating
-                          ? "fill-warning text-warning"
-                          : "text-muted-foreground"
-                      }`}
-                    />
-                  ))}
+                {r.comment && (
+                  <p className="mt-2 line-clamp-2 text-sm text-foreground">
+                    {r.comment}
+                  </p>
+                )}
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(r.created_at).toLocaleDateString()}
+                  </span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                      r.status === "published"
+                        ? "bg-success/10 text-success"
+                        : "bg-warning/10 text-warning"
+                    }`}
+                  >
+                    {r.status}
+                  </span>
+                  {hasResponse ? (
+                    <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                      <MessageSquare className="h-3 w-3" />
+                      Responded
+                    </span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">
+                      Click to respond
+                    </span>
+                  )}
                 </div>
-              </div>
-              {r.comment && (
-                <p className="mt-2 text-sm text-foreground">{r.comment}</p>
-              )}
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">
-                  {new Date(r.created_at).toLocaleDateString()}
-                </span>
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                    r.status === "published"
-                      ? "bg-success/10 text-success"
-                      : "bg-warning/10 text-warning"
-                  }`}
-                >
-                  {r.status}
-                </span>
-              </div>
-            </div>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       ) : (
         <EmptyState
