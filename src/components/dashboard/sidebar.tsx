@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import type { NavItem } from "./nav-config";
 import { iconMap } from "./icon-map";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Sidebar({
   items,
@@ -53,9 +54,12 @@ export function Sidebar({
         </ul>
       </nav>
       <div className="border-t border-border px-3 py-3">
-        <span className="block px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          {role}
-        </span>
+        <div className="flex items-center justify-between px-3">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            {role}
+          </span>
+          <ThemeToggle />
+        </div>
       </div>
     </aside>
   );
