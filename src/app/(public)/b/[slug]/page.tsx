@@ -74,7 +74,12 @@ export default async function BusinessProfilePage({
     business.longitude != null &&
     (business.latitude !== 0 || business.longitude !== 0);
   const hasMapKey = !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const galleryPhotos = (business.gallery as string[] | null) ?? [];
+  const rawGallery = business.gallery;
+  const galleryPhotos: string[] = Array.isArray(rawGallery)
+    ? rawGallery
+    : typeof rawGallery === "string"
+      ? (() => { try { const p = JSON.parse(rawGallery); return Array.isArray(p) ? p : []; } catch { return []; } })()
+      : [];
 
   // Check if current user has favorited this business
   const {
