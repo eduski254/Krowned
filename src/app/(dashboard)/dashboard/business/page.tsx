@@ -20,9 +20,14 @@ export default async function BusinessDashboardPage() {
   // Get the user's business
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, plan_id, subscription_status")
+    .select("id, name, plan_id, subscription_status, onboarding_completed_at")
     .eq("owner_id", user.id)
     .maybeSingle();
+
+  // Redirect to onboarding if business exists but hasn't completed setup
+  if (business && !business.onboarding_completed_at) {
+    redirect("/dashboard/business/onboarding");
+  }
 
   if (!business) {
     return (

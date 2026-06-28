@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   signupSchema,
   loginSchema,
@@ -55,6 +56,38 @@ export async function signup(
   // Fire-and-forget welcome email
   const welcome = welcomeEmail(full_name);
   sendEmail({ to: email, ...welcome }).catch(() => {});
+
+  // For professionals: create a business row so onboarding can populate it
+  if (account_type === "professional") {
+    const { data: { user: newUser } } = await supabase.auth.getUser();
+    if (newUser) {
+      const admin = createAdminClient();
+      // Get free plan
+      const { data: freePlan } = await admin
+        .from("plans")
+        .select("id")
+        .eq("tier", "free")
+        .single();
+
+      if (freePlan) {
+        const slug = full_name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "")
+          + "-" + Date.now().toString(36);
+
+        await admin.from("businesses").insert({
+          owner_id: newUser.id,
+          name: `${full_name}'s Business`,
+          slug,
+          plan_id: freePlan.id,
+          is_published: false,
+          verification_status: "pending",
+        });
+      }
+    }
+    redirect("/dashboard/business/onboarding");
+  }
 
   redirect("/dashboard");
 }

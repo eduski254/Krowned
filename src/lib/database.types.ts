@@ -213,6 +213,7 @@ export type Database = {
           logo_url: string | null
           longitude: number | null
           name: string
+          onboarding_completed_at: string | null
           owner_id: string
           payouts_enabled: boolean
           phone: string | null
@@ -253,6 +254,7 @@ export type Database = {
           logo_url?: string | null
           longitude?: number | null
           name: string
+          onboarding_completed_at?: string | null
           owner_id: string
           payouts_enabled?: boolean
           phone?: string | null
@@ -293,6 +295,7 @@ export type Database = {
           logo_url?: string | null
           longitude?: number | null
           name?: string
+          onboarding_completed_at?: string | null
           owner_id?: string
           payouts_enabled?: boolean
           phone?: string | null
