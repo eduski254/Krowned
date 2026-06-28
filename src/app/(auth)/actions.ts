@@ -38,7 +38,7 @@ export async function signup(
   const { full_name, email, password, account_type } = parsed.data;
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data: signUpData, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -46,6 +46,9 @@ export async function signup(
         full_name,
         account_type, // stored in raw_user_meta_data for post-signup routing
       },
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadibooking.vercel.app"}/auth/callback?next=${
+        account_type === "professional" ? "/dashboard/business/onboarding" : "/dashboard"
+      }`,
     },
   });
 
@@ -58,38 +61,39 @@ export async function signup(
   sendEmail({ to: email, ...welcome }).catch(() => {});
 
   // For professionals: create a business row so onboarding can populate it
-  if (account_type === "professional") {
-    const { data: { user: newUser } } = await supabase.auth.getUser();
-    if (newUser) {
-      const admin = createAdminClient();
-      // Get free plan
-      const { data: freePlan } = await admin
-        .from("plans")
-        .select("id")
-        .eq("tier", "free")
-        .single();
+  // Use admin client since user has no session until email is confirmed
+  if (account_type === "professional" && signUpData.user) {
+    const admin = createAdminClient();
+    // Get free plan
+    const { data: freePlan } = await admin
+      .from("plans")
+      .select("id")
+      .eq("tier", "free")
+      .single();
 
-      if (freePlan) {
-        const slug = full_name
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "")
-          + "-" + Date.now().toString(36);
+    if (freePlan) {
+      const slug = full_name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "")
+        + "-" + Date.now().toString(36);
 
-        await admin.from("businesses").insert({
-          owner_id: newUser.id,
-          name: `${full_name}'s Business`,
-          slug,
-          plan_id: freePlan.id,
-          is_published: false,
-          verification_status: "pending",
-        });
-      }
+      await admin.from("businesses").insert({
+        owner_id: signUpData.user.id,
+        name: `${full_name}'s Business`,
+        slug,
+        plan_id: freePlan.id,
+        is_published: false,
+        verification_status: "pending",
+      });
     }
-    redirect("/dashboard/business/onboarding");
   }
 
-  redirect("/dashboard");
+  // Email confirmation is required — show success message instead of redirecting
+  return {
+    success: true,
+    message: "Check your email for a confirmation link to activate your account.",
+  };
 }
 
 export async function login(

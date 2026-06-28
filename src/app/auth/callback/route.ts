@@ -12,6 +12,23 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      // If redirecting to dashboard (default), check if professional needs onboarding
+      if (next === "/dashboard") {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.user_metadata?.account_type === "professional") {
+          const { data: business } = await supabase
+            .from("businesses")
+            .select("onboarding_completed_at")
+            .eq("owner_id", user.id)
+            .maybeSingle();
+
+          if (business && !business.onboarding_completed_at) {
+            return NextResponse.redirect(
+              new URL("/dashboard/business/onboarding", request.url),
+            );
+          }
+        }
+      }
       return NextResponse.redirect(new URL(next, request.url));
     }
   }
