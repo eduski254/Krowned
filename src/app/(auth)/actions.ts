@@ -8,6 +8,8 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
 } from "@/lib/validations/auth";
+import { sendEmail } from "@/lib/email/resend";
+import { welcomeEmail } from "@/lib/email/templates";
 
 export type AuthState = {
   error?: string;
@@ -49,6 +51,10 @@ export async function signup(
   if (error) {
     return { error: error.message };
   }
+
+  // Fire-and-forget welcome email
+  const welcome = welcomeEmail(full_name);
+  sendEmail({ to: email, subject: welcome.subject, html: welcome.html }).catch(() => {});
 
   redirect("/dashboard");
 }

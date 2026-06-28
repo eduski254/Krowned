@@ -12,6 +12,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getAvailableSlots } from "./availability";
+import { sendBookingConfirmationEmails } from "@/lib/email/send-booking-emails";
 
 // ── Zod schemas ─────────────────────────────────────────────────────
 
@@ -225,6 +226,9 @@ export async function confirmBooking(
     .eq("id", bookingId);
 
   if (updateErr) return { success: false, error: "Failed to confirm booking." };
+
+  // Fire-and-forget: send confirmation email to client + notification to owner
+  sendBookingConfirmationEmails({ bookingId }).catch(() => {});
 
   return { success: true };
 }

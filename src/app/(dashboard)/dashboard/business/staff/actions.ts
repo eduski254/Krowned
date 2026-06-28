@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { staffInviteSchema } from "@/lib/validations/service";
+import { sendEmail } from "@/lib/email/resend";
+import { staffInvitationEmail } from "@/lib/email/templates";
 
 export type StaffFormState = {
   error?: string;
@@ -64,8 +66,28 @@ export async function inviteStaff(
 
   if (error) return { error: error.message };
 
-  // // REVIEW: Send invite email notification here
-  // // Would use a notification/email service to send the invite link
+  // Fetch business name for the email
+  const { data: bizDetails } = await supabase
+    .from("businesses")
+    .select("name")
+    .eq("id", business.id)
+    .single();
+
+  // Fetch inviter's name
+  const { data: inviterProfile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user.id)
+    .single();
+
+  // Fire-and-forget staff invitation email
+  const mail = staffInvitationEmail({
+    staffName: display_name,
+    businessName: bizDetails?.name ?? "a business",
+    inviteToken: invite_token,
+    invitedBy: inviterProfile?.full_name ?? "A business owner",
+  });
+  sendEmail({ to: email, subject: mail.subject, html: mail.html }).catch(() => {});
 
   redirect("/dashboard/business/staff");
 }
