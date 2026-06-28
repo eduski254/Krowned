@@ -39,7 +39,7 @@ export function ExploreClient({
   const [businesses, setBusinesses] = useState(initialBusinesses);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [mobileMapOpen, setMobileMapOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const [boundsChanged, setBoundsChanged] = useState(false);
   const [isPending, startTransition] = useTransition();
   const boundsRef = useRef<{
