@@ -1335,7 +1335,7 @@ export type Database = {
         | "failed"
         | "refunded"
         | "partially_refunded"
-      plan_tier: "free" | "premium"
+      plan_tier: "free" | "premium" | "starter" | "pro" | "enterprise"
       platform_role: "user" | "super_admin"
       review_status: "published" | "flagged" | "removed"
       staff_status: "invited" | "active" | "inactive"
@@ -1498,7 +1498,7 @@ export const Constants = {
         "refunded",
         "partially_refunded",
       ],
-      plan_tier: ["free", "premium"],
+      plan_tier: ["free", "premium", "starter", "pro", "enterprise"],
       platform_role: ["user", "super_admin"],
       review_status: ["published", "flagged", "removed"],
       staff_status: ["invited", "active", "inactive"],

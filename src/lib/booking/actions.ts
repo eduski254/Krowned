@@ -13,6 +13,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getAvailableSlots } from "./availability";
 import { sendBookingConfirmationEmails } from "@/lib/email/send-booking-emails";
+import { isBookable } from "@/lib/plans";
 
 // ── Zod schemas ─────────────────────────────────────────────────────
 
@@ -96,7 +97,7 @@ export async function holdBookingSlot(
 
   // 4. Gate checks
   const plan = biz.plans as unknown as { tier: string } | null;
-  if (plan?.tier !== "premium" || !["trialing", "active"].includes(biz.subscription_status ?? "")) {
+  if (!isBookable(plan?.tier, biz.subscription_status)) {
     return { success: false, error: "This business is not currently accepting bookings." };
   }
 

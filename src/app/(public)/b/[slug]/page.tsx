@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isBookable } from "@/lib/plans";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Suspense, lazy } from "react";
@@ -68,7 +69,7 @@ export default async function BusinessProfilePage({
       : null;
 
   const plan = business.plans as unknown as { tier: string; features: Record<string, unknown> } | null;
-  const isBookable = plan?.tier === "premium" && ["trialing", "active"].includes(business.subscription_status ?? "");
+  const bookable = isBookable(plan?.tier, business.subscription_status);
 
   const hasCoords =
     business.latitude != null &&
@@ -138,7 +139,7 @@ export default async function BusinessProfilePage({
             </div>
           </div>
         </div>
-        {isBookable && (
+        {bookable && (
           <Link
             href={`/book/${business.booking_link_token}?source=marketplace`}
             className="self-start rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
@@ -202,7 +203,7 @@ export default async function BusinessProfilePage({
                         </p>
                         <p className="text-xs text-muted-foreground">{s.currency?.toUpperCase()}</p>
                       </div>
-                      {isBookable && (
+                      {bookable && (
                         <Link
                           href={`/book/${business.booking_link_token}?source=marketplace&service=${s.id}`}
                           className="shrink-0 rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-colors"

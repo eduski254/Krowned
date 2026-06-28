@@ -11,6 +11,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isBookable } from "@/lib/plans";
 
 const SLOT_GRID_MINUTES = 30;
 const LEAD_TIME_MINUTES = 60;
@@ -76,10 +77,9 @@ export async function getAvailableSlots(
   const service = svcResult.data;
   const tz = biz.timezone;
 
-  // Gate check: must be Premium + active/trialing
+  // Gate check: must be paid tier + active/trialing
   const plan = biz.plans as unknown as { tier: string } | null;
-  if (plan?.tier !== "premium") return { slots: [], timezone: tz, date };
-  if (!["trialing", "active"].includes(biz.subscription_status ?? "")) {
+  if (!isBookable(plan?.tier, biz.subscription_status)) {
     return { slots: [], timezone: tz, date };
   }
 
@@ -384,8 +384,7 @@ export async function getAvailableDateRange(
   if (!biz) return { dates: [], timezone: "Africa/Nairobi" };
 
   const plan = biz.plans as unknown as { tier: string } | null;
-  if (plan?.tier !== "premium") return { dates: [], timezone: biz.timezone };
-  if (!["trialing", "active"].includes(biz.subscription_status ?? "")) {
+  if (!isBookable(plan?.tier, biz.subscription_status)) {
     return { dates: [], timezone: biz.timezone };
   }
 

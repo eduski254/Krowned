@@ -46,14 +46,16 @@ A four-sided marketplace: **clients** discover and book services; **businesses**
 
 ## Freemium model (every business is always on a plan)
 - **Free (forever, $0):** visibility only — directory listing + basic profile. **NOT bookable.** No booking engine, payments, staff, or messaging.
-- **Premium (paid, per active staff seat):** the full product — booking engine, online prepay + tips, multiple staff, in-app messaging, earnings/analytics, full profile, featured-placement eligibility, and a **shareable booking link** (`/book/{booking_link_token}`).
-- **14-day trial = full Premium** (`subscription_status = 'trialing'`), no separate trial caps. **No credit card required to start the trial.**
+- **Starter ($15/seat/mo):** booking engine, online payments, 1 staff, 5 bookable services, shareable link. No messaging, no featured placement.
+- **Pro ($25/seat/mo):** everything in Starter + up to 10 staff, unlimited services, messaging. No featured placement.
+- **Enterprise ($49/seat/mo):** everything in Pro + unlimited staff, featured-placement eligibility.
+- **14-day trial = full paid tier** (`subscription_status = 'trialing'`), no separate trial caps. **No credit card required to start the trial.**
 - **`plans.features` (jsonb) is the single source of truth** for all gates/quotas. Read it for every feature check; never hardcode limits.
-- **On lapse, downgrade = swap `businesses.plan_id` to the Free plan** (never delete). Premium features lock, excess staff go `inactive`, already-prepaid future bookings are honored, resubscribe reactivates instantly.
+- **On lapse, downgrade = swap `businesses.plan_id` to the Free plan** (never delete). Paid features lock, excess staff go `inactive`, already-prepaid future bookings are honored, resubscribe reactivates instantly.
 
 ## Gating ladder (enforce server-side)
-- Listed in directory: any verified + published business (Free or Premium).
-- Booking engine on: `plan.tier = 'premium' AND subscription_status IN ('trialing','active')`.
+- Listed in directory: any verified + published business (any plan).
+- Booking engine on: `plan.tier IN ('starter','pro','enterprise') AND subscription_status IN ('trialing','active')`. Use `isBookable()` from `@/lib/plans`.
 - Online prepay + tips: the above AND `businesses.charges_enabled = true`.
 - Pay-at-store bookings: booking engine on (no Stripe needed).
 

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isBookable } from "@/lib/plans";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -29,11 +30,9 @@ export default async function BookingPage({
   if (!business) notFound();
 
   const plan = business.plans as unknown as { tier: string } | null;
-  const isBookable =
-    plan?.tier === "premium" &&
-    ["trialing", "active"].includes(business.subscription_status ?? "");
+  const bookable = isBookable(plan?.tier, business.subscription_status);
 
-  if (!isBookable) {
+  if (!bookable) {
     return (
       <div className="mx-auto max-w-xl px-4 py-16 text-center">
         <h1 className="text-2xl font-bold text-foreground font-heading">
