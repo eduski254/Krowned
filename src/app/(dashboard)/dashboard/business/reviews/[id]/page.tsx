@@ -28,7 +28,7 @@ export default async function ReviewDetailPage({
   const { data: review } = await supabase
     .from("reviews")
     .select(
-      "id, rating, comment, status, created_at, booking_id, clients:client_id(full_name), staff(display_name)",
+      "id, rating, comment, status, created_at, booking_id, clients:client_id(full_name, avatar_url), staff(display_name)",
     )
     .eq("id", id)
     .eq("business_id", business.id)
@@ -60,8 +60,9 @@ export default async function ReviewDetailPage({
     .eq("review_id", review.id)
     .maybeSingle();
 
-  const clientName =
-    (review.clients as unknown as { full_name: string } | null)?.full_name ?? "Anonymous";
+  const client = review.clients as unknown as { full_name: string | null; avatar_url: string | null } | null;
+  const clientName = client?.full_name || "A client";
+  const clientAvatar = client?.avatar_url ?? null;
   const staffName =
     (review.staff as unknown as { display_name: string } | null)?.display_name ?? "—";
 
@@ -79,13 +80,22 @@ export default async function ReviewDetailPage({
         {/* Review card */}
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1 className="text-lg font-semibold text-foreground">
-                Review from {clientName}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Staff: {staffName}
-              </p>
+            <div className="flex items-center gap-3">
+              {clientAvatar ? (
+                <img src={clientAvatar} alt="" className="h-10 w-10 rounded-full object-cover" />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                  {clientName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div>
+                <h1 className="text-lg font-semibold text-foreground">
+                  Review from {clientName}
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Staff: {staffName}
+                </p>
+              </div>
             </div>
             <div className="flex shrink-0 gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (

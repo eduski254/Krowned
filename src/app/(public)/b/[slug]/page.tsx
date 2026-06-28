@@ -50,7 +50,7 @@ export default async function BusinessProfilePage({
       .order("day_of_week"),
     supabase
       .from("reviews")
-      .select("id, rating, comment, created_at, clients:client_id(full_name), review_responses(body, created_at)")
+      .select("id, rating, comment, created_at, clients:client_id(full_name, avatar_url), review_responses(body, created_at)")
       .eq("business_id", business.id)
       .eq("status", "published")
       .order("created_at", { ascending: false })
@@ -248,12 +248,27 @@ export default async function BusinessProfilePage({
             <h2 className="mb-4 text-xl font-bold text-foreground">Reviews</h2>
             {reviews.length > 0 ? (
               <div className="space-y-4">
-                {reviews.map((r) => (
+                {reviews.map((r) => {
+                  const client = r.clients as unknown as { full_name: string | null; avatar_url: string | null } | null;
+                  const reviewerName = client?.full_name || "A client";
+                  const reviewerInitial = reviewerName.charAt(0).toUpperCase();
+                  return (
                   <div key={r.id} className="rounded-xl border border-border bg-card p-4">
                     <div className="flex items-center justify-between">
-                      <p className="font-medium text-foreground">
-                        {(r.clients as unknown as { full_name: string } | null)?.full_name ?? "Anonymous"}
-                      </p>
+                      <div className="flex items-center gap-3">
+                        {client?.avatar_url ? (
+                          <img
+                            src={client.avatar_url}
+                            alt=""
+                            className="h-9 w-9 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                            {reviewerInitial}
+                          </div>
+                        )}
+                        <p className="font-medium text-foreground">{reviewerName}</p>
+                      </div>
                       <div className="flex gap-0.5">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
@@ -282,7 +297,8 @@ export default async function BusinessProfilePage({
                       );
                     })()}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">No reviews yet.</p>

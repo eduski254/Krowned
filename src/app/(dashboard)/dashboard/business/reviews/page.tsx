@@ -22,7 +22,7 @@ export default async function BusinessReviewsPage() {
   const { data: reviews } = await supabase
     .from("reviews")
     .select(
-      "id, rating, comment, status, created_at, clients:client_id(full_name), staff(display_name)",
+      "id, rating, comment, status, created_at, clients:client_id(full_name, avatar_url), staff(display_name)",
     )
     .eq("business_id", business.id)
     .order("created_at", { ascending: false })
@@ -54,13 +54,26 @@ export default async function BusinessReviewsPage() {
                 className="group block rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-foreground group-hover:text-primary transition-colors">
-                      {(r.clients as unknown as { full_name: string } | null)?.full_name ?? "Anonymous"}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Staff: {(r.staff as unknown as { display_name: string } | null)?.display_name ?? "—"}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    {(() => {
+                      const client = r.clients as unknown as { full_name: string | null; avatar_url: string | null } | null;
+                      const name = client?.full_name || "A client";
+                      return client?.avatar_url ? (
+                        <img src={client.avatar_url} alt="" className="h-9 w-9 rounded-full object-cover" />
+                      ) : (
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                          {name.charAt(0).toUpperCase()}
+                        </div>
+                      );
+                    })()}
+                    <div>
+                      <p className="font-medium text-foreground group-hover:text-primary transition-colors">
+                        {(r.clients as unknown as { full_name: string | null })?.full_name || "A client"}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Staff: {(r.staff as unknown as { display_name: string } | null)?.display_name ?? "—"}
+                      </p>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (

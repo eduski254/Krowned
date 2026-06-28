@@ -12,7 +12,7 @@ export default async function AdminReviewsPage() {
   const { data: reviews } = await supabase
     .from("reviews")
     .select(
-      "id, rating, comment, status, created_at, businesses(name), clients:client_id(full_name)",
+      "id, rating, comment, status, created_at, businesses(name), clients:client_id(full_name, avatar_url)",
     )
     .order("created_at", { ascending: false })
     .limit(100);
@@ -28,13 +28,26 @@ export default async function AdminReviewsPage() {
             className="rounded-xl border border-border bg-card p-4"
           >
             <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-foreground">
-                  {(r.businesses as unknown as { name: string } | null)?.name}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  by {(r.clients as unknown as { full_name: string } | null)?.full_name ?? "Anonymous"}
-                </p>
+              <div className="flex items-center gap-3">
+                {(() => {
+                  const client = r.clients as unknown as { full_name: string | null; avatar_url: string | null } | null;
+                  const name = client?.full_name || "A client";
+                  return client?.avatar_url ? (
+                    <img src={client.avatar_url} alt="" className="h-8 w-8 rounded-full object-cover" />
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                      {name.charAt(0).toUpperCase()}
+                    </div>
+                  );
+                })()}
+                <div>
+                  <p className="font-medium text-foreground">
+                    {(r.businesses as unknown as { name: string } | null)?.name}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    by {(r.clients as unknown as { full_name: string | null })?.full_name || "A client"}
+                  </p>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-0.5">
