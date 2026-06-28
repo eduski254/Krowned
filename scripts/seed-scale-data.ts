@@ -382,7 +382,7 @@ interface BusinessDef {
   bizName: string;
   template: BizTemplate;
   cityInfo: typeof CITIES[number];
-  planTier: "free" | "premium";
+  planTier: "free" | "starter" | "pro" | "enterprise";
   subscriptionStatus: "active" | "trialing" | "canceled" | null;
   verificationStatus: "verified" | "pending" | "suspended";
   isPublished: boolean;
@@ -419,12 +419,16 @@ function generateBusinessDefs(): BusinessDef[] {
       const ownerFirst = FIRST_NAMES[nameIdx % FIRST_NAMES.length];
       const ownerLast = LAST_NAMES[nameIdx % LAST_NAMES.length];
 
-      // Plan mix: ~12 premium, ~6 free, ~2 trialing
-      let planTier: "free" | "premium" = "premium";
+      // Plan mix: 6 free, 4 starter, 6 pro, 2 enterprise, 2 trialing
+      let planTier: "free" | "starter" | "pro" | "enterprise" = "pro";
       let subscriptionStatus: "active" | "trialing" | "canceled" | null = "active";
       if (nameIdx === 4 || nameIdx === 9 || nameIdx === 13 || nameIdx === 16 || nameIdx === 18 || nameIdx === 19) {
         planTier = "free";
         subscriptionStatus = null;
+      } else if (nameIdx === 0 || nameIdx === 5 || nameIdx === 8 || nameIdx === 12) {
+        planTier = "starter";
+      } else if (nameIdx === 3 || nameIdx === 10) {
+        planTier = "enterprise";
       } else if (nameIdx === 2 || nameIdx === 7) {
         subscriptionStatus = "trialing";
       }
@@ -439,11 +443,11 @@ function generateBusinessDefs(): BusinessDef[] {
         isPublished = false;
       }
 
-      // Featured: only verified + premium
+      // Featured: only verified + enterprise (featured_eligible)
       const isFeatured =
         verificationStatus === "verified" &&
-        planTier === "premium" &&
-        (nameIdx < 5 || nameIdx === 8 || nameIdx === 10);
+        planTier === "enterprise" &&
+        (nameIdx === 3 || nameIdx === 10);
 
       defs.push({
         ownerName: `${ownerFirst} ${ownerLast}`,
@@ -473,9 +477,10 @@ async function main() {
 
   // Fetch plans + categories
   const { data: plans } = await supabase.from("plans").select("id, tier");
-  if (!plans || plans.length < 2) throw new Error("Plans not found — run migrations first");
-  const premiumPlanId = plans.find((p) => p.tier === "premium")!.id;
-  const freePlanId = plans.find((p) => p.tier === "free")!.id;
+  if (!plans || plans.length < 4) throw new Error("Plans not found — run migrations first");
+  const planIdMap: Record<string, string> = {};
+  for (const p of plans) planIdMap[p.tier] = p.id;
+  const freePlanId = planIdMap["free"];
 
   const { data: categories } = await supabase
     .from("service_categories")
@@ -593,7 +598,7 @@ async function main() {
     const def = bizDefs[bi];
     const ownerId = ownerIds[bi];
     const slug = slugify(def.bizName);
-    const planId = def.planTier === "premium" ? premiumPlanId : freePlanId;
+    const planId = planIdMap[def.planTier] ?? freePlanId;
 
     const { data: biz, error: bizErr } = await supabase
       .from("businesses")
@@ -613,8 +618,8 @@ async function main() {
         default_payment_option: pick(["both", "prepay", "pay_at_store"]) as "both" | "prepay" | "pay_at_store",
         commission_rate: pick([0.05, 0.05, 0.05, 0.08, 0.10]),
         verification_status: def.verificationStatus,
-        charges_enabled: def.planTier === "premium" && def.verificationStatus === "verified",
-        payouts_enabled: def.planTier === "premium" && def.verificationStatus === "verified",
+        charges_enabled: def.planTier !== "free" && def.verificationStatus === "verified",
+        payouts_enabled: def.planTier !== "free" && def.verificationStatus === "verified",
         plan_id: planId,
         subscription_status: def.subscriptionStatus ?? ("canceled" as const),
         trial_ends_at: def.subscriptionStatus === "trialing" ? futureDate(14, 0) : null,
@@ -645,11 +650,11 @@ async function main() {
       })),
     );
 
-    // Subscription (Premium/trialing only)
-    if (def.planTier === "premium" || def.subscriptionStatus === "trialing") {
+    // Subscription (paid tiers only)
+    if (def.planTier !== "free" || def.subscriptionStatus === "trialing") {
       await supabase.from("subscriptions").insert({
         business_id: businessId,
-        plan_id: premiumPlanId,
+        plan_id: planIdMap[def.planTier],
         status: def.subscriptionStatus ?? "active",
         seat_count: def.staffCount,
         current_period_end: futureDate(30, 0),
@@ -743,7 +748,7 @@ async function main() {
 
     createdBusinesses.push({ id: businessId, def, serviceIds, staffRowIds });
 
-    const icon = def.isFeatured ? "⭐" : def.planTier === "premium" ? "💎" : "🆓";
+    const icon = def.isFeatured ? "⭐" : def.planTier !== "free" ? "💎" : "🆓";
     process.stdout.write(`  ${icon} ${def.bizName} (${def.cityInfo.city}, ${def.planTier}, ${def.verificationStatus})\n`);
   }
 
@@ -752,7 +757,7 @@ async function main() {
 
   const bookableBusinesses = createdBusinesses.filter(
     (b) =>
-      b.def.planTier === "premium" &&
+      b.def.planTier !== "free" &&
       b.def.verificationStatus === "verified" &&
       b.def.isPublished,
   );
@@ -951,7 +956,9 @@ async function main() {
   console.log(`  ✓ ${favCount} favorites`);
 
   // ── Summary ───────────────────────────────────────────────────────
-  const premiumCount = bizDefs.filter((d) => d.planTier === "premium" && d.subscriptionStatus === "active").length;
+  const starterCount = bizDefs.filter((d) => d.planTier === "starter").length;
+  const proCount = bizDefs.filter((d) => d.planTier === "pro").length;
+  const enterpriseCount = bizDefs.filter((d) => d.planTier === "enterprise").length;
   const trialCount = bizDefs.filter((d) => d.subscriptionStatus === "trialing").length;
   const freeCount = bizDefs.filter((d) => d.planTier === "free").length;
   const verifiedCount = bizDefs.filter((d) => d.verificationStatus === "verified").length;
@@ -964,7 +971,7 @@ async function main() {
   console.log("=".repeat(72));
   console.log("");
   console.log("  Businesses:      20 total");
-  console.log(`    Premium:       ${premiumCount} active, ${trialCount} trialing`);
+  console.log(`    Starter:       ${starterCount}  |  Pro: ${proCount}  |  Enterprise: ${enterpriseCount}  |  Trialing: ${trialCount}`);
   console.log(`    Free:          ${freeCount}`);
   console.log(`    Verified:      ${verifiedCount}  |  Pending: ${pendingCount}  |  Suspended: ${suspendedCount}`);
   console.log(`    Featured:      ${featuredCount}`);

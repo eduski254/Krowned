@@ -104,14 +104,14 @@ async function main() {
     .eq("id", adminId);
   console.log("  ✓ admin@zawaditest.com → platform_role = super_admin");
 
-  // 3. Get the Premium plan
+  // 3. Get the Pro plan
   console.log("\n3. Fetching plans + categories...");
-  const { data: premiumPlan } = await supabase
+  const { data: proPlan } = await supabase
     .from("plans")
     .select("id")
-    .eq("tier", "premium")
+    .eq("tier", "pro")
     .single();
-  if (!premiumPlan) throw new Error("Premium plan not found — run migrations first");
+  if (!proPlan) throw new Error("Pro plan not found — run migrations first");
 
   const { data: categories } = await supabase
     .from("service_categories")
@@ -120,7 +120,7 @@ async function main() {
   if (!categories || categories.length === 0) throw new Error("No categories — run migrations first");
 
   const catMap = Object.fromEntries(categories.map((c) => [c.slug, c.id]));
-  console.log(`  ✓ Premium plan: ${premiumPlan.id}`);
+  console.log(`  ✓ Pro plan: ${proPlan.id}`);
   console.log(`  ✓ ${categories.length} categories found`);
 
   // 4. Create or update business
@@ -154,7 +154,7 @@ async function main() {
     verification_status: "verified" as const,
     charges_enabled: true,
     payouts_enabled: true,
-    plan_id: premiumPlan.id,
+    plan_id: proPlan.id,
     subscription_status: "active" as const,
     trial_ends_at: null,
     booking_link_token: bookingToken,
@@ -197,7 +197,7 @@ async function main() {
   await supabase.from("subscriptions").delete().eq("business_id", businessId);
   await supabase.from("subscriptions").insert({
     business_id: businessId,
-    plan_id: premiumPlan.id,
+    plan_id: proPlan.id,
     status: "active",
     seat_count: 1,
     current_period_end: futureDate(30, 0),
@@ -455,7 +455,7 @@ async function main() {
   console.log("    - 2 bookings (1 past + completed, 1 upcoming + confirmed)");
   console.log("    - 1 payment ($50 incl $5 tip), 1 review (5 stars)");
   console.log("    - 1 favorite");
-  console.log("    - Business hours Mon-Sat 9-18, Premium plan, verified");
+  console.log("    - Business hours Mon-Sat 9-18, Pro plan, verified");
   console.log("");
   console.log("=".repeat(68));
   console.log("");
