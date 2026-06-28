@@ -154,6 +154,8 @@ export async function saveFirstService(input: z.infer<typeof serviceSchema>) {
     name: parsed.data.name,
     duration_minutes: parsed.data.durationMinutes,
     price_amount: parsed.data.priceAmount,
+    currency: "usd",
+    payment_option: "both",
     is_active: true,
   });
 
