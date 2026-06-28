@@ -25,6 +25,7 @@ export const businessNav: NavItem[] = [
   { label: "Business Profile", href: "/dashboard/business/profile", icon: "Building2" },
   { label: "Payments Setup", href: "/dashboard/business/payments", icon: "CreditCard" },
   { label: "Settings", href: "/dashboard/business/settings", icon: "Settings" },
+  { label: "My Profile", href: "/dashboard/profile", icon: "UserCircle" },
 ];
 
 export const staffNav: NavItem[] = [
@@ -35,6 +36,7 @@ export const staffNav: NavItem[] = [
   { label: "Performance", href: "/dashboard/staff/performance", icon: "TrendingUp" },
   { label: "Earnings", href: "/dashboard/staff/earnings", icon: "DollarSign" },
   { label: "Profile", href: "/dashboard/staff/profile", icon: "User" },
+  { label: "My Profile", href: "/dashboard/profile", icon: "UserCircle" },
 ];
 
 export const adminNav: NavItem[] = [
@@ -48,4 +50,5 @@ export const adminNav: NavItem[] = [
   { label: "Disputes", href: "/dashboard/admin/disputes", icon: "AlertTriangle" },
   { label: "Content", href: "/dashboard/admin/content", icon: "FileText" },
   { label: "Settings", href: "/dashboard/admin/settings", icon: "Settings" },
+  { label: "My Profile", href: "/dashboard/profile", icon: "UserCircle" },
 ];

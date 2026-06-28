@@ -38,17 +38,32 @@ export default async function DashboardLayout({
 
   if (!user) redirect("/login");
 
-  const role = await getUserRole(supabase, user.id);
+  const [role, profileRes] = await Promise.all([
+    getUserRole(supabase, user.id),
+    supabase
+      .from("profiles")
+      .select("full_name, avatar_url")
+      .eq("id", user.id)
+      .single(),
+  ]);
+
   const navItems = navMap[role];
   const fullName =
-    user.user_metadata?.full_name ?? user.email ?? "User";
+    profileRes.data?.full_name ??
+    user.user_metadata?.full_name ??
+    user.email ??
+    "User";
 
   return (
     <div className="flex h-full min-h-screen">
       <IdleTimeout />
       <Sidebar items={navItems} role={roleLabels[role]} />
       <div className="flex flex-1 flex-col">
-        <Topbar userName={fullName} navItems={navItems} />
+        <Topbar
+          userName={fullName}
+          avatarUrl={profileRes.data?.avatar_url}
+          navItems={navItems}
+        />
         <main className="flex-1 overflow-y-auto bg-background p-4 sm:p-6 lg:p-8">
           {children}
         </main>

@@ -16,6 +16,7 @@ import {
   Tag,
   AlertTriangle,
   FileText,
+  UserCircle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -37,4 +38,5 @@ export const iconMap: Record<string, LucideIcon> = {
   Tag,
   AlertTriangle,
   FileText,
+  UserCircle,
 };

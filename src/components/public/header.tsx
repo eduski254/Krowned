@@ -16,7 +16,20 @@ export async function PublicHeader() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const fullName = user?.user_metadata?.full_name ?? user?.email ?? null;
+  let fullName: string | null = null;
+  let avatarUrl: string | null = null;
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, avatar_url")
+      .eq("id", user.id)
+      .single();
+    fullName = profile?.full_name ?? user.user_metadata?.full_name ?? user.email ?? null;
+    avatarUrl = profile?.avatar_url ?? null;
+  }
+
+  const initial = (fullName || "?").charAt(0).toUpperCase();
 
   return (
     <header className="border-b border-border bg-background">
@@ -48,8 +61,19 @@ export async function PublicHeader() {
             <>
               <Link
                 href="/dashboard"
-                className="rounded-lg px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt=""
+                    className="h-7 w-7 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                    {initial}
+                  </div>
+                )}
                 {fullName ?? "Dashboard"}
               </Link>
               <form action={logoutAction}>

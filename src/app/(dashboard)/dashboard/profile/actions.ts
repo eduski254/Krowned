@@ -7,6 +7,7 @@ const profileSchema = z.object({
   full_name: z.string().min(1, "Name is required").max(100).trim(),
   phone: z.string().max(20).trim().optional().default(""),
   country: z.string().max(5).trim().optional().default(""),
+  bio: z.string().max(500).trim().optional().default(""),
 });
 
 export type ProfileState = {
@@ -22,6 +23,7 @@ export async function updateProfile(
     full_name: formData.get("full_name"),
     phone: formData.get("phone"),
     country: formData.get("country"),
+    bio: formData.get("bio"),
   };
 
   const parsed = profileSchema.safeParse(raw);
@@ -43,6 +45,7 @@ export async function updateProfile(
       full_name: parsed.data.full_name,
       phone: parsed.data.phone || null,
       country: parsed.data.country || null,
+      bio: parsed.data.bio || null,
     })
     .eq("id", user.id);
 

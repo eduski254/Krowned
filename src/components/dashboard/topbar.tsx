@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileNav } from "./mobile-nav";
 import { NotificationBell } from "./notification-bell";
@@ -6,11 +7,15 @@ import type { NavItem } from "./nav-config";
 
 export function Topbar({
   userName,
+  avatarUrl,
   navItems,
 }: {
   userName: string;
+  avatarUrl?: string | null;
   navItems: NavItem[];
 }) {
+  const initial = (userName || "?").charAt(0).toUpperCase();
+
   return (
     <header className="flex h-16 items-center justify-between border-b border-border bg-card px-4 sm:px-6">
       <MobileNav items={navItems} />
@@ -18,9 +23,25 @@ export function Topbar({
       <div className="flex items-center gap-3">
         <NotificationBell />
         <ThemeToggle />
-        <span className="hidden text-sm font-medium text-foreground sm:block">
-          {userName}
-        </span>
+        <Link
+          href="/dashboard/profile"
+          className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-muted transition-colors"
+        >
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt=""
+              className="h-8 w-8 rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+              {initial}
+            </div>
+          )}
+          <span className="hidden text-sm font-medium text-foreground sm:block">
+            {userName}
+          </span>
+        </Link>
         <form action={logoutAction}>
           <button
             type="submit"
