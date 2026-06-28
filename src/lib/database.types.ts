@@ -210,6 +210,7 @@ export type Database = {
           is_featured: boolean
           is_published: boolean
           latitude: number | null
+          location_notes: string | null
           logo_url: string | null
           longitude: number | null
           name: string
@@ -251,6 +252,7 @@ export type Database = {
           is_featured?: boolean
           is_published?: boolean
           latitude?: number | null
+          location_notes?: string | null
           logo_url?: string | null
           longitude?: number | null
           name: string
@@ -292,6 +294,7 @@ export type Database = {
           is_featured?: boolean
           is_published?: boolean
           latitude?: number | null
+          location_notes?: string | null
           logo_url?: string | null
           longitude?: number | null
           name?: string

@@ -314,9 +314,16 @@ export default async function BusinessProfilePage({
             <h3 className="font-semibold text-foreground">Contact</h3>
             <div className="mt-3 space-y-2 text-sm">
               {business.address && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="h-4 w-4 shrink-0" />
-                  <span>{business.address}, {business.city}</span>
+                <div className="flex items-start gap-2 text-muted-foreground">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+                  <div>
+                    <span>{business.address}, {business.city}</span>
+                    {business.location_notes && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {business.location_notes}
+                      </p>
+                    )}
+                  </div>
                 </div>
               )}
               {business.phone && (
@@ -361,6 +368,11 @@ export default async function BusinessProfilePage({
                   {[business.address, business.city, business.country]
                     .filter(Boolean)
                     .join(", ")}
+                </p>
+              )}
+              {business.location_notes && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {business.location_notes}
                 </p>
               )}
               <div className="mt-3">

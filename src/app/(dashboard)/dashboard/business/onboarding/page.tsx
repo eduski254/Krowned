@@ -24,6 +24,9 @@ export default async function OnboardingPage() {
         savedLocation={{
           address: state.business.address ?? "",
           city: state.business.city ?? "",
+          latitude: state.business.latitude ?? null,
+          longitude: state.business.longitude ?? null,
+          locationNotes: state.business.location_notes ?? "",
         }}
         savedService={
           state.service

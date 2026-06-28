@@ -18,6 +18,10 @@ import {
 } from "lucide-react";
 import { Spinner } from "@/components/spinner";
 import {
+  AddressAutocomplete,
+  type AddressResult,
+} from "@/components/address-autocomplete";
+import {
   saveBusinessBasics,
   saveBusinessLocation,
   saveFirstService,
@@ -34,7 +38,7 @@ interface Props {
   businessId: string;
   categories: Category[];
   savedBasics: { name: string; description: string; primaryCategoryId: string };
-  savedLocation: { address: string; city: string };
+  savedLocation: { address: string; city: string; latitude: number | null; longitude: number | null; locationNotes: string };
   savedService: { name: string; durationMinutes: number; priceAmount: number } | null;
 }
 
@@ -390,6 +394,16 @@ function StepLocation({
   location: Props["savedLocation"];
   setLocation: (l: Props["savedLocation"]) => void;
 }) {
+  function handlePlaceSelect(result: AddressResult) {
+    setLocation({
+      ...location,
+      address: result.address,
+      city: result.city || location.city,
+      latitude: result.lat,
+      longitude: result.lng,
+    });
+  }
+
   return (
     <div className="space-y-4">
       <div>
@@ -402,26 +416,25 @@ function StepLocation({
       </div>
 
       <div>
-        <label htmlFor="biz-address" className="block text-sm font-medium text-foreground">
+        <label htmlFor="ob-address" className="block text-sm font-medium text-foreground">
           Address
         </label>
-        <input
-          id="biz-address"
-          type="text"
+        <AddressAutocomplete
+          id="ob-address"
           value={location.address}
-          onChange={(e) => setLocation({ ...location, address: e.target.value })}
-          placeholder="e.g. 123 Kenyatta Ave, Floor 2"
-          maxLength={200}
-          className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          onChange={(val) => setLocation({ ...location, address: val })}
+          onPlaceSelect={handlePlaceSelect}
+          placeholder="Start typing your business address..."
+          required
         />
       </div>
 
       <div>
-        <label htmlFor="biz-city" className="block text-sm font-medium text-foreground">
+        <label htmlFor="ob-city" className="block text-sm font-medium text-foreground">
           City
         </label>
         <input
-          id="biz-city"
+          id="ob-city"
           type="text"
           value={location.city}
           onChange={(e) => setLocation({ ...location, city: e.target.value })}
@@ -430,6 +443,31 @@ function StepLocation({
           className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
+
+      <div>
+        <label htmlFor="ob-location-notes" className="block text-sm font-medium text-foreground">
+          Additional location info{" "}
+          <span className="font-normal text-muted-foreground">(optional)</span>
+        </label>
+        <input
+          id="ob-location-notes"
+          type="text"
+          value={location.locationNotes}
+          onChange={(e) => setLocation({ ...location, locationNotes: e.target.value })}
+          placeholder="e.g. 3rd floor, Suite K11, behind Total petrol station"
+          maxLength={500}
+          className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+        <p className="mt-1 text-xs text-muted-foreground">
+          Building name, floor, suite, or landmarks to help clients find you.
+        </p>
+      </div>
+
+      {location.latitude != null && location.longitude != null && (
+        <p className="text-xs text-muted-foreground">
+          Coordinates captured: {location.latitude.toFixed(5)}, {location.longitude.toFixed(5)}
+        </p>
+      )}
     </div>
   );
 }

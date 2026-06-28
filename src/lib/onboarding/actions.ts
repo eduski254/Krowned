@@ -65,6 +65,9 @@ export async function saveBusinessBasics(input: z.infer<typeof basicsSchema>) {
 const locationSchema = z.object({
   address: z.string().min(3, "Address is required").max(200).trim(),
   city: z.string().min(2, "City is required").max(100).trim(),
+  latitude: z.number().min(-90).max(90).nullable().optional(),
+  longitude: z.number().min(-180).max(180).nullable().optional(),
+  locationNotes: z.string().max(500).trim().optional().default(""),
 });
 
 export async function saveBusinessLocation(input: z.infer<typeof locationSchema>) {
@@ -85,12 +88,20 @@ export async function saveBusinessLocation(input: z.infer<typeof locationSchema>
 
   if (!business) return { error: "Business not found." };
 
+  const updatePayload: Record<string, unknown> = {
+    address: parsed.data.address,
+    city: parsed.data.city,
+    location_notes: parsed.data.locationNotes || null,
+  };
+
+  if (parsed.data.latitude != null && parsed.data.longitude != null) {
+    updatePayload.latitude = parsed.data.latitude;
+    updatePayload.longitude = parsed.data.longitude;
+  }
+
   const { error } = await admin
     .from("businesses")
-    .update({
-      address: parsed.data.address,
-      city: parsed.data.city,
-    })
+    .update(updatePayload)
     .eq("id", business.id);
 
   if (error) return { error: error.message };
@@ -197,7 +208,7 @@ export async function getOnboardingState() {
 
   const { data: business } = await admin
     .from("businesses")
-    .select("id, name, description, primary_category_id, address, city, logo_url, cover_url, onboarding_completed_at")
+    .select("id, name, description, primary_category_id, address, city, latitude, longitude, location_notes, logo_url, cover_url, onboarding_completed_at")
     .eq("owner_id", user.id)
     .maybeSingle();
 

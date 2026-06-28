@@ -19,6 +19,9 @@ const businessSchema = z.object({
   address: z.string().max(500).trim().optional().default(""),
   city: z.string().max(100).trim().optional().default(""),
   country: z.string().max(5).trim().optional().default(""),
+  latitude: z.coerce.number().min(-90).max(90).optional().or(z.literal("")),
+  longitude: z.coerce.number().min(-180).max(180).optional().or(z.literal("")),
+  location_notes: z.string().max(500).trim().optional().default(""),
 });
 
 export type BusinessProfileState = {
@@ -44,14 +47,21 @@ export async function upsertBusiness(
   if (!user) return { error: "Not authenticated" };
 
   const businessId = formData.get("business_id") as string | null;
-  const { primary_category_id, email, ...rest } = parsed.data;
+  const { primary_category_id, email, latitude, longitude, location_notes, ...rest } = parsed.data;
 
-  const payload = {
+  const payload: Record<string, unknown> = {
     ...rest,
     email: email || null,
     primary_category_id: primary_category_id || null,
+    location_notes: location_notes || null,
     owner_id: user.id,
   };
+
+  // Only update coordinates if we got valid numbers
+  if (typeof latitude === "number" && typeof longitude === "number") {
+    payload.latitude = latitude;
+    payload.longitude = longitude;
+  }
 
   if (businessId) {
     const { error } = await supabase
