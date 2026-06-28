@@ -25,7 +25,7 @@ async function fetchBookingDetails(bookingId: string) {
       `id, client_id, staff_id, starts_at, ends_at, status, service_amount, currency,
        services(name, duration_minutes),
        staff(display_name, user_id, invited_email),
-       businesses(name, timezone, owner_id, address_line1, city),
+       businesses(name, timezone, owner_id, address, city),
        profiles!client_id(full_name)`,
     )
     .eq("id", bookingId)
@@ -85,7 +85,7 @@ async function fetchBookingDetails(bookingId: string) {
     businessName: (data.businesses as any)?.name ?? "Business",
     timezone: (data.businesses as any)?.timezone ?? "UTC",
     address: [
-      (data.businesses as any)?.address_line1,
+      (data.businesses as any)?.address,
       (data.businesses as any)?.city,
     ]
       .filter(Boolean)
