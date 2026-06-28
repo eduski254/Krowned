@@ -255,6 +255,7 @@ export function ExploreClient({
                   isLoggedIn={isLoggedIn}
                   isHighlighted={highlightedId === biz.id}
                   onHover={handleCardHover}
+                  viewMode={viewMode}
                   ref={(el) => {
                     if (el) cardRefs.current.set(biz.id, el);
                     else cardRefs.current.delete(biz.id);
@@ -350,77 +351,177 @@ const BusinessCard = forwardRef<
     isLoggedIn: boolean;
     isHighlighted: boolean;
     onHover: (id: string | null) => void;
+    viewMode: "list" | "grid";
   }
->(function BusinessCard({ biz, isLoggedIn, isHighlighted, onHover }, ref) {
+>(function BusinessCard({ biz, isLoggedIn, isHighlighted, onHover, viewMode }, ref) {
   const hasCords = biz.latitude != null && biz.longitude != null && (biz.latitude !== 0 || biz.longitude !== 0);
+  const imageUrl = biz.imageUrl;
 
+  const badges = (
+    <>
+      {biz.is_featured && (
+        <span className="rounded-full bg-primary/90 px-2 py-0.5 text-xs font-medium text-primary-foreground shadow-sm">
+          Featured
+        </span>
+      )}
+      {!hasCords && (
+        <span className="rounded-full bg-accent/90 px-2 py-0.5 text-xs font-medium text-accent-foreground shadow-sm">
+          Mobile
+        </span>
+      )}
+    </>
+  );
+
+  const cardInfo = (
+    <>
+      <div className="flex items-center gap-2">
+        <h3 className="truncate font-semibold text-foreground group-hover:text-primary transition-colors">
+          {biz.name}
+        </h3>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        {biz.categoryName ?? ""}
+      </p>
+      <p className="text-sm text-muted-foreground">
+        {[biz.city, biz.country].filter(Boolean).join(", ")}
+      </p>
+    </>
+  );
+
+  const letterAvatar = (
+    <div className="flex h-full w-full items-center justify-center bg-primary/10 text-3xl font-bold text-primary">
+      {biz.name.charAt(0)}
+    </div>
+  );
+
+  // --- GRID VIEW ---
+  if (viewMode === "grid") {
+    return (
+      <Link
+        href={`/b/${biz.slug}`}
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        onMouseEnter={() => onHover(biz.id)}
+        onMouseLeave={() => onHover(null)}
+        className={`group relative block overflow-hidden rounded-xl border bg-card transition-all hover:shadow-lg ${
+          isHighlighted
+            ? "border-primary ring-2 ring-primary/20"
+            : "border-border"
+        }`}
+      >
+        {/* Image banner */}
+        <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={biz.name}
+              loading="lazy"
+              className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            />
+          ) : (
+            letterAvatar
+          )}
+          {/* Overlay badges */}
+          <div className="absolute left-2 top-2 flex gap-1.5">
+            {badges}
+          </div>
+          <div className="absolute right-2 top-2">
+            <FavoriteButton
+              businessId={biz.id}
+              initialFavorited={biz.isFavorited}
+              isLoggedIn={isLoggedIn}
+              size="sm"
+            />
+          </div>
+        </div>
+
+        {/* Card body */}
+        <div className="p-4">
+          {cardInfo}
+          {biz.description && (
+            <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+              {biz.description}
+            </p>
+          )}
+          <div className="mt-3 flex items-center justify-between">
+            <StarRating value={biz.avgRating} count={biz.reviewCount} />
+            <span className="text-sm font-medium text-primary">View &rarr;</span>
+          </div>
+        </div>
+      </Link>
+    );
+  }
+
+  // --- LIST VIEW ---
   return (
     <Link
       href={`/b/${biz.slug}`}
       ref={ref as React.Ref<HTMLAnchorElement>}
       onMouseEnter={() => onHover(biz.id)}
       onMouseLeave={() => onHover(null)}
-      className={`group relative block rounded-xl border bg-card p-5 transition-all hover:shadow-lg ${
+      className={`group relative flex overflow-hidden rounded-xl border bg-card transition-all hover:shadow-lg ${
         isHighlighted
           ? "border-primary ring-2 ring-primary/20"
           : "border-border"
       }`}
     >
-      <div className="absolute right-3 top-3 z-10">
-        <FavoriteButton
-          businessId={biz.id}
-          initialFavorited={biz.isFavorited}
-          isLoggedIn={isLoggedIn}
-          size="sm"
-        />
-      </div>
-
-      <div className="flex items-start gap-4">
-        {biz.logo_url ? (
+      {/* Thumbnail */}
+      <div className="relative hidden w-40 shrink-0 overflow-hidden bg-muted sm:block">
+        {imageUrl ? (
           <img
-            src={biz.logo_url}
-            alt=""
-            className="h-14 w-14 rounded-lg object-cover"
+            src={imageUrl}
+            alt={biz.name}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-primary/10 text-xl font-bold text-primary">
-            {biz.name.charAt(0)}
-          </div>
+          letterAvatar
         )}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="truncate font-semibold text-foreground group-hover:text-primary transition-colors">
-              {biz.name}
-            </h3>
-            {biz.is_featured && (
-              <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                Featured
-              </span>
-            )}
-            {!hasCords && (
-              <span className="shrink-0 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
-                Mobile
-              </span>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {biz.categoryName ?? ""}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {[biz.city, biz.country].filter(Boolean).join(", ")}
-          </p>
+        {/* Badges on thumbnail */}
+        <div className="absolute left-1.5 top-1.5 flex flex-col gap-1">
+          {badges}
         </div>
       </div>
 
-      {biz.description && (
-        <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">
-          {biz.description}
-        </p>
-      )}
+      {/* Content */}
+      <div className="flex min-w-0 flex-1 flex-col p-4">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="truncate font-semibold text-foreground group-hover:text-primary transition-colors">
+                {biz.name}
+              </h3>
+              {/* Inline badges for mobile (no thumbnail) */}
+              <div className="flex gap-1.5 sm:hidden">
+                {badges}
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {biz.categoryName ?? ""}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {[biz.city, biz.country].filter(Boolean).join(", ")}
+            </p>
+          </div>
+          <div className="shrink-0">
+            <FavoriteButton
+              businessId={biz.id}
+              initialFavorited={biz.isFavorited}
+              isLoggedIn={isLoggedIn}
+              size="sm"
+            />
+          </div>
+        </div>
 
-      <div className="mt-4 flex items-center justify-between">
-        <StarRating value={biz.avgRating} count={biz.reviewCount} />
-        <span className="text-sm font-medium text-primary">View &rarr;</span>
+        {biz.description && (
+          <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+            {biz.description}
+          </p>
+        )}
+
+        <div className="mt-auto flex items-center justify-between pt-3">
+          <StarRating value={biz.avgRating} count={biz.reviewCount} />
+          <span className="text-sm font-medium text-primary">View &rarr;</span>
+        </div>
       </div>
     </Link>
   );

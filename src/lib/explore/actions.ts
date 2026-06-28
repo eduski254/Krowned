@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
+import { resolveCardImage } from "./utils";
 
 const boundsSchema = z.object({
   north: z.number(),
@@ -18,6 +19,8 @@ export type ExploreBusiness = {
   slug: string;
   description: string | null;
   logo_url: string | null;
+  cover_url: string | null;
+  imageUrl: string | null;
   city: string | null;
   country: string | null;
   is_featured: boolean;
@@ -29,6 +32,7 @@ export type ExploreBusiness = {
   isFavorited: boolean;
 };
 
+
 export async function searchByBounds(input: z.infer<typeof boundsSchema>) {
   const parsed = boundsSchema.safeParse(input);
   if (!parsed.success) return { businesses: [] as ExploreBusiness[] };
@@ -39,7 +43,7 @@ export async function searchByBounds(input: z.infer<typeof boundsSchema>) {
   let query = supabase
     .from("businesses")
     .select(
-      "id, name, slug, description, logo_url, city, country, is_featured, latitude, longitude, primary_category_id, service_categories(name)",
+      "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, latitude, longitude, primary_category_id, service_categories(name)",
     )
     .eq("is_published", true)
     .eq("verification_status", "verified")
@@ -100,6 +104,8 @@ export async function searchByBounds(input: z.infer<typeof boundsSchema>) {
       slug: biz.slug,
       description: biz.description,
       logo_url: biz.logo_url,
+      cover_url: biz.cover_url,
+      imageUrl: resolveCardImage(biz),
       city: biz.city,
       country: biz.country,
       is_featured: biz.is_featured,

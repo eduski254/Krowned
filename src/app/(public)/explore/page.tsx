@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { ExploreClient } from "./explore-client";
 import type { ExploreBusiness } from "@/lib/explore/actions";
+import { resolveCardImage } from "@/lib/explore/utils";
 
 export default async function ExplorePage({
   searchParams,
@@ -20,7 +21,7 @@ export default async function ExplorePage({
   let query = supabase
     .from("businesses")
     .select(
-      "id, name, slug, description, logo_url, city, country, is_featured, latitude, longitude, primary_category_id, service_categories(name)",
+      "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, latitude, longitude, primary_category_id, service_categories(name)",
     )
     .eq("is_published", true)
     .eq("verification_status", "verified")
@@ -79,6 +80,8 @@ export default async function ExplorePage({
       slug: biz.slug,
       description: biz.description,
       logo_url: biz.logo_url,
+      cover_url: biz.cover_url,
+      imageUrl: resolveCardImage(biz),
       city: biz.city,
       country: biz.country,
       is_featured: biz.is_featured,
