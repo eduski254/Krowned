@@ -11,6 +11,7 @@ export const clientNav: NavItem[] = [
   { label: "Reviews", href: "/dashboard/reviews", icon: "Star" },
   { label: "Payment Methods", href: "/dashboard/payments", icon: "CreditCard" },
   { label: "Profile", href: "/dashboard/profile", icon: "User" },
+  { label: "Support", href: "/dashboard/support", icon: "LifeBuoy" },
   { label: "Settings", href: "/dashboard/settings", icon: "Settings" },
 ];
 
@@ -24,6 +25,7 @@ export const businessNav: NavItem[] = [
   { label: "Reviews", href: "/dashboard/business/reviews", icon: "Star" },
   { label: "Business Profile", href: "/dashboard/business/profile", icon: "Building2" },
   { label: "Payments Setup", href: "/dashboard/business/payments", icon: "CreditCard" },
+  { label: "Support", href: "/dashboard/support", icon: "LifeBuoy" },
   { label: "Settings", href: "/dashboard/business/settings", icon: "Settings" },
   { label: "My Profile", href: "/dashboard/profile", icon: "UserCircle" },
 ];
@@ -36,6 +38,7 @@ export const staffNav: NavItem[] = [
   { label: "Performance", href: "/dashboard/staff/performance", icon: "TrendingUp" },
   { label: "Earnings", href: "/dashboard/staff/earnings", icon: "DollarSign" },
   { label: "Profile", href: "/dashboard/staff/profile", icon: "User" },
+  { label: "Support", href: "/dashboard/support", icon: "LifeBuoy" },
   { label: "My Profile", href: "/dashboard/profile", icon: "UserCircle" },
 ];
 
@@ -49,6 +52,7 @@ export const adminNav: NavItem[] = [
   { label: "Finance", href: "/dashboard/admin/finance", icon: "DollarSign" },
   { label: "Disputes", href: "/dashboard/admin/disputes", icon: "AlertTriangle" },
   { label: "Content", href: "/dashboard/admin/content", icon: "FileText" },
+  { label: "Support Tickets", href: "/dashboard/admin/support", icon: "LifeBuoy" },
   { label: "Settings", href: "/dashboard/admin/settings", icon: "Settings" },
   { label: "My Profile", href: "/dashboard/profile", icon: "UserCircle" },
 ];

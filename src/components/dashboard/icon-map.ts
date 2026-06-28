@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   FileText,
   UserCircle,
+  LifeBuoy,
   type LucideIcon,
 } from "lucide-react";
 
@@ -39,4 +40,5 @@ export const iconMap: Record<string, LucideIcon> = {
   AlertTriangle,
   FileText,
   UserCircle,
+  LifeBuoy,
 };
