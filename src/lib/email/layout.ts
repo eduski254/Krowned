@@ -6,7 +6,22 @@
 const BRAND_PRIMARY = "#5604ad";
 const BRAND_DARK = "#2e3043";
 
-export function emailLayout(body: string, preheader?: string): string {
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadi.com";
+
+interface LayoutOptions {
+  /** Show "Manage email preferences" link in footer (for optional emails) */
+  showManagePrefs?: boolean;
+}
+
+export function emailLayout(
+  body: string,
+  preheader?: string,
+  options?: LayoutOptions,
+): string {
+  const manageLink = options?.showManagePrefs
+    ? `<p style="margin:8px 0 0;"><a href="${SITE_URL}/dashboard/settings" style="color:#6b7280;text-decoration:underline;">Manage email preferences</a></p>`
+    : "";
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,6 +52,7 @@ export function emailLayout(body: string, preheader?: string): string {
             <td style="padding:20px 32px;border-top:1px solid #e8e8ed;text-align:center;font-size:12px;color:#9ca3af;">
               <p style="margin:0;">You received this email because you have an account on Zawadi.</p>
               <p style="margin:8px 0 0;">&copy; ${new Date().getFullYear()} Zawadi. All rights reserved.</p>
+              ${manageLink}
             </td>
           </tr>
         </table>
@@ -66,4 +82,23 @@ export function emailDetailRow(label: string, value: string): string {
     <td style="padding:6px 0;color:#6b7280;font-size:14px;width:140px;">${label}</td>
     <td style="padding:6px 0;font-size:14px;font-weight:500;">${value}</td>
   </tr>`;
+}
+
+/** Strip HTML tags for plaintext fallback */
+export function htmlToPlaintext(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<\/tr>/gi, "\n")
+    .replace(/<\/h[1-6]>/gi, "\n\n")
+    .replace(/<a[^>]*href="([^"]*)"[^>]*>[^<]*<\/a>/gi, "$1")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&middot;/g, "-")
+    .replace(/&ldquo;/g, '"')
+    .replace(/&rdquo;/g, '"')
+    .replace(/&copy;/g, "(c)")
+    .replace(/&amp;/g, "&")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }

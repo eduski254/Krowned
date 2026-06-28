@@ -1,6 +1,12 @@
-import { emailLayout, emailButton, emailDetailRow } from "./layout";
+import { emailLayout, emailButton, emailDetailRow, htmlToPlaintext } from "./layout";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadi.com";
+
+interface EmailOutput {
+  subject: string;
+  html: string;
+  text: string;
+}
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString("en-US", {
@@ -44,24 +50,30 @@ function bookingDetailsTable(details: {
   rows += emailDetailRow("Professional", details.staff);
   if (details.amount) rows += emailDetailRow("Total", details.amount);
   return `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;border:1px solid #e8e8ed;border-radius:8px;overflow:hidden;">
-    <tr><td style="padding:16px;">${rows}</td></tr>
+    <tr><td style="padding:16px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
+        ${rows}
+      </table>
+    </td></tr>
   </table>`;
+}
+
+function build(subject: string, html: string): EmailOutput {
+  return { subject, html, text: htmlToPlaintext(html) };
 }
 
 // ── 1. Welcome ──────────────────────────────────────────────────────
 
-export function welcomeEmail(name: string): { subject: string; html: string } {
-  return {
-    subject: "Welcome to Zawadi!",
-    html: emailLayout(
-      `<h2 style="margin:0 0 16px;font-size:22px;">Welcome, ${name}!</h2>
-      <p>We're glad you're here. Zawadi connects you with the best beauty and wellness professionals near you.</p>
-      <p>Browse services, book your first appointment, and discover something new.</p>
-      ${emailButton("Explore Services", `${SITE_URL}/explore`)}
-      <p style="color:#6b7280;font-size:13px;">Questions? Just reply to this email.</p>`,
-      `Welcome to Zawadi, ${name}!`,
-    ),
-  };
+export function welcomeEmail(name: string): EmailOutput {
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">Welcome, ${name}!</h2>
+    <p>We're glad you're here. Zawadi connects you with the best beauty and wellness professionals near you.</p>
+    <p>Browse services, book your first appointment, and discover something new.</p>
+    ${emailButton("Explore Services", `${SITE_URL}/explore`)}
+    <p style="color:#6b7280;font-size:13px;">Questions? Just reply to this email.</p>`,
+    `Welcome to Zawadi, ${name}!`,
+  );
+  return build("Welcome to Zawadi!", html);
 }
 
 // ── 2. Booking Confirmation (to client) ─────────────────────────────
@@ -77,33 +89,32 @@ export function bookingConfirmationEmail(data: {
   timezone: string;
   amount?: number;
   currency?: string;
-}): { subject: string; html: string } {
+}): EmailOutput {
   const ref = bookingRef(data.bookingId);
   const amountStr =
     data.amount != null
       ? `${(data.amount / 100).toFixed(2)} ${data.currency?.toUpperCase() ?? ""}`
       : undefined;
 
-  return {
-    subject: `Booking confirmed — ${ref}`,
-    html: emailLayout(
-      `<h2 style="margin:0 0 16px;font-size:22px;">You're all set, ${data.clientName}!</h2>
-      <p>Your booking has been confirmed. Here are the details:</p>
-      ${bookingDetailsTable({
-        ref,
-        service: data.serviceName,
-        business: data.businessName,
-        date: formatDate(data.startsAt),
-        time: formatTime(data.startsAt, data.timezone),
-        duration: data.durationMinutes,
-        staff: data.staffName,
-        amount: amountStr,
-      })}
-      <p style="font-size:13px;color:#6b7280;">A calendar invite (.ics) is attached to this email. Add it to your calendar so you don't miss it!</p>
-      ${emailButton("View My Bookings", `${SITE_URL}/dashboard/bookings`)}`,
-      `Booking confirmed: ${data.serviceName} at ${data.businessName}`,
-    ),
-  };
+  const subject = `Booking confirmed — ${ref}`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">You're all set, ${data.clientName}!</h2>
+    <p>Your booking has been confirmed. Here are the details:</p>
+    ${bookingDetailsTable({
+      ref,
+      service: data.serviceName,
+      business: data.businessName,
+      date: formatDate(data.startsAt),
+      time: formatTime(data.startsAt, data.timezone),
+      duration: data.durationMinutes,
+      staff: data.staffName,
+      amount: amountStr,
+    })}
+    <p style="font-size:13px;color:#6b7280;">A calendar invite (.ics) is attached. Add it to your calendar so you don't miss it!</p>
+    ${emailButton("View My Bookings", `${SITE_URL}/dashboard/bookings`)}`,
+    `Booking confirmed: ${data.serviceName} at ${data.businessName}`,
+  );
+  return build(subject, html);
 }
 
 // ── 3. Booking Reschedule (to client) ───────────────────────────────
@@ -118,32 +129,31 @@ export function bookingRescheduleEmail(data: {
   newStartsAt: Date;
   durationMinutes: number;
   timezone: string;
-}): { subject: string; html: string } {
+}): EmailOutput {
   const ref = bookingRef(data.bookingId);
 
-  return {
-    subject: `Booking rescheduled — ${ref}`,
-    html: emailLayout(
-      `<h2 style="margin:0 0 16px;font-size:22px;">Booking rescheduled</h2>
-      <p>Hi ${data.clientName}, your booking has been moved to a new time.</p>
-      <p style="margin:12px 0;padding:12px;background:#fef3c7;border-radius:8px;font-size:14px;">
-        <strong>Was:</strong> ${formatDate(data.oldStartsAt)} at ${formatTime(data.oldStartsAt, data.timezone)}<br/>
-        <strong>Now:</strong> ${formatDate(data.newStartsAt)} at ${formatTime(data.newStartsAt, data.timezone)}
-      </p>
-      ${bookingDetailsTable({
-        ref,
-        service: data.serviceName,
-        business: data.businessName,
-        date: formatDate(data.newStartsAt),
-        time: formatTime(data.newStartsAt, data.timezone),
-        duration: data.durationMinutes,
-        staff: data.staffName,
-      })}
-      <p style="font-size:13px;color:#6b7280;">An updated calendar invite is attached.</p>
-      ${emailButton("View My Bookings", `${SITE_URL}/dashboard/bookings`)}`,
-      `Your booking at ${data.businessName} has been rescheduled`,
-    ),
-  };
+  const subject = `Booking rescheduled — ${ref}`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">Booking rescheduled</h2>
+    <p>Hi ${data.clientName}, your booking has been moved to a new time.</p>
+    <p style="margin:12px 0;padding:12px;background:#fef3c7;border-radius:8px;font-size:14px;">
+      <strong>Was:</strong> ${formatDate(data.oldStartsAt)} at ${formatTime(data.oldStartsAt, data.timezone)}<br/>
+      <strong>Now:</strong> ${formatDate(data.newStartsAt)} at ${formatTime(data.newStartsAt, data.timezone)}
+    </p>
+    ${bookingDetailsTable({
+      ref,
+      service: data.serviceName,
+      business: data.businessName,
+      date: formatDate(data.newStartsAt),
+      time: formatTime(data.newStartsAt, data.timezone),
+      duration: data.durationMinutes,
+      staff: data.staffName,
+    })}
+    <p style="font-size:13px;color:#6b7280;">An updated calendar invite is attached.</p>
+    ${emailButton("View My Bookings", `${SITE_URL}/dashboard/bookings`)}`,
+    `Your booking at ${data.businessName} has been rescheduled`,
+  );
+  return build(subject, html);
 }
 
 // ── 4. Booking Cancellation (to client) ─────────────────────────────
@@ -156,30 +166,31 @@ export function bookingCancellationEmail(data: {
   startsAt: Date;
   timezone: string;
   cancelledBy: "client" | "business";
-}): { subject: string; html: string } {
+}): EmailOutput {
   const ref = bookingRef(data.bookingId);
   const who =
     data.cancelledBy === "client"
       ? "You cancelled"
       : `${data.businessName} cancelled`;
 
-  return {
-    subject: `Booking cancelled — ${ref}`,
-    html: emailLayout(
-      `<h2 style="margin:0 0 16px;font-size:22px;">Booking cancelled</h2>
-      <p>Hi ${data.clientName}, ${who.toLowerCase()} your booking.</p>
-      <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;border:1px solid #e8e8ed;border-radius:8px;overflow:hidden;">
-        <tr><td style="padding:16px;">
+  const subject = `Booking cancelled — ${ref}`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">Booking cancelled</h2>
+    <p>Hi ${data.clientName}, ${who.toLowerCase()} your booking.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;border:1px solid #e8e8ed;border-radius:8px;overflow:hidden;">
+      <tr><td style="padding:16px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
           ${emailDetailRow("Reference", `<strong>${ref}</strong>`)}
           ${emailDetailRow("Service", data.serviceName)}
           ${emailDetailRow("Was scheduled", `${formatDate(data.startsAt)} at ${formatTime(data.startsAt, data.timezone)}`)}
-        </td></tr>
-      </table>
-      <p>Want to rebook?</p>
-      ${emailButton("Browse Services", `${SITE_URL}/explore`)}`,
-      `Your booking at ${data.businessName} has been cancelled`,
-    ),
-  };
+        </table>
+      </td></tr>
+    </table>
+    <p>Want to rebook?</p>
+    ${emailButton("Browse Services", `${SITE_URL}/explore`)}`,
+    `Your booking at ${data.businessName} has been cancelled`,
+  );
+  return build(subject, html);
 }
 
 // ── 5. New Booking (to business owner) ──────────────────────────────
@@ -196,32 +207,31 @@ export function newBookingOwnerEmail(data: {
   timezone: string;
   amount?: number;
   currency?: string;
-}): { subject: string; html: string } {
+}): EmailOutput {
   const ref = bookingRef(data.bookingId);
   const amountStr =
     data.amount != null
       ? `${(data.amount / 100).toFixed(2)} ${data.currency?.toUpperCase() ?? ""}`
       : undefined;
 
-  return {
-    subject: `New booking from ${data.clientName} — ${ref}`,
-    html: emailLayout(
-      `<h2 style="margin:0 0 16px;font-size:22px;">New booking!</h2>
-      <p>Hi ${data.ownerName}, ${data.clientName} just booked an appointment.</p>
-      ${bookingDetailsTable({
-        ref,
-        service: data.serviceName,
-        business: data.businessName,
-        date: formatDate(data.startsAt),
-        time: formatTime(data.startsAt, data.timezone),
-        duration: data.durationMinutes,
-        staff: data.staffName,
-        amount: amountStr,
-      })}
-      ${emailButton("View Calendar", `${SITE_URL}/dashboard/business/calendar`)}`,
-      `${data.clientName} booked ${data.serviceName}`,
-    ),
-  };
+  const subject = `New booking from ${data.clientName} — ${ref}`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">New booking!</h2>
+    <p>Hi ${data.ownerName}, ${data.clientName} just booked an appointment.</p>
+    ${bookingDetailsTable({
+      ref,
+      service: data.serviceName,
+      business: data.businessName,
+      date: formatDate(data.startsAt),
+      time: formatTime(data.startsAt, data.timezone),
+      duration: data.durationMinutes,
+      staff: data.staffName,
+      amount: amountStr,
+    })}
+    ${emailButton("View Calendar", `${SITE_URL}/dashboard/business/calendar`)}`,
+    `${data.clientName} booked ${data.serviceName}`,
+  );
+  return build(subject, html);
 }
 
 // ── 6. Booking Cancelled by Client (to business owner) ──────────────
@@ -233,29 +243,30 @@ export function bookingCancelledByClientOwnerEmail(data: {
   serviceName: string;
   startsAt: Date;
   timezone: string;
-}): { subject: string; html: string } {
+}): EmailOutput {
   const ref = bookingRef(data.bookingId);
 
-  return {
-    subject: `Booking cancelled by ${data.clientName} — ${ref}`,
-    html: emailLayout(
-      `<h2 style="margin:0 0 16px;font-size:22px;">Booking cancelled</h2>
-      <p>Hi ${data.ownerName}, ${data.clientName} cancelled their booking.</p>
-      <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;border:1px solid #e8e8ed;border-radius:8px;overflow:hidden;">
-        <tr><td style="padding:16px;">
+  const subject = `Booking cancelled by ${data.clientName} — ${ref}`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">Booking cancelled</h2>
+    <p>Hi ${data.ownerName}, ${data.clientName} cancelled their booking.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;border:1px solid #e8e8ed;border-radius:8px;overflow:hidden;">
+      <tr><td style="padding:16px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
           ${emailDetailRow("Reference", `<strong>${ref}</strong>`)}
           ${emailDetailRow("Service", data.serviceName)}
           ${emailDetailRow("Was scheduled", `${formatDate(data.startsAt)} at ${formatTime(data.startsAt, data.timezone)}`)}
-        </td></tr>
-      </table>
-      <p style="font-size:13px;color:#6b7280;">The time slot is now free for other clients.</p>
-      ${emailButton("View Calendar", `${SITE_URL}/dashboard/business/calendar`)}`,
-      `${data.clientName} cancelled their booking for ${data.serviceName}`,
-    ),
-  };
+        </table>
+      </td></tr>
+    </table>
+    <p style="font-size:13px;color:#6b7280;">The time slot is now free for other clients.</p>
+    ${emailButton("View Calendar", `${SITE_URL}/dashboard/business/calendar`)}`,
+    `${data.clientName} cancelled their booking for ${data.serviceName}`,
+  );
+  return build(subject, html);
 }
 
-// ── 7. New Review (to business owner) ───────────────────────────────
+// ── 7. New Review (to business owner) — OPTIONAL email ──────────────
 
 export function newReviewOwnerEmail(data: {
   ownerName: string;
@@ -264,23 +275,23 @@ export function newReviewOwnerEmail(data: {
   comment?: string;
   serviceName: string;
   businessName: string;
-}): { subject: string; html: string } {
-  const stars = "★".repeat(data.rating) + "☆".repeat(5 - data.rating);
+}): EmailOutput {
+  const stars = "\u2605".repeat(data.rating) + "\u2606".repeat(5 - data.rating);
 
-  return {
-    subject: `New ${data.rating}-star review from ${data.clientName}`,
-    html: emailLayout(
-      `<h2 style="margin:0 0 16px;font-size:22px;">New review!</h2>
-      <p>Hi ${data.ownerName}, ${data.clientName} left a review for ${data.serviceName}.</p>
-      <div style="margin:16px 0;padding:16px;background:#f9fafb;border-radius:8px;border:1px solid #e8e8ed;">
-        <p style="margin:0 0 8px;font-size:20px;letter-spacing:2px;color:#f59e0b;">${stars}</p>
-        ${data.comment ? `<p style="margin:0;font-style:italic;color:#374151;">"${data.comment}"</p>` : ""}
-        <p style="margin:8px 0 0;font-size:13px;color:#6b7280;">— ${data.clientName}</p>
-      </div>
-      ${emailButton("View & Respond", `${SITE_URL}/dashboard/business/reviews`)}`,
-      `${data.clientName} left a ${data.rating}-star review on ${data.businessName}`,
-    ),
-  };
+  const subject = `New ${data.rating}-star review from ${data.clientName}`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">New review!</h2>
+    <p>Hi ${data.ownerName}, ${data.clientName} left a review for ${data.serviceName}.</p>
+    <div style="margin:16px 0;padding:16px;background:#f9fafb;border-radius:8px;border:1px solid #e8e8ed;">
+      <p style="margin:0 0 8px;font-size:20px;letter-spacing:2px;color:#f59e0b;">${stars}</p>
+      ${data.comment ? `<p style="margin:0;font-style:italic;color:#374151;">"${data.comment}"</p>` : ""}
+      <p style="margin:8px 0 0;font-size:13px;color:#6b7280;">&mdash; ${data.clientName}</p>
+    </div>
+    ${emailButton("View & Respond", `${SITE_URL}/dashboard/business/reviews`)}`,
+    `${data.clientName} left a ${data.rating}-star review on ${data.businessName}`,
+    { showManagePrefs: true },
+  );
+  return build(subject, html);
 }
 
 // ── 8. Staff Invitation ─────────────────────────────────────────────
@@ -290,18 +301,17 @@ export function staffInvitationEmail(data: {
   businessName: string;
   inviteToken: string;
   invitedBy: string;
-}): { subject: string; html: string } {
+}): EmailOutput {
   const acceptUrl = `${SITE_URL}/invite/${data.inviteToken}`;
 
-  return {
-    subject: `You're invited to join ${data.businessName} on Zawadi`,
-    html: emailLayout(
-      `<h2 style="margin:0 0 16px;font-size:22px;">You're invited!</h2>
-      <p>Hi ${data.staffName}, ${data.invitedBy} has invited you to join <strong>${data.businessName}</strong> on Zawadi as a team member.</p>
-      <p>Click below to accept the invitation and set up your account. This link expires in 7 days.</p>
-      ${emailButton("Accept Invitation", acceptUrl)}
-      <p style="font-size:13px;color:#6b7280;">If you didn't expect this invite, you can safely ignore this email.</p>`,
-      `Join ${data.businessName} on Zawadi`,
-    ),
-  };
+  const subject = `You're invited to join ${data.businessName} on Zawadi`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">You're invited!</h2>
+    <p>Hi ${data.staffName}, ${data.invitedBy} has invited you to join <strong>${data.businessName}</strong> on Zawadi as a team member.</p>
+    <p>Click below to accept the invitation and set up your account. This link expires in 7 days.</p>
+    ${emailButton("Accept Invitation", acceptUrl)}
+    <p style="font-size:13px;color:#6b7280;">If you didn't expect this invite, you can safely ignore this email.</p>`,
+    `Join ${data.businessName} on Zawadi`,
+  );
+  return build(subject, html);
 }

@@ -105,11 +105,7 @@ export async function submitReview(
         businessName: biz.name,
       });
 
-      await sendEmail({
-        to: ownerUser.email,
-        subject: mail.subject,
-        html: mail.html,
-      });
+      await sendEmail({ to: ownerUser.email, ...mail });
     } catch {
       // Swallow — email failure must not break the review
     }

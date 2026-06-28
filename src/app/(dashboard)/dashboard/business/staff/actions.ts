@@ -87,7 +87,7 @@ export async function inviteStaff(
     inviteToken: invite_token,
     invitedBy: inviterProfile?.full_name ?? "A business owner",
   });
-  sendEmail({ to: email, subject: mail.subject, html: mail.html }).catch(() => {});
+  sendEmail({ to: email, ...mail }).catch(() => {});
 
   redirect("/dashboard/business/staff");
 }

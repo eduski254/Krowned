@@ -12,12 +12,14 @@ function getResend(): Resend | null {
   return _resend;
 }
 
-const EMAIL_FROM = process.env.EMAIL_FROM ?? "Zawadi <noreply@zawadi.com>";
+const EMAIL_FROM = process.env.EMAIL_FROM ?? "Zawadi <noreply@kenyangossip.com>";
 
 export interface SendEmailOptions {
   to: string;
   subject: string;
   html: string;
+  /** Plaintext fallback */
+  text?: string;
   /** Optional .ics calendar attachment */
   attachments?: { filename: string; content: string }[];
 }
@@ -40,6 +42,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
       to: options.to,
       subject: options.subject,
       html: options.html,
+      text: options.text,
       attachments: options.attachments?.map((a) => ({
         filename: a.filename,
         content: Buffer.from(a.content, "utf-8"),

@@ -37,7 +37,9 @@ async function fetchBookingDetails(bookingId: string) {
   const clientId = data.client_id;
   if (!clientId) return null;
 
-  const { data: { user: clientUser } } = await admin.auth.admin.getUserById(clientId);
+  const {
+    data: { user: clientUser },
+  } = await admin.auth.admin.getUserById(clientId);
   if (!clientUser) return null;
 
   // Fetch owner profile + email
@@ -45,7 +47,12 @@ async function fetchBookingDetails(bookingId: string) {
   let ownerEmail: string | undefined;
   let ownerName: string | undefined;
   if (ownerId) {
-    const [{ data: { user: ownerUser } }, { data: ownerProfile }] = await Promise.all([
+    const [
+      {
+        data: { user: ownerUser },
+      },
+      { data: ownerProfile },
+    ] = await Promise.all([
       admin.auth.admin.getUserById(ownerId),
       admin.from("profiles").select("full_name").eq("id", ownerId).single(),
     ]);
@@ -63,7 +70,10 @@ async function fetchBookingDetails(bookingId: string) {
     staffName: (data.staff as any)?.display_name ?? "Your professional",
     businessName: (data.businesses as any)?.name ?? "Business",
     timezone: (data.businesses as any)?.timezone ?? "UTC",
-    address: [(data.businesses as any)?.address_line1, (data.businesses as any)?.city]
+    address: [
+      (data.businesses as any)?.address_line1,
+      (data.businesses as any)?.city,
+    ]
       .filter(Boolean)
       .join(", "),
     ownerId,
@@ -80,7 +90,9 @@ async function fetchBookingDetails(bookingId: string) {
  * Send booking confirmation email to client + new booking email to owner.
  * Includes .ics calendar attachment.
  */
-export async function sendBookingConfirmationEmails({ bookingId }: BookingEmailData) {
+export async function sendBookingConfirmationEmails({
+  bookingId,
+}: BookingEmailData) {
   const details = await fetchBookingDetails(bookingId);
   if (!details) return;
 
@@ -95,7 +107,7 @@ export async function sendBookingConfirmationEmails({ bookingId }: BookingEmailD
   });
 
   // 1. Email to client (essential — always sent)
-  const clientEmail = bookingConfirmationEmail({
+  const clientMail = bookingConfirmationEmail({
     clientName: details.clientName,
     bookingId,
     serviceName: details.serviceName,
@@ -110,35 +122,34 @@ export async function sendBookingConfirmationEmails({ bookingId }: BookingEmailD
 
   await sendEmail({
     to: details.clientEmail,
-    subject: clientEmail.subject,
-    html: clientEmail.html,
+    subject: clientMail.subject,
+    html: clientMail.html,
+    text: clientMail.text,
     attachments: [{ filename: "booking.ics", content: icsContent }],
   });
 
-  // 2. Email to business owner (optional — respect preferences)
-  if (details.ownerEmail && details.ownerId) {
-    const shouldSend = await shouldSendEmail(details.ownerId, "new_booking_owner");
-    if (shouldSend) {
-      const ownerMail = newBookingOwnerEmail({
-        ownerName: details.ownerName,
-        clientName: details.clientName,
-        bookingId,
-        serviceName: details.serviceName,
-        businessName: details.businessName,
-        staffName: details.staffName,
-        startsAt: details.startsAt,
-        durationMinutes: details.durationMinutes,
-        timezone: details.timezone,
-        amount: details.serviceAmount ?? undefined,
-        currency: details.currency ?? undefined,
-      });
+  // 2. Email to business owner (essential per spec)
+  if (details.ownerEmail) {
+    const ownerMail = newBookingOwnerEmail({
+      ownerName: details.ownerName,
+      clientName: details.clientName,
+      bookingId,
+      serviceName: details.serviceName,
+      businessName: details.businessName,
+      staffName: details.staffName,
+      startsAt: details.startsAt,
+      durationMinutes: details.durationMinutes,
+      timezone: details.timezone,
+      amount: details.serviceAmount ?? undefined,
+      currency: details.currency ?? undefined,
+    });
 
-      await sendEmail({
-        to: details.ownerEmail,
-        subject: ownerMail.subject,
-        html: ownerMail.html,
-      });
-    }
+    await sendEmail({
+      to: details.ownerEmail,
+      subject: ownerMail.subject,
+      html: ownerMail.html,
+      text: ownerMail.text,
+    });
   }
 }
 
@@ -167,27 +178,26 @@ export async function sendBookingCancellationEmails({
     to: details.clientEmail,
     subject: clientMail.subject,
     html: clientMail.html,
+    text: clientMail.text,
   });
 
-  // 2. Email to owner if cancelled by client (optional)
-  if (cancelledBy === "client" && details.ownerEmail && details.ownerId) {
-    const shouldSend = await shouldSendEmail(details.ownerId, "booking_cancelled_owner");
-    if (shouldSend) {
-      const ownerMail = bookingCancelledByClientOwnerEmail({
-        ownerName: details.ownerName,
-        clientName: details.clientName,
-        bookingId,
-        serviceName: details.serviceName,
-        startsAt: details.startsAt,
-        timezone: details.timezone,
-      });
+  // 2. Email to owner if cancelled by client (essential)
+  if (cancelledBy === "client" && details.ownerEmail) {
+    const ownerMail = bookingCancelledByClientOwnerEmail({
+      ownerName: details.ownerName,
+      clientName: details.clientName,
+      bookingId,
+      serviceName: details.serviceName,
+      startsAt: details.startsAt,
+      timezone: details.timezone,
+    });
 
-      await sendEmail({
-        to: details.ownerEmail,
-        subject: ownerMail.subject,
-        html: ownerMail.html,
-      });
-    }
+    await sendEmail({
+      to: details.ownerEmail,
+      subject: ownerMail.subject,
+      html: ownerMail.html,
+      text: ownerMail.text,
+    });
   }
 }
 
@@ -226,6 +236,7 @@ export async function sendBookingRescheduleEmail({
     to: details.clientEmail,
     subject: mail.subject,
     html: mail.html,
+    text: mail.text,
     attachments: [{ filename: "booking-updated.ics", content: icsContent }],
   });
 }

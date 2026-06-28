@@ -6,26 +6,26 @@ const EMAIL_PREF_CONFIG = [
   {
     eventType: "booking_confirmation",
     label: "Booking confirmations",
-    description: "When a booking is confirmed or cancelled",
-    essential: true,
-  },
-  {
-    eventType: "booking_reschedule",
-    label: "Booking reschedules",
-    description: "When a booking is moved to a new time",
+    description: "When your booking is confirmed, rescheduled, or cancelled",
     essential: true,
   },
   {
     eventType: "new_booking_owner",
     label: "New booking alerts",
     description: "When a client books an appointment (business owners)",
-    essential: false,
+    essential: true,
   },
   {
     eventType: "booking_cancelled_owner",
     label: "Cancellation alerts",
     description: "When a client cancels a booking (business owners)",
-    essential: false,
+    essential: true,
+  },
+  {
+    eventType: "staff_invitation",
+    label: "Staff invitations",
+    description: "When you're invited to join a business as staff",
+    essential: true,
   },
   {
     eventType: "new_review_owner",
@@ -60,7 +60,9 @@ export default async function ClientSettingsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-foreground">Settings</h1>
+      <h1 className="mb-6 text-2xl font-bold font-heading text-foreground">
+        Settings
+      </h1>
 
       <div className="max-w-xl space-y-6">
         {/* Email preferences */}

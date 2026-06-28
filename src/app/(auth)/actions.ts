@@ -54,7 +54,7 @@ export async function signup(
 
   // Fire-and-forget welcome email
   const welcome = welcomeEmail(full_name);
-  sendEmail({ to: email, subject: welcome.subject, html: welcome.html }).catch(() => {});
+  sendEmail({ to: email, ...welcome }).catch(() => {});
 
   redirect("/dashboard");
 }

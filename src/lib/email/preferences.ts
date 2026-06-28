@@ -2,12 +2,16 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Essential email events — always sent, user cannot opt out.
- * These are transactional emails required for the service to function.
+ * Per spec: welcome, booking confirmation, reschedule, cancellation,
+ * new-booking-to-owner, cancelled-by-client-to-owner, staff invite.
  */
 const ESSENTIAL_EVENTS = new Set([
+  "welcome",
   "booking_confirmation",
   "booking_cancellation",
   "booking_reschedule",
+  "new_booking_owner",
+  "booking_cancelled_owner",
   "staff_invitation",
 ]);
 
@@ -32,4 +36,8 @@ export async function shouldSendEmail(
 
   // Default to true (opt-out model) — if no row exists, they get emails
   return data?.email ?? true;
+}
+
+export function isEssentialEvent(eventType: string): boolean {
+  return ESSENTIAL_EVENTS.has(eventType);
 }
