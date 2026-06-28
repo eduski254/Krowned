@@ -12,7 +12,9 @@
  * functions directly. Uses a real email address for delivery verification.
  */
 
-import "dotenv/config";
+import { config } from "dotenv";
+import { resolve } from "path";
+config({ path: resolve(__dirname, "../.env.local") });
 
 // Verify env
 if (!process.env.RESEND_API_KEY) {
