@@ -1,6 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "./resend";
-import { shouldSendEmail } from "./preferences";
 import { generateICSString } from "./ics";
 import {
   bookingConfirmationEmail,
@@ -16,16 +15,16 @@ interface BookingEmailData {
 
 /**
  * Fetch full booking details needed for email templates.
- * Returns null if booking not found.
+ * Resolves client, owner, and staff emails.
  */
 async function fetchBookingDetails(bookingId: string) {
   const admin = createAdminClient();
   const { data } = await admin
     .from("bookings")
     .select(
-      `id, client_id, starts_at, ends_at, status, service_amount, currency,
+      `id, client_id, staff_id, starts_at, ends_at, status, service_amount, currency,
        services(name, duration_minutes),
-       staff(display_name),
+       staff(display_name, user_id, invited_email),
        businesses(name, timezone, owner_id, address_line1, city),
        profiles!client_id(full_name)`,
     )
@@ -60,6 +59,21 @@ async function fetchBookingDetails(bookingId: string) {
     ownerName = ownerProfile?.full_name ?? "there";
   }
 
+  // Resolve staff member's email (if assigned and not the owner)
+  let staffEmail: string | undefined;
+  const staffData = data.staff as any;
+  if (staffData) {
+    if (staffData.user_id && staffData.user_id !== ownerId) {
+      const {
+        data: { user: staffUser },
+      } = await admin.auth.admin.getUserById(staffData.user_id);
+      staffEmail = staffUser?.email;
+    } else if (!staffData.user_id && staffData.invited_email) {
+      // Staff hasn't accepted invite yet — use invited_email
+      staffEmail = staffData.invited_email;
+    }
+  }
+
   return {
     booking: data,
     clientEmail: clientUser.email!,
@@ -67,7 +81,7 @@ async function fetchBookingDetails(bookingId: string) {
     clientId,
     serviceName: (data.services as any)?.name ?? "Service",
     durationMinutes: (data.services as any)?.duration_minutes ?? 60,
-    staffName: (data.staff as any)?.display_name ?? "Your professional",
+    staffName: staffData?.display_name ?? "Your professional",
     businessName: (data.businesses as any)?.name ?? "Business",
     timezone: (data.businesses as any)?.timezone ?? "UTC",
     address: [
@@ -79,6 +93,7 @@ async function fetchBookingDetails(bookingId: string) {
     ownerId,
     ownerEmail,
     ownerName: ownerName ?? "there",
+    staffEmail,
     serviceAmount: data.service_amount,
     currency: data.currency,
     startsAt: new Date(data.starts_at),
@@ -87,8 +102,8 @@ async function fetchBookingDetails(bookingId: string) {
 }
 
 /**
- * Send booking confirmation email to client + new booking email to owner.
- * Includes .ics calendar attachment.
+ * Send booking confirmation email to client + new booking email to owner + staff.
+ * Includes .ics calendar attachment for client.
  */
 export async function sendBookingConfirmationEmails({
   bookingId,
@@ -106,7 +121,7 @@ export async function sendBookingConfirmationEmails({
     description: `Booking ref: ZW-${bookingId.replace(/-/g, "").slice(0, 8).toUpperCase()}`,
   });
 
-  // 1. Email to client (essential — always sent)
+  // 1. Email to client (essential)
   const clientMail = bookingConfirmationEmail({
     clientName: details.clientName,
     bookingId,
@@ -128,22 +143,26 @@ export async function sendBookingConfirmationEmails({
     attachments: [{ filename: "booking.ics", content: icsContent }],
   });
 
-  // 2. Email to business owner (essential per spec)
+  // Shared owner/staff email content
+  const ownerMailData = {
+    clientName: details.clientName,
+    bookingId,
+    serviceName: details.serviceName,
+    businessName: details.businessName,
+    staffName: details.staffName,
+    startsAt: details.startsAt,
+    durationMinutes: details.durationMinutes,
+    timezone: details.timezone,
+    amount: details.serviceAmount ?? undefined,
+    currency: details.currency ?? undefined,
+  };
+
+  // 2. Email to business owner (essential)
   if (details.ownerEmail) {
     const ownerMail = newBookingOwnerEmail({
       ownerName: details.ownerName,
-      clientName: details.clientName,
-      bookingId,
-      serviceName: details.serviceName,
-      businessName: details.businessName,
-      staffName: details.staffName,
-      startsAt: details.startsAt,
-      durationMinutes: details.durationMinutes,
-      timezone: details.timezone,
-      amount: details.serviceAmount ?? undefined,
-      currency: details.currency ?? undefined,
+      ...ownerMailData,
     });
-
     await sendEmail({
       to: details.ownerEmail,
       subject: ownerMail.subject,
@@ -151,10 +170,24 @@ export async function sendBookingConfirmationEmails({
       text: ownerMail.text,
     });
   }
+
+  // 3. Email to assigned staff (if different from owner)
+  if (details.staffEmail) {
+    const staffMail = newBookingOwnerEmail({
+      ownerName: details.staffName,
+      ...ownerMailData,
+    });
+    await sendEmail({
+      to: details.staffEmail,
+      subject: staffMail.subject,
+      html: staffMail.html,
+      text: staffMail.text,
+    });
+  }
 }
 
 /**
- * Send booking cancellation email to client + notification to owner.
+ * Send booking cancellation email to client + notification to owner + staff.
  */
 export async function sendBookingCancellationEmails({
   bookingId,
@@ -181,22 +214,39 @@ export async function sendBookingCancellationEmails({
     text: clientMail.text,
   });
 
+  const cancelOwnerData = {
+    clientName: details.clientName,
+    bookingId,
+    serviceName: details.serviceName,
+    startsAt: details.startsAt,
+    timezone: details.timezone,
+  };
+
   // 2. Email to owner if cancelled by client (essential)
   if (cancelledBy === "client" && details.ownerEmail) {
     const ownerMail = bookingCancelledByClientOwnerEmail({
       ownerName: details.ownerName,
-      clientName: details.clientName,
-      bookingId,
-      serviceName: details.serviceName,
-      startsAt: details.startsAt,
-      timezone: details.timezone,
+      ...cancelOwnerData,
     });
-
     await sendEmail({
       to: details.ownerEmail,
       subject: ownerMail.subject,
       html: ownerMail.html,
       text: ownerMail.text,
+    });
+  }
+
+  // 3. Email to assigned staff if cancelled by client (so they know slot is free)
+  if (cancelledBy === "client" && details.staffEmail) {
+    const staffMail = bookingCancelledByClientOwnerEmail({
+      ownerName: details.staffName,
+      ...cancelOwnerData,
+    });
+    await sendEmail({
+      to: details.staffEmail,
+      subject: staffMail.subject,
+      html: staffMail.html,
+      text: staffMail.text,
     });
   }
 }

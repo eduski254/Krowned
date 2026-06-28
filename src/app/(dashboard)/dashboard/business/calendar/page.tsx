@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Calendar } from "lucide-react";
+import { OwnerCancelButton, RescheduleButton } from "./calendar-actions";
 
 export default async function BusinessCalendarPage() {
   const supabase = await createClient();
@@ -36,53 +37,73 @@ export default async function BusinessCalendarPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-foreground">
+      <h1 className="mb-6 text-2xl font-bold font-heading text-foreground">
         Calendar &amp; Bookings
       </h1>
 
       {bookings && bookings.length > 0 ? (
         <div className="space-y-3">
-          {bookings.map((b) => (
-            <div
-              key={b.id}
-              className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div>
-                <p className="font-medium text-foreground">
-                  {(b.services as unknown as { name: string } | null)?.name}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {(b.clients as unknown as { full_name: string } | null)?.full_name ?? "Client"}
-                  {" — "}
-                  {(b.staff as unknown as { display_name: string } | null)?.display_name ?? "Unassigned"}
-                </p>
+          {bookings.map((b) => {
+            const canManage = b.status === "confirmed";
+            return (
+              <div
+                key={b.id}
+                className="rounded-xl border border-border bg-card p-4"
+              >
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-medium text-foreground">
+                      {(b.services as unknown as { name: string } | null)
+                        ?.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {(
+                        b.clients as unknown as {
+                          full_name: string;
+                        } | null
+                      )?.full_name ?? "Client"}
+                      {" — "}
+                      {(
+                        b.staff as unknown as {
+                          display_name: string;
+                        } | null
+                      )?.display_name ?? "Unassigned"}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3 text-sm">
+                    <span className="text-foreground">
+                      {new Date(b.starts_at).toLocaleDateString("en-US", {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                      })}{" "}
+                      {new Date(b.starts_at).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        b.status === "confirmed"
+                          ? "bg-success/10 text-success"
+                          : b.status === "cancelled"
+                            ? "bg-destructive/10 text-destructive"
+                            : "bg-primary/10 text-primary"
+                      }`}
+                    >
+                      {b.status}
+                    </span>
+                    {canManage && (
+                      <>
+                        <RescheduleButton bookingId={b.id} />
+                        <OwnerCancelButton bookingId={b.id} />
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-3 text-sm">
-                <span className="text-foreground">
-                  {new Date(b.starts_at).toLocaleDateString("en-US", {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                  })}{" "}
-                  {new Date(b.starts_at).toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
-                </span>
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                    b.status === "confirmed"
-                      ? "bg-success/10 text-success"
-                      : b.status === "cancelled"
-                        ? "bg-destructive/10 text-destructive"
-                        : "bg-primary/10 text-primary"
-                  }`}
-                >
-                  {b.status}
-                </span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <EmptyState
