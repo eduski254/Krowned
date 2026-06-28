@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { resetPassword, type AuthState } from "../actions";
+import { Spinner } from "@/components/spinner";
 
 export default function ResetPasswordPage() {
   const [state, action, pending] = useActionState<AuthState, FormData>(
@@ -47,9 +48,9 @@ export default function ResetPasswordPage() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50"
         >
-          {pending ? "Updating..." : "Update password"}
+          {pending ? <><Spinner className="h-4 w-4" /> Updating...</> : "Update password"}
         </button>
       </form>
     </>

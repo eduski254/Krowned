@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { saveBusinessHours } from "./actions";
+import { Spinner } from "@/components/spinner";
 
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -124,9 +125,9 @@ export function HoursEditor({
         type="button"
         onClick={handleSave}
         disabled={isPending}
-        className="rounded-lg bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className="flex items-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
       >
-        {isPending ? "Saving..." : "Save Hours"}
+        {isPending ? <><Spinner className="h-4 w-4" /> Saving...</> : "Save Hours"}
       </button>
     </div>
   );

@@ -4,6 +4,7 @@ import { Suspense, useActionState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { login, loginWithGoogle, type AuthState } from "../actions";
+import { Spinner } from "@/components/spinner";
 
 function MessageBanner() {
   const searchParams = useSearchParams();
@@ -96,9 +97,9 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50"
         >
-          {pending ? "Logging in..." : "Log in"}
+          {pending ? <><Spinner className="h-4 w-4" /> Logging in...</> : "Log in"}
         </button>
       </form>
 

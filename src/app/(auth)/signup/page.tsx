@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { signup, loginWithGoogle, type AuthState } from "../actions";
+import { Spinner } from "@/components/spinner";
 
 export default function SignupPage() {
   const [state, action, pending] = useActionState<AuthState, FormData>(
@@ -120,10 +121,10 @@ export default function SignupPage() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50"
         >
           {pending
-            ? "Creating account…"
+            ? <><Spinner className="h-4 w-4" /> Creating account...</>
             : accountType === "professional"
               ? "Create professional account"
               : "Create account"}

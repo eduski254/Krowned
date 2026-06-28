@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createService, updateService, type ServiceFormState } from "./actions";
+import { Spinner } from "@/components/spinner";
 
 type ServiceData = {
   id?: string;
@@ -166,9 +167,9 @@ export function ServiceForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
       >
-        {pending ? "Saving..." : isEdit ? "Save changes" : "Add Service"}
+        {pending ? <><Spinner className="h-4 w-4" /> Saving...</> : isEdit ? "Save changes" : "Add Service"}
       </button>
     </form>
   );

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { upsertBusiness, type BusinessProfileState } from "./actions";
+import { Spinner } from "@/components/spinner";
 
 type BusinessData = {
   id?: string;
@@ -182,9 +183,9 @@ export function BusinessProfileForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
       >
-        {pending ? "Saving..." : business?.id ? "Save changes" : "Create Business"}
+        {pending ? <><Spinner className="h-4 w-4" /> Saving...</> : business?.id ? "Save changes" : "Create Business"}
       </button>
     </form>
   );

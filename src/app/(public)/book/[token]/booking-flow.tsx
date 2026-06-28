@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useTransition, useMemo } from "react";
-import { Clock, Calendar, ChevronLeft, ChevronRight, Loader2, AlertCircle, CheckCircle2, User, CalendarPlus, MapPin, ArrowRight, Copy, Check } from "lucide-react";
+import { Clock, Calendar, ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, User, CalendarPlus, MapPin, ArrowRight, Copy, Check } from "lucide-react";
+import { Spinner } from "@/components/spinner";
 import { QRCodeSVG } from "qrcode.react";
 import { holdBookingSlot, confirmBooking } from "@/lib/booking/actions";
 
@@ -346,7 +347,7 @@ export function BookingFlow({
             <div className="mt-4">
               {loadingSlots ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                  <Spinner className="h-5 w-5 text-primary" />
                   <span className="ml-2 text-sm text-muted-foreground">Loading available times...</span>
                 </div>
               ) : slots.length === 0 ? (
@@ -478,7 +479,7 @@ export function BookingFlow({
           >
             {isPending ? (
               <span className="inline-flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Spinner className="h-4 w-4" />
                 Booking...
               </span>
             ) : paymentMethod === "prepay" ? (

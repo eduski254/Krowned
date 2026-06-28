@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CheckCircle2, Clock, User, Loader2, AlertCircle, UserCheck } from "lucide-react";
+import { CheckCircle2, Clock, User, AlertCircle, UserCheck } from "lucide-react";
+import { Spinner } from "@/components/spinner";
 import { checkInBooking } from "@/lib/booking/checkin-action";
 
 interface Props {
@@ -167,7 +168,7 @@ export function CheckInClient({
         >
           {isPending ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Spinner className="h-4 w-4" />
               Checking in...
             </>
           ) : (

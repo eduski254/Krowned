@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { upsertReviewResponse } from "../actions";
+import { Spinner } from "@/components/spinner";
 
 export function ResponseForm({
   reviewId,
@@ -51,9 +52,9 @@ export function ResponseForm({
         <button
           type="submit"
           disabled={isPending || !body.trim()}
-          className="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
         >
-          {isPending ? "Saving..." : existingResponse ? "Update Response" : "Post Response"}
+          {isPending ? <><Spinner className="h-4 w-4" /> Saving...</> : existingResponse ? "Update Response" : "Post Response"}
         </button>
         {message && (
           <p
