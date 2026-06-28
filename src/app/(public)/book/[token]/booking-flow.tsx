@@ -5,6 +5,7 @@ import { Clock, Calendar, ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, 
 import { Spinner } from "@/components/spinner";
 import { QRCodeSVG } from "qrcode.react";
 import { holdBookingSlot, confirmBooking } from "@/lib/booking/actions";
+import { createBookingCheckout } from "@/lib/stripe/booking-payment";
 
 interface Service {
   id: string;
@@ -166,23 +167,19 @@ export function BookingFlow({
 
       if (result.success && result.bookingId) {
         if (paymentMethod === "pay_at_store") {
-          // REVIEW: For pay-at-store, confirm immediately (no Stripe step)
           const confirmResult = await confirmBooking(result.bookingId);
           setBookingResult(confirmResult.success
             ? { success: true, bookingId: result.bookingId }
             : { success: false, error: confirmResult.error });
         } else {
-          // REVIEW: For prepay, this is where Stripe checkout would happen.
-          // The booking is now held for 10 minutes. The payment step would:
-          //   1. Create a Stripe PaymentIntent
-          //   2. Show the Stripe Elements payment form
-          //   3. On successful payment, call confirmBooking()
-          //   4. On failure/abandonment, the hold expires automatically
-          // For now, confirm immediately as a stub.
-          const confirmResult = await confirmBooking(result.bookingId);
-          setBookingResult(confirmResult.success
-            ? { success: true, bookingId: result.bookingId }
-            : { success: false, error: confirmResult.error });
+          // Prepay: redirect to Stripe Checkout
+          const checkout = await createBookingCheckout(result.bookingId);
+          if (checkout.url) {
+            window.location.href = checkout.url;
+            return; // Navigating away
+          }
+          // Fallback: if Stripe checkout fails, show error
+          setBookingResult({ success: false, error: checkout.error ?? "Payment setup failed." });
         }
       } else {
         setBookingResult(result);
