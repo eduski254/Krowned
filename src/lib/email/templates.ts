@@ -315,3 +315,98 @@ export function staffInvitationEmail(data: {
   );
   return build(subject, html);
 }
+
+// ── 9. Support Ticket — New Ticket (to admins) ────────────────────
+
+export function newSupportTicketEmail(data: {
+  adminName: string;
+  userName: string;
+  subject: string;
+  category: string;
+  ticketId: string;
+  message: string;
+}): EmailOutput {
+  const subject = `New support ticket: ${data.subject}`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">New support ticket</h2>
+    <p>Hi ${data.adminName}, a new support ticket has been submitted.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">
+      <tr>
+        ${emailDetailRow("From", data.userName)}
+      </tr>
+      <tr>
+        ${emailDetailRow("Category", data.category)}
+      </tr>
+      <tr>
+        ${emailDetailRow("Subject", data.subject)}
+      </tr>
+    </table>
+    <div style="margin:16px 0;padding:16px;background:#f9fafb;border-radius:8px;border:1px solid #e8e8ed;">
+      <p style="margin:0;color:#374151;white-space:pre-wrap;">${data.message.slice(0, 500)}</p>
+    </div>
+    ${emailButton("View Ticket", `${SITE_URL}/dashboard/support/${data.ticketId}`)}`,
+    `New ticket from ${data.userName}: ${data.subject}`,
+  );
+  return build(subject, html);
+}
+
+// ── 10. Support Ticket — Reply (to user or admin) ─────────────────
+
+export function supportTicketReplyEmail(data: {
+  recipientName: string;
+  senderName: string;
+  ticketSubject: string;
+  ticketId: string;
+  message: string;
+  isStaffReply: boolean;
+}): EmailOutput {
+  const subject = `Reply on: ${data.ticketSubject}`;
+  const label = data.isStaffReply ? "Support Team" : data.senderName;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">New reply on your ticket</h2>
+    <p>Hi ${data.recipientName}, ${label} replied to your support ticket.</p>
+    <p style="font-size:13px;color:#6b7280;margin:4px 0 12px;">Subject: <strong>${data.ticketSubject}</strong></p>
+    <div style="margin:16px 0;padding:16px;background:#f9fafb;border-radius:8px;border:1px solid #e8e8ed;">
+      <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#5604ad;">${label}</p>
+      <p style="margin:0;color:#374151;white-space:pre-wrap;">${data.message.slice(0, 500)}</p>
+    </div>
+    ${emailButton("View Conversation", `${SITE_URL}/dashboard/support/${data.ticketId}`)}`,
+    `${label} replied to "${data.ticketSubject}"`,
+  );
+  return build(subject, html);
+}
+
+// ── 11. Support Ticket — Status Update (to user) ──────────────────
+
+export function supportTicketStatusEmail(data: {
+  userName: string;
+  ticketSubject: string;
+  ticketId: string;
+  newStatus: string;
+}): EmailOutput {
+  const statusLabels: Record<string, string> = {
+    in_progress: "In Progress",
+    resolved: "Resolved",
+    closed: "Closed",
+    open: "Reopened",
+  };
+  const label = statusLabels[data.newStatus] ?? data.newStatus;
+
+  const subject = `Ticket ${label.toLowerCase()}: ${data.ticketSubject}`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">Ticket ${label}</h2>
+    <p>Hi ${data.userName}, your support ticket has been updated.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">
+      <tr>
+        ${emailDetailRow("Subject", data.ticketSubject)}
+      </tr>
+      <tr>
+        ${emailDetailRow("New Status", label)}
+      </tr>
+    </table>
+    ${data.newStatus === "resolved" ? `<p>If this doesn't resolve your issue, you can reply to reopen the ticket.</p>` : ""}
+    ${emailButton("View Ticket", `${SITE_URL}/dashboard/support/${data.ticketId}`)}`,
+    `Your ticket "${data.ticketSubject}" is now ${label.toLowerCase()}`,
+  );
+  return build(subject, html);
+}

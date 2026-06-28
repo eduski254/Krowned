@@ -3,6 +3,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { z } from "zod";
+import { sendEmail } from "@/lib/email/resend";
+import {
+  newSupportTicketEmail,
+  supportTicketReplyEmail,
+  supportTicketStatusEmail,
+} from "@/lib/email/templates";
 
 // ── Schemas ────────────────────────────────────────────────────────
 
@@ -81,6 +87,26 @@ export async function createTicket(input: z.infer<typeof createTicketSchema>) {
         data: { ticket_id: ticket.id } as any,
       })),
     );
+
+    // Email admins (fire-and-forget)
+    for (const a of admins) {
+      const { data: { user: adminUser } } = await admin.auth.admin.getUserById(a.id);
+      if (!adminUser?.email) continue;
+      const { data: ap } = await admin
+        .from("profiles")
+        .select("full_name")
+        .eq("id", a.id)
+        .single();
+      const email = newSupportTicketEmail({
+        adminName: ap?.full_name ?? "Admin",
+        userName: profile?.full_name ?? "A user",
+        subject: parsed.data.subject,
+        category: parsed.data.category,
+        ticketId: ticket.id,
+        message: parsed.data.message,
+      });
+      sendEmail({ to: adminUser.email, ...email });
+    }
   }
 
   return { ticketId: ticket.id };
@@ -132,6 +158,13 @@ export async function replyToTicket(input: z.infer<typeof replySchema>) {
     await admin.from("support_tickets").update({ status: "in_progress" }).eq("id", ticket.id);
   }
 
+  // Fetch ticket subject for email
+  const { data: ticketDetail } = await admin
+    .from("support_tickets")
+    .select("subject")
+    .eq("id", ticket.id)
+    .single();
+
   // Notify the other party
   const notifyUserId = isAdmin ? ticket.user_id : null;
   if (notifyUserId) {
@@ -142,6 +175,25 @@ export async function replyToTicket(input: z.infer<typeof replySchema>) {
       body: `${profile?.full_name ?? "Support"} replied to "${ticket.id}"`,
       data: { ticket_id: ticket.id } as any,
     });
+
+    // Email the ticket owner
+    const { data: { user: ownerUser } } = await admin.auth.admin.getUserById(notifyUserId);
+    if (ownerUser?.email) {
+      const { data: ownerProfile } = await admin
+        .from("profiles")
+        .select("full_name")
+        .eq("id", notifyUserId)
+        .single();
+      const email = supportTicketReplyEmail({
+        recipientName: ownerProfile?.full_name ?? "there",
+        senderName: profile?.full_name ?? "Support Team",
+        ticketSubject: ticketDetail?.subject ?? "Support ticket",
+        ticketId: ticket.id,
+        message: parsed.data.message,
+        isStaffReply: true,
+      });
+      sendEmail({ to: ownerUser.email, ...email });
+    }
   } else if (!isAdmin) {
     // User replied — notify admins
     const { data: admins } = await admin
@@ -159,6 +211,26 @@ export async function replyToTicket(input: z.infer<typeof replySchema>) {
           data: { ticket_id: ticket.id } as any,
         })),
       );
+
+      // Email admins
+      for (const a of admins) {
+        const { data: { user: adminUser } } = await admin.auth.admin.getUserById(a.id);
+        if (!adminUser?.email) continue;
+        const { data: ap } = await admin
+          .from("profiles")
+          .select("full_name")
+          .eq("id", a.id)
+          .single();
+        const email = supportTicketReplyEmail({
+          recipientName: ap?.full_name ?? "Admin",
+          senderName: profile?.full_name ?? "A user",
+          ticketSubject: ticketDetail?.subject ?? "Support ticket",
+          ticketId: ticket.id,
+          message: parsed.data.message,
+          isStaffReply: false,
+        });
+        sendEmail({ to: adminUser.email, ...email });
+      }
     }
   }
 
@@ -266,6 +338,23 @@ export async function updateTicket(input: z.infer<typeof updateTicketSchema>) {
         body: `Your ticket "${ticket.subject}" has been marked as ${parsed.data.status}.`,
         data: { ticket_id: parsed.data.ticketId } as any,
       });
+
+      // Email the ticket owner
+      const { data: { user: ticketOwner } } = await admin.auth.admin.getUserById(ticket.user_id);
+      if (ticketOwner?.email) {
+        const { data: ownerProfile } = await admin
+          .from("profiles")
+          .select("full_name")
+          .eq("id", ticket.user_id)
+          .single();
+        const email = supportTicketStatusEmail({
+          userName: ownerProfile?.full_name ?? "there",
+          ticketSubject: ticket.subject,
+          ticketId: parsed.data.ticketId,
+          newStatus: parsed.data.status,
+        });
+        sendEmail({ to: ticketOwner.email, ...email });
+      }
     }
   }
 
