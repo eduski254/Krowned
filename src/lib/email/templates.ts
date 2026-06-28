@@ -1,6 +1,6 @@
 import { emailLayout, emailButton, emailDetailRow, htmlToPlaintext } from "./layout";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadi.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadibooking.vercel.app";
 
 interface EmailOutput {
   subject: string;
