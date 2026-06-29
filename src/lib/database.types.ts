@@ -1,3 +1,4 @@
+WARN: config section [inbucket] is deprecated. Please use [local_smtp] instead.
 export type Json =
   | string
   | number
@@ -45,8 +46,9 @@ export type Database = {
           cancellation_reason: string | null
           cancelled_by: string | null
           checked_in_at: string | null
-          client_id: string
+          client_id: string | null
           client_note: string | null
+          contact_id: string | null
           created_at: string
           currency: string
           ends_at: string
@@ -69,8 +71,9 @@ export type Database = {
           cancellation_reason?: string | null
           cancelled_by?: string | null
           checked_in_at?: string | null
-          client_id: string
+          client_id?: string | null
           client_note?: string | null
+          contact_id?: string | null
           created_at?: string
           currency: string
           ends_at: string
@@ -93,8 +96,9 @@ export type Database = {
           cancellation_reason?: string | null
           cancelled_by?: string | null
           checked_in_at?: string | null
-          client_id?: string
+          client_id?: string | null
           client_note?: string | null
+          contact_id?: string | null
           created_at?: string
           currency?: string
           ends_at?: string
@@ -135,6 +139,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "bookings_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "business_contacts"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bookings_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
@@ -146,6 +157,57 @@ export type Database = {
             columns: ["staff_id"]
             isOneToOne: false
             referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_contacts: {
+        Row: {
+          business_id: string
+          created_at: string
+          email: string | null
+          id: string
+          linked_profile_id: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          linked_profile_id?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          linked_profile_id?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_contacts_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_contacts_linked_profile_id_fkey"
+            columns: ["linked_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1396,25 +1458,46 @@ export type Database = {
     Functions: {
       is_staff_of: { Args: { business_id: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
-      reserve_booking_slot: {
-        Args: {
-          p_business_id: string
-          p_client_id: string
-          p_client_note?: string
-          p_currency: string
-          p_ends_at: string
-          p_hold_minutes?: number
-          p_payment_method: Database["public"]["Enums"]["payment_method"]
-          p_platform_fee: number
-          p_service_amount: number
-          p_service_id: string
-          p_source: Database["public"]["Enums"]["booking_source"]
-          p_staff_chosen: boolean
-          p_staff_id: string
-          p_starts_at: string
-        }
-        Returns: string
-      }
+      reserve_booking_slot:
+        | {
+            Args: {
+              p_business_id: string
+              p_client_id: string
+              p_client_note?: string
+              p_currency: string
+              p_ends_at: string
+              p_hold_minutes?: number
+              p_payment_method: Database["public"]["Enums"]["payment_method"]
+              p_platform_fee: number
+              p_service_amount: number
+              p_service_id: string
+              p_source: Database["public"]["Enums"]["booking_source"]
+              p_staff_chosen: boolean
+              p_staff_id: string
+              p_starts_at: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_business_id: string
+              p_client_id: string
+              p_client_note?: string
+              p_contact_id?: string
+              p_currency: string
+              p_ends_at: string
+              p_hold_minutes?: number
+              p_payment_method: Database["public"]["Enums"]["payment_method"]
+              p_platform_fee: number
+              p_service_amount: number
+              p_service_id: string
+              p_source: Database["public"]["Enums"]["booking_source"]
+              p_staff_chosen: boolean
+              p_staff_id: string
+              p_starts_at: string
+            }
+            Returns: string
+          }
     }
     Enums: {
       booking_source: "marketplace" | "direct_link" | "manual"

@@ -252,6 +252,118 @@ export async function sendBookingCancellationEmails({
 }
 
 /**
+ * Send booking confirmation email to a manually-added contact (no auth account).
+ * Only sends if the contact has an email address.
+ */
+export async function sendManualBookingConfirmationEmail({
+  bookingId,
+  contactId,
+}: {
+  bookingId: string;
+  contactId: string;
+}) {
+  const admin = createAdminClient();
+
+  // Fetch the contact's email
+  const { data: contact } = await admin
+    .from("business_contacts")
+    .select("name, email")
+    .eq("id", contactId)
+    .single();
+
+  if (!contact?.email) return; // No email — nothing to send
+
+  // Fetch booking details
+  const { data } = await admin
+    .from("bookings")
+    .select(
+      `id, starts_at, ends_at, service_amount, currency,
+       services(name, duration_minutes),
+       staff(display_name),
+       businesses(name, timezone, address, city, owner_id)`,
+    )
+    .eq("id", bookingId)
+    .single();
+
+  if (!data) return;
+
+  const serviceName = (data.services as any)?.name ?? "Service";
+  const durationMinutes = (data.services as any)?.duration_minutes ?? 60;
+  const staffName = (data.staff as any)?.display_name ?? "Your professional";
+  const businessName = (data.businesses as any)?.name ?? "Business";
+  const timezone = (data.businesses as any)?.timezone ?? "UTC";
+  const address = [(data.businesses as any)?.address, (data.businesses as any)?.city]
+    .filter(Boolean)
+    .join(", ");
+
+  // Generate .ics
+  const icsContent = generateICSString({
+    title: `${serviceName} at ${businessName}`,
+    start: new Date(data.starts_at),
+    end: new Date(data.ends_at),
+    timezone,
+    location: address || undefined,
+    description: `Booking ref: ZW-${bookingId.replace(/-/g, "").slice(0, 8).toUpperCase()}`,
+  });
+
+  // Build and send the confirmation email
+  const mail = bookingConfirmationEmail({
+    clientName: contact.name,
+    bookingId,
+    serviceName,
+    businessName,
+    staffName,
+    startsAt: new Date(data.starts_at),
+    durationMinutes,
+    timezone,
+    amount: data.service_amount ?? undefined,
+    currency: data.currency ?? undefined,
+  });
+
+  await sendEmail({
+    to: contact.email,
+    subject: mail.subject,
+    html: mail.html,
+    text: mail.text,
+    attachments: [{ filename: "booking.ics", content: icsContent }],
+  });
+
+  // Also email the owner
+  const ownerId = (data.businesses as any)?.owner_id;
+  if (ownerId) {
+    const { data: { user: ownerUser } } = await admin.auth.admin.getUserById(ownerId);
+    if (ownerUser?.email) {
+      const { data: ownerProfile } = await admin
+        .from("profiles")
+        .select("full_name")
+        .eq("id", ownerId)
+        .single();
+
+      const ownerMail = newBookingOwnerEmail({
+        ownerName: ownerProfile?.full_name ?? "there",
+        clientName: contact.name,
+        bookingId,
+        serviceName,
+        businessName,
+        staffName,
+        startsAt: new Date(data.starts_at),
+        durationMinutes,
+        timezone,
+        amount: data.service_amount ?? undefined,
+        currency: data.currency ?? undefined,
+      });
+
+      await sendEmail({
+        to: ownerUser.email,
+        subject: ownerMail.subject,
+        html: ownerMail.html,
+        text: ownerMail.text,
+      });
+    }
+  }
+}
+
+/**
  * Send booking reschedule email to client with updated .ics.
  */
 export async function sendBookingRescheduleEmail({
