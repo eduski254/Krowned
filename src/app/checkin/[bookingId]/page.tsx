@@ -18,17 +18,22 @@ export default async function CheckInPage({
   // Load booking
   const { data: booking } = await supabase
     .from("bookings")
-    .select("id, status, starts_at, ends_at, checked_in_at, staff_id, business_id, service_id, client_id, service_amount, currency")
+    .select("id, status, starts_at, ends_at, checked_in_at, staff_id, business_id, service_id, client_id, contact_id, service_amount, currency")
     .eq("id", bookingId)
     .single();
 
   if (!booking) notFound();
 
   // Load related data in parallel
-  const [bizRes, svcRes, clientRes, staffRes] = await Promise.all([
+  const [bizRes, svcRes, clientRes, contactRes, staffRes] = await Promise.all([
     supabase.from("businesses").select("id, name, owner_id").eq("id", booking.business_id).single(),
     supabase.from("services").select("name, duration_minutes").eq("id", booking.service_id).single(),
-    supabase.from("profiles").select("full_name").eq("id", booking.client_id).single(),
+    booking.client_id
+      ? supabase.from("profiles").select("full_name").eq("id", booking.client_id).single()
+      : Promise.resolve({ data: null }),
+    booking.contact_id
+      ? supabase.from("business_contacts").select("name").eq("id", booking.contact_id).single()
+      : Promise.resolve({ data: null }),
     booking.staff_id
       ? supabase.from("staff").select("id, display_name, user_id").eq("id", booking.staff_id).single()
       : Promise.resolve({ data: null }),
@@ -37,6 +42,7 @@ export default async function CheckInPage({
   const biz = bizRes.data;
   const svc = svcRes.data;
   const client = clientRes.data;
+  const contact = contactRes.data;
   const staffRow = staffRes.data;
 
   // Authorization: must be business owner or assigned staff
@@ -67,7 +73,7 @@ export default async function CheckInPage({
       <CheckInClient
         bookingId={booking.id}
         status={booking.status}
-        clientName={client?.full_name ?? "Unknown client"}
+        clientName={client?.full_name ?? contact?.name ?? "Unknown client"}
         serviceName={svc?.name ?? "Unknown service"}
         durationMinutes={svc?.duration_minutes ?? 0}
         staffName={staffRow?.display_name ?? "Unassigned"}
