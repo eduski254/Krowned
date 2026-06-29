@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Calendar } from "lucide-react";
 import { OwnerCancelButton, RescheduleButton } from "./calendar-actions";
+import { CalendarHeader } from "./calendar-header";
 
 export default async function BusinessCalendarPage() {
   const supabase = await createClient();
@@ -27,7 +28,11 @@ export default async function BusinessCalendarPage() {
   const { data: bookings } = await supabase
     .from("bookings")
     .select(
-      "id, starts_at, ends_at, status, services(name), staff(display_name), clients:client_id(full_name)",
+      `id, starts_at, ends_at, status, source,
+       services(name),
+       staff(display_name),
+       clients:client_id(full_name),
+       contact:contact_id(name)`,
     )
     .eq("business_id", business.id)
     .gte("starts_at", now.toISOString())
@@ -35,16 +40,38 @@ export default async function BusinessCalendarPage() {
     .order("starts_at", { ascending: true })
     .limit(100);
 
+  // Fetch services and staff for the "New Booking" modal
+  const [{ data: services }, { data: staffMembers }] = await Promise.all([
+    supabase
+      .from("services")
+      .select("id, name, duration_minutes, price_amount, currency")
+      .eq("business_id", business.id)
+      .eq("is_active", true)
+      .order("name"),
+    supabase
+      .from("staff")
+      .select("id, display_name")
+      .eq("business_id", business.id)
+      .eq("status", "active")
+      .order("display_name"),
+  ]);
+
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold font-heading text-foreground">
-        Calendar &amp; Bookings
-      </h1>
+      <CalendarHeader
+        businessId={business.id}
+        services={services ?? []}
+        staffMembers={staffMembers ?? []}
+      />
 
       {bookings && bookings.length > 0 ? (
         <div className="space-y-3">
           {bookings.map((b) => {
             const canManage = b.status === "confirmed";
+            const clientName =
+              (b.clients as unknown as { full_name: string } | null)?.full_name ??
+              (b.contact as unknown as { name: string } | null)?.name ??
+              "Client";
             return (
               <div
                 key={b.id}
@@ -57,11 +84,7 @@ export default async function BusinessCalendarPage() {
                         ?.name}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {(
-                        b.clients as unknown as {
-                          full_name: string;
-                        } | null
-                      )?.full_name ?? "Client"}
+                      {clientName}
                       {" — "}
                       {(
                         b.staff as unknown as {
@@ -93,6 +116,11 @@ export default async function BusinessCalendarPage() {
                     >
                       {b.status}
                     </span>
+                    {b.source === "manual" && (
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                        manual
+                      </span>
+                    )}
                     {canManage && (
                       <>
                         <RescheduleButton bookingId={b.id} />
