@@ -2,6 +2,15 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 
+type NotificationItem = {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  href: string;
+};
+
 export async function GET() {
   const supabase = await createClient();
   const {
@@ -12,102 +21,120 @@ export async function GET() {
     return NextResponse.json({ items: [], unreadCount: 0 });
   }
 
-  // Get the user's business (if any)
-  const { data: business } = await supabase
-    .from("businesses")
-    .select("id")
-    .eq("owner_id", user.id)
-    .maybeSingle();
+  const admin = createAdminClient();
 
-  if (!business) {
-    return NextResponse.json({ items: [], unreadCount: 0 });
-  }
+  // Fetch real notifications from the DB (last 30 days, max 30)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  // Derive notifications from recent bookings and reviews (last 7 days)
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-  const [bookingsRes, reviewsRes, lastReadRes] = await Promise.all([
-    supabase
-      .from("bookings")
-      .select(
-        "id, status, created_at, services(name), clients:client_id(full_name)",
-      )
-      .eq("business_id", business.id)
-      .gte("created_at", sevenDaysAgo.toISOString())
+  const [notifRes, lastReadRes, businessRes] = await Promise.all([
+    admin
+      .from("notifications")
+      .select("id, type, payload, read_at, created_at")
+      .eq("user_id", user.id)
+      .neq("type", "last_bell_read")
+      .gte("created_at", thirtyDaysAgo.toISOString())
       .order("created_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("reviews")
-      .select("id, rating, created_at, clients:client_id(full_name)")
-      .eq("business_id", business.id)
-      .gte("created_at", sevenDaysAgo.toISOString())
-      .order("created_at", { ascending: false })
-      .limit(10),
-    supabase
+      .limit(30),
+    admin
       .from("notifications")
       .select("read_at")
       .eq("user_id", user.id)
       .eq("type", "last_bell_read")
       .maybeSingle(),
+    supabase
+      .from("businesses")
+      .select("id")
+      .eq("owner_id", user.id)
+      .maybeSingle(),
   ]);
-
-  type NotificationItem = {
-    id: string;
-    type: "booking" | "review";
-    title: string;
-    description: string;
-    createdAt: string;
-    href: string;
-  };
 
   const items: NotificationItem[] = [];
 
-  for (const b of bookingsRes.data ?? []) {
-    const clientName =
-      (b.clients as unknown as { full_name: string } | null)?.full_name ??
-      "A client";
-    const serviceName =
-      (b.services as unknown as { name: string } | null)?.name ?? "a service";
+  // Add real DB notifications
+  for (const n of notifRes.data ?? []) {
+    const payload = (n.payload ?? {}) as Record<string, unknown>;
+    items.push({
+      id: n.id,
+      type: n.type,
+      title: (payload.title as string) || n.type,
+      description: (payload.body as string) || "",
+      createdAt: n.created_at,
+      href: (payload.href as string) || "/dashboard",
+    });
+  }
 
-    if (b.status === "confirmed" || b.status === "pending") {
+  // Also derive from recent bookings and reviews (for business owners)
+  if (businessRes.data) {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const [bookingsRes, reviewsRes] = await Promise.all([
+      supabase
+        .from("bookings")
+        .select(
+          "id, status, created_at, services(name), clients:client_id(full_name)",
+        )
+        .eq("business_id", businessRes.data.id)
+        .gte("created_at", sevenDaysAgo.toISOString())
+        .order("created_at", { ascending: false })
+        .limit(15),
+      supabase
+        .from("reviews")
+        .select("id, rating, created_at, clients:client_id(full_name)")
+        .eq("business_id", businessRes.data.id)
+        .gte("created_at", sevenDaysAgo.toISOString())
+        .order("created_at", { ascending: false })
+        .limit(5),
+    ]);
+
+    for (const b of bookingsRes.data ?? []) {
+      const clientName =
+        (b.clients as unknown as { full_name: string } | null)?.full_name ??
+        "A client";
+      const serviceName =
+        (b.services as unknown as { name: string } | null)?.name ?? "a service";
+
+      if (b.status === "confirmed" || b.status === "pending") {
+        items.push({
+          id: `booking-${b.id}`,
+          type: "booking",
+          title: b.status === "confirmed" ? "New booking" : "Pending booking",
+          description: `${clientName} booked ${serviceName}`,
+          createdAt: b.created_at,
+          href: "/dashboard/business/calendar",
+        });
+      } else if (b.status === "cancelled") {
+        items.push({
+          id: `booking-${b.id}`,
+          type: "booking",
+          title: "Booking cancelled",
+          description: `${clientName} cancelled ${serviceName}`,
+          createdAt: b.created_at,
+          href: "/dashboard/business/calendar",
+        });
+      }
+    }
+
+    for (const r of reviewsRes.data ?? []) {
+      const clientName =
+        (r.clients as unknown as { full_name: string } | null)?.full_name ??
+        "A client";
       items.push({
-        id: `booking-${b.id}`,
-        type: "booking",
-        title: b.status === "confirmed" ? "New booking" : "Pending booking",
-        description: `${clientName} booked ${serviceName}`,
-        createdAt: b.created_at,
-        href: "/dashboard/business/calendar",
-      });
-    } else if (b.status === "cancelled") {
-      items.push({
-        id: `booking-${b.id}`,
-        type: "booking",
-        title: "Booking cancelled",
-        description: `${clientName} cancelled ${serviceName}`,
-        createdAt: b.created_at,
-        href: "/dashboard/business/calendar",
+        id: `review-${r.id}`,
+        type: "review",
+        title: "New review",
+        description: `${clientName} left a ${r.rating}-star review`,
+        createdAt: r.created_at,
+        href: "/dashboard/business/reviews",
       });
     }
   }
 
-  for (const r of reviewsRes.data ?? []) {
-    const clientName =
-      (r.clients as unknown as { full_name: string } | null)?.full_name ??
-      "A client";
-    items.push({
-      id: `review-${r.id}`,
-      type: "review",
-      title: "New review",
-      description: `${clientName} left a ${r.rating}-star review`,
-      createdAt: r.created_at,
-      href: "/dashboard/business/reviews",
-    });
-  }
-
   // Sort by most recent first
   items.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    (a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   const lastReadAt = lastReadRes.data?.read_at
@@ -117,7 +144,7 @@ export async function GET() {
     (i) => new Date(i.createdAt).getTime() > lastReadAt,
   ).length;
 
-  return NextResponse.json({ items: items.slice(0, 15), unreadCount });
+  return NextResponse.json({ items: items.slice(0, 20), unreadCount });
 }
 
 export async function POST() {
@@ -130,8 +157,6 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Use admin client to upsert the "last_bell_read" marker
-  // (RLS on notifications only allows SELECT/UPDATE for user, not INSERT)
   const admin = createAdminClient();
 
   const { data: existing } = await admin

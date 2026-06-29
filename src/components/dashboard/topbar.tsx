@@ -6,10 +6,12 @@ import { logoutAction } from "@/app/(auth)/actions";
 import type { NavItem } from "./nav-config";
 
 export function Topbar({
+  userId,
   userName,
   avatarUrl,
   navItems,
 }: {
+  userId: string;
   userName: string;
   avatarUrl?: string | null;
   navItems: NavItem[];
@@ -18,10 +20,10 @@ export function Topbar({
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-border bg-card px-4 sm:px-6">
-      <MobileNav items={navItems} />
+      <MobileNav items={navItems} userId={userId} />
       <div className="hidden lg:block" />
       <div className="flex items-center gap-3">
-        <NotificationBell />
+        <NotificationBell userId={userId} />
         <ThemeToggle />
         <Link
           href="/dashboard/profile"

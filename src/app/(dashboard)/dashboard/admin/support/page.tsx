@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { MessageSquare, Clock, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 import { AdminTicketFilters } from "./admin-ticket-filters";
+import { MarkNotificationsRead } from "@/components/mark-notifications-read";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
   open: { label: "Open", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", icon: Clock },
@@ -72,6 +73,7 @@ export default async function AdminSupportPage({
 
   return (
     <div>
+      <MarkNotificationsRead types={["support_ticket", "support_reply", "support_update"]} />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground font-heading">Support Tickets</h1>
         <span className="text-sm text-muted-foreground">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
@@ -8,9 +8,39 @@ import { Menu, X } from "lucide-react";
 import type { NavItem } from "./nav-config";
 import { iconMap } from "./icon-map";
 
-export function MobileNav({ items }: { items: NavItem[] }) {
+const BADGE_ITEMS = ["/dashboard/support", "/dashboard/admin/support"];
+
+export function MobileNav({
+  items,
+  userId,
+}: {
+  items: NavItem[];
+  userId?: string;
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const [badges, setBadges] = useState<Record<string, number>>({});
+
+  const fetchCounts = useCallback(async () => {
+    try {
+      const res = await fetch("/api/notifications/counts");
+      if (!res.ok) return;
+      const data = await res.json();
+      const newBadges: Record<string, number> = {};
+      if (data.support > 0) {
+        for (const href of BADGE_ITEMS) {
+          newBadges[href] = data.support;
+        }
+      }
+      setBadges(newBadges);
+    } catch {
+      // silently fail
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCounts();
+  }, [fetchCounts]);
 
   return (
     <>
@@ -55,6 +85,7 @@ export function MobileNav({ items }: { items: NavItem[] }) {
                       item.href !== "/dashboard/admin" &&
                       pathname.startsWith(item.href));
                   const Icon = iconMap[item.icon];
+                  const badgeCount = badges[item.href] ?? 0;
                   return (
                     <li key={item.href}>
                       <Link
@@ -68,7 +99,12 @@ export function MobileNav({ items }: { items: NavItem[] }) {
                         )}
                       >
                         {Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
-                        {item.label}
+                        <span className="flex-1">{item.label}</span>
+                        {badgeCount > 0 && (
+                          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold text-destructive-foreground">
+                            {badgeCount > 9 ? "9+" : badgeCount}
+                          </span>
+                        )}
                       </Link>
                     </li>
                   );

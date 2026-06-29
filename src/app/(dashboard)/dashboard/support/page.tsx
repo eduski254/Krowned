@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus, MessageSquare, Clock, CheckCircle2, AlertCircle } from "lucide-react";
 import { getUserTickets } from "@/lib/support/actions";
+import { MarkNotificationsRead } from "@/components/mark-notifications-read";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
   open: { label: "Open", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", icon: Clock },
@@ -27,8 +28,12 @@ export default async function SupportPage() {
 
   const { tickets } = await getUserTickets();
 
+  // Mark support notifications as read when visiting this page
+  const markTypes = ["support_ticket", "support_reply", "support_update"];
+
   return (
     <div>
+      <MarkNotificationsRead types={markTypes} />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground font-heading">Support</h1>
         <Link

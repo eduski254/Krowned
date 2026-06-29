@@ -4,6 +4,7 @@ import { useState, useTransition, useRef, useEffect } from "react";
 import { Send, Shield } from "lucide-react";
 import { Spinner } from "@/components/spinner";
 import { replyToTicket } from "@/lib/support/actions";
+import { createClient } from "@/lib/supabase/client";
 
 interface Message {
   id: string;
@@ -32,6 +33,53 @@ export function TicketThread({ ticketId, ticketStatus, messages: initial, curren
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
+
+  // Subscribe to Realtime for live messages
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`ticket-thread:${ticketId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "support_ticket_messages",
+          filter: `ticket_id=eq.${ticketId}`,
+        },
+        (payload) => {
+          const row = payload.new as {
+            id: string;
+            sender_id: string;
+            message: string;
+            is_staff_reply: boolean;
+            created_at: string;
+          };
+
+          // Skip if we already have this message (from optimistic add)
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === row.id)) return prev;
+            // Also skip if sender is current user (already added optimistically)
+            if (row.sender_id === currentUserId) return prev;
+            return [
+              ...prev,
+              {
+                ...row,
+                profiles: {
+                  full_name: row.is_staff_reply ? "Support Team" : "User",
+                  avatar_url: null,
+                },
+              },
+            ];
+          });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [ticketId, currentUserId]);
 
   const isClosed = ticketStatus === "closed";
 

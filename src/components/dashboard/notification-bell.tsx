@@ -1,19 +1,28 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Bell, Calendar, Star, X } from "lucide-react";
+import { Bell, Calendar, Star, LifeBuoy, MessageSquare, X } from "lucide-react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 type NotificationItem = {
   id: string;
-  type: "booking" | "review";
+  type: string;
   title: string;
   description: string;
   createdAt: string;
   href: string;
 };
 
-export function NotificationBell() {
+const TYPE_ICONS: Record<string, typeof Bell> = {
+  booking: Calendar,
+  review: Star,
+  support_ticket: LifeBuoy,
+  support_reply: MessageSquare,
+  support_update: LifeBuoy,
+};
+
+export function NotificationBell({ userId }: { userId?: string }) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -37,6 +46,58 @@ export function NotificationBell() {
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
+
+  // Poll every 30 seconds as fallback
+  useEffect(() => {
+    const interval = setInterval(fetchNotifications, 30_000);
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
+
+  // Subscribe to Supabase Realtime for live notifications
+  useEffect(() => {
+    if (!userId) return;
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`notifications:${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          const row = payload.new as {
+            id: string;
+            type: string;
+            payload: Record<string, unknown>;
+            created_at: string;
+          };
+
+          if (row.type === "last_bell_read") return;
+
+          const p = row.payload ?? {};
+          const newItem: NotificationItem = {
+            id: row.id,
+            type: row.type,
+            title: (p.title as string) || row.type,
+            description: (p.body as string) || "",
+            createdAt: row.created_at,
+            href: (p.href as string) || "/dashboard",
+          };
+
+          setItems((prev) => [newItem, ...prev].slice(0, 20));
+          setUnreadCount((prev) => prev + 1);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId]);
 
   // Close on outside click
   useEffect(() => {
@@ -63,7 +124,6 @@ export function NotificationBell() {
   const handleOpen = async () => {
     setOpen((prev) => !prev);
     if (!open && unreadCount > 0) {
-      // Mark as read
       setUnreadCount(0);
       try {
         await fetch("/api/notifications", { method: "POST" });
@@ -94,7 +154,7 @@ export function NotificationBell() {
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground animate-in fade-in">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -126,33 +186,32 @@ export function NotificationBell() {
               </div>
             ) : (
               <div className="divide-y divide-border">
-                {items.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className="flex items-start gap-3 px-4 py-3 hover:bg-muted transition-colors"
-                  >
-                    <div className="mt-0.5 rounded-lg bg-primary/10 p-1.5">
-                      {item.type === "booking" ? (
-                        <Calendar className="h-3.5 w-3.5 text-primary" />
-                      ) : (
-                        <Star className="h-3.5 w-3.5 text-primary" />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-foreground">
-                        {item.title}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {item.description}
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-muted-foreground">
-                        {timeAgo(item.createdAt)}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
+                {items.map((item) => {
+                  const Icon = TYPE_ICONS[item.type] ?? Bell;
+                  return (
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className="flex items-start gap-3 px-4 py-3 hover:bg-muted transition-colors"
+                    >
+                      <div className="mt-0.5 rounded-lg bg-primary/10 p-1.5">
+                        <Icon className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground">
+                          {item.title}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {item.description}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">
+                          {timeAgo(item.createdAt)}
+                        </p>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>

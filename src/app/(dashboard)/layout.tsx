@@ -57,9 +57,10 @@ export default async function DashboardLayout({
   return (
     <div className="flex h-full min-h-screen">
       <IdleTimeout />
-      <Sidebar items={navItems} role={roleLabels[role]} />
+      <Sidebar items={navItems} role={roleLabels[role]} userId={user.id} />
       <div className="flex flex-1 flex-col">
         <Topbar
+          userId={user.id}
           userName={fullName}
           avatarUrl={profileRes.data?.avatar_url}
           navItems={navItems}

@@ -9,6 +9,7 @@ import {
   supportTicketReplyEmail,
   supportTicketStatusEmail,
 } from "@/lib/email/templates";
+import { createNotification, createNotificationBulk } from "@/lib/notifications";
 
 // ── Schemas ────────────────────────────────────────────────────────
 
@@ -78,14 +79,15 @@ export async function createTicket(input: z.infer<typeof createTicketSchema>) {
       .eq("id", user.id)
       .single();
 
-    await admin.from("notifications").insert(
-      admins.map((a) => ({
-        user_id: a.id,
-        type: "support_ticket" as any,
+    await createNotificationBulk(
+      admins.map((a) => a.id),
+      {
+        type: "support_ticket",
         title: "New support ticket",
         body: `${profile?.full_name ?? "A user"}: ${parsed.data.subject}`,
-        data: { ticket_id: ticket.id } as any,
-      })),
+        href: `/dashboard/admin/support/${ticket.id}`,
+        meta: { ticket_id: ticket.id },
+      },
     );
 
     // Email admins (fire-and-forget)
@@ -168,12 +170,13 @@ export async function replyToTicket(input: z.infer<typeof replySchema>) {
   // Notify the other party
   const notifyUserId = isAdmin ? ticket.user_id : null;
   if (notifyUserId) {
-    await admin.from("notifications").insert({
-      user_id: notifyUserId,
-      type: "support_reply" as any,
+    await createNotification({
+      userId: notifyUserId,
+      type: "support_reply",
       title: "Reply on your support ticket",
-      body: `${profile?.full_name ?? "Support"} replied to "${ticket.id}"`,
-      data: { ticket_id: ticket.id } as any,
+      body: `${profile?.full_name ?? "Support"} replied to your ticket`,
+      href: `/dashboard/support/${ticket.id}`,
+      meta: { ticket_id: ticket.id },
     });
 
     // Email the ticket owner
@@ -202,14 +205,15 @@ export async function replyToTicket(input: z.infer<typeof replySchema>) {
       .eq("platform_role", "super_admin");
 
     if (admins && admins.length > 0) {
-      await admin.from("notifications").insert(
-        admins.map((a) => ({
-          user_id: a.id,
-          type: "support_reply" as any,
+      await createNotificationBulk(
+        admins.map((a) => a.id),
+        {
+          type: "support_reply",
           title: "New reply on support ticket",
-          body: `${profile?.full_name ?? "User"} replied`,
-          data: { ticket_id: ticket.id } as any,
-        })),
+          body: `${profile?.full_name ?? "A user"} replied`,
+          href: `/dashboard/admin/support/${ticket.id}`,
+          meta: { ticket_id: ticket.id },
+        },
       );
 
       // Email admins
@@ -331,12 +335,13 @@ export async function updateTicket(input: z.infer<typeof updateTicketSchema>) {
       .single();
 
     if (ticket) {
-      await admin.from("notifications").insert({
-        user_id: ticket.user_id,
-        type: "support_update" as any,
+      await createNotification({
+        userId: ticket.user_id,
+        type: "support_update",
         title: `Ticket ${parsed.data.status}`,
         body: `Your ticket "${ticket.subject}" has been marked as ${parsed.data.status}.`,
-        data: { ticket_id: parsed.data.ticketId } as any,
+        href: `/dashboard/support/${parsed.data.ticketId}`,
+        meta: { ticket_id: parsed.data.ticketId },
       });
 
       // Email the ticket owner
