@@ -20,6 +20,8 @@ function MessageBanner() {
 }
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams.get("redirect");
   const [state, action, pending] = useActionState<AuthState, FormData>(
     login,
     null,
@@ -48,6 +50,9 @@ export default function LoginPage() {
       )}
 
       <form action={action} className="space-y-4">
+        {redirectParam && (
+          <input type="hidden" name="redirect" value={redirectParam} />
+        )}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-foreground">
             Email

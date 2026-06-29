@@ -6,7 +6,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, isStripeConfigured } from "@/lib/stripe";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadibooking.vercel.app";
 
@@ -18,6 +18,10 @@ export async function createConnectOnboardingLink(): Promise<{
   url?: string;
   error?: string;
 }> {
+  if (!isStripeConfigured()) {
+    return { error: "Payments are not configured yet. Stripe integration is coming soon." };
+  }
+
   const serverClient = await createClient();
   const { data: { user } } = await serverClient.auth.getUser();
   if (!user) return { error: "Not authenticated." };
@@ -84,6 +88,10 @@ export async function getConnectStatus(): Promise<{
 
   if (!business?.stripe_connect_account_id) {
     return { connected: false, chargesEnabled: false, payoutsEnabled: false };
+  }
+
+  if (!isStripeConfigured()) {
+    return { connected: false, chargesEnabled: false, payoutsEnabled: false, error: "Stripe not configured." };
   }
 
   const stripe = getStripe();

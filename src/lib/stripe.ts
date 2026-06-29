@@ -10,3 +10,7 @@ export function getStripe(): Stripe {
   }
   return _stripe;
 }
+
+export function isStripeConfigured(): boolean {
+  return !!process.env.STRIPE_SECRET_KEY;
+}

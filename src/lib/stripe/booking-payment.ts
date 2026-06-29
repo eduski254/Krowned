@@ -13,7 +13,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, isStripeConfigured } from "@/lib/stripe";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadibooking.vercel.app";
 

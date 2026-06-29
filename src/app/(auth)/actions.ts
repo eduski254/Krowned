@@ -118,6 +118,12 @@ export async function login(
     return { error: error.message };
   }
 
+  // Support redirect param for post-login routing (e.g. staff invite accept)
+  const redirectTo = formData.get("redirect") as string | null;
+  if (redirectTo && redirectTo.startsWith("/")) {
+    redirect(redirectTo);
+  }
+
   redirect("/dashboard");
 }
 

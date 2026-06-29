@@ -6,7 +6,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, isStripeConfigured } from "@/lib/stripe";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadibooking.vercel.app";
 
@@ -18,6 +18,10 @@ export async function createSubscriptionCheckout(planTier: string): Promise<{
   url?: string;
   error?: string;
 }> {
+  if (!isStripeConfigured()) {
+    return { error: "Payments are not configured yet. Stripe integration is coming soon." };
+  }
+
   const serverClient = await createClient();
   const { data: { user } } = await serverClient.auth.getUser();
   if (!user) return { error: "Not authenticated." };
@@ -125,6 +129,10 @@ export async function createCustomerPortal(): Promise<{
   url?: string;
   error?: string;
 }> {
+  if (!isStripeConfigured()) {
+    return { error: "Payments are not configured yet. Stripe integration is coming soon." };
+  }
+
   const serverClient = await createClient();
   const { data: { user } } = await serverClient.auth.getUser();
   if (!user) return { error: "Not authenticated." };

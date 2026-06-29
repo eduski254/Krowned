@@ -1,17 +1,20 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signup, loginWithGoogle, type AuthState } from "../actions";
 import { Spinner } from "@/components/spinner";
 
 export default function SignupPage() {
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get("type");
   const [state, action, pending] = useActionState<AuthState, FormData>(
     signup,
     null,
   );
   const [accountType, setAccountType] = useState<"client" | "professional">(
-    "client",
+    typeParam === "professional" ? "professional" : "client",
   );
 
   return (
