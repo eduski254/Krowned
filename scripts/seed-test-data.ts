@@ -39,9 +39,14 @@ const ACCOUNTS = {
 
 // ── Helpers ─────────────────────────────────────────────────────────
 async function upsertUser(email: string, full_name: string) {
-  // Try to find existing user by email
-  const { data: existing } = await supabase.auth.admin.listUsers();
-  const found = existing?.users?.find((u) => u.email === email);
+  // Try to find existing user by email (paginate to find all users)
+  let found: { id: string; email?: string } | undefined;
+  for (let page = 1; page <= 20; page++) {
+    const { data } = await supabase.auth.admin.listUsers({ page, perPage: 100 });
+    const match = data?.users?.find((u) => u.email === email);
+    if (match) { found = match; break; }
+    if (!data?.users || data.users.length < 100) break;
+  }
 
   if (found) {
     console.log(`  ✓ User ${email} already exists (${found.id})`);
