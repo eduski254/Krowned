@@ -12,7 +12,7 @@ export default async function AdminBusinessesPage() {
   const { data: businesses } = await supabase
     .from("businesses")
     .select(
-      "id, name, slug, city, country, verification_status, subscription_status, is_published, owner:owner_id(full_name)",
+      "id, name, slug, city, country, verification_status, subscription_status, is_published, owner_id, owner:owner_id(full_name)",
     )
     .order("created_at", { ascending: false })
     .limit(500);
@@ -25,12 +25,16 @@ export default async function AdminBusinessesPage() {
     country: b.country,
     verification_status: b.verification_status,
     subscription_status: b.subscription_status,
+    is_published: b.is_published ?? false,
+    owner_id: b.owner_id,
     owner: b.owner as unknown as { full_name: string } | null,
   }));
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-foreground">Businesses</h1>
+      <h1 className="mb-6 text-2xl font-bold text-foreground font-heading">
+        Businesses
+      </h1>
       <BusinessesTable rows={rows} />
     </div>
   );
