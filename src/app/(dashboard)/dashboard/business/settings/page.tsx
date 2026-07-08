@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getEffectiveUserId } from "@/lib/effective-user";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { VisibilityToggle } from "./visibility-toggle";
@@ -8,10 +9,8 @@ import { ConnectCard } from "./connect-card";
 
 export default async function BusinessSettingsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const effectiveUserId = await getEffectiveUserId();
+  if (!effectiveUserId) redirect("/login");
 
   const admin = createAdminClient();
 
@@ -23,7 +22,7 @@ export default async function BusinessSettingsPage() {
        subscription_status, plan_id,
        plans(tier, name)`
     )
-    .eq("owner_id", user.id)
+    .eq("owner_id", effectiveUserId)
     .maybeSingle();
 
   if (!business) redirect("/dashboard/business");

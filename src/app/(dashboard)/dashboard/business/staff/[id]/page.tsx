@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect, notFound } from "next/navigation";
 import { removeStaff } from "../actions";
 import { removeWeeklySlotForStaff } from "../../../staff/schedule/actions";
@@ -13,15 +14,13 @@ export default async function StaffDetailPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const effectiveUserId = await getEffectiveUserId();
+  if (!effectiveUserId) redirect("/login");
 
   const { data: business } = await supabase
     .from("businesses")
     .select("id")
-    .eq("owner_id", user.id)
+    .eq("owner_id", effectiveUserId)
     .maybeSingle();
   if (!business) redirect("/dashboard/business");
 

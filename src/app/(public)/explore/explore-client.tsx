@@ -10,7 +10,6 @@ import {
   forwardRef,
   useEffect,
 } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -41,6 +40,7 @@ import {
 const ExploreMap = lazy(() =>
   import("./explore-map").then((m) => ({ default: m.ExploreMap })),
 );
+import { BusinessPreview } from "./business-preview";
 
 type Category = { id: string; name: string; slug: string };
 type BusinessHours = Record<
@@ -166,9 +166,12 @@ export function ExploreClient({
   );
 
   // UI state
-  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [pinnedId, setPinnedId] = useState<string | null>(null);
+  const highlightedId = hoveredId ?? pinnedId;
   const [mobileMapOpen, setMobileMapOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [previewBiz, setPreviewBiz] = useState<ExploreBusiness | null>(null);
 
   // Dropdown visibility
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
@@ -258,7 +261,7 @@ export function ExploreClient({
   }, []);
 
   const handlePinClick = useCallback((id: string) => {
-    setHighlightedId(id);
+    setPinnedId((prev) => (prev === id ? null : id));
     const el = cardRefs.current.get(id);
     const panel = listPanelRef.current;
     if (el && panel) {
@@ -271,7 +274,7 @@ export function ExploreClient({
   }, []);
 
   const handleCardHover = useCallback((id: string | null) => {
-    setHighlightedId(id);
+    setHoveredId(id);
   }, []);
 
   const activeFilterCount =
@@ -295,7 +298,7 @@ export function ExploreClient({
   return (
     <div className="flex h-[calc(100vh-57px)] flex-col">
       {/* ── Filters bar ── */}
-      <div className="border-b border-border bg-background px-4 py-3 sm:px-6">
+      <div className="sticky top-16 z-20 border-b border-border bg-background/95 backdrop-blur-sm px-4 py-3 sm:px-6">
         <div className="flex max-w-7xl flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           {/* Search input + dropdown */}
           <div ref={searchRef} className="relative flex-1">
@@ -523,6 +526,7 @@ export function ExploreClient({
                   isLoggedIn={isLoggedIn}
                   isHighlighted={highlightedId === biz.id}
                   onHover={handleCardHover}
+                  onSelect={setPreviewBiz}
                   viewMode={viewMode}
                   index={i}
                   ref={(el) => {
@@ -585,6 +589,7 @@ export function ExploreClient({
                 highlightedId={highlightedId}
                 onPinClick={handlePinClick}
                 onBoundsChanged={() => {}}
+                onSelectBiz={setPreviewBiz}
               />
             </Suspense>
           </div>
@@ -598,6 +603,15 @@ export function ExploreClient({
           </div>
         )}
       </div>
+
+      {/* Zillow-style business preview overlay */}
+      {previewBiz && (
+        <BusinessPreview
+          slug={previewBiz.slug}
+          imageUrl={previewBiz.imageUrl}
+          onClose={() => setPreviewBiz(null)}
+        />
+      )}
     </div>
   );
 }
@@ -611,11 +625,12 @@ const BusinessCard = forwardRef<
     isLoggedIn: boolean;
     isHighlighted: boolean;
     onHover: (id: string | null) => void;
+    onSelect: (biz: ExploreBusiness) => void;
     viewMode: "list" | "grid";
     index: number;
   }
 >(function BusinessCard(
-  { biz, isLoggedIn, isHighlighted, onHover, viewMode, index },
+  { biz, isLoggedIn, isHighlighted, onHover, onSelect, viewMode, index },
   ref,
 ) {
   const hasCords =
@@ -648,13 +663,16 @@ const BusinessCard = forwardRef<
 
   if (viewMode === "grid") {
     return (
-      <Link
-        href={`/b/${biz.slug}`}
-        ref={ref as React.Ref<HTMLAnchorElement>}
+      <div
+        ref={ref as React.Ref<HTMLDivElement>}
+        role="button"
+        tabIndex={0}
+        onClick={() => onSelect(biz)}
+        onKeyDown={(e) => { if (e.key === "Enter") onSelect(biz); }}
         onMouseEnter={() => onHover(biz.id)}
         onMouseLeave={() => onHover(null)}
         style={{ animationDelay: `${delay}ms` }}
-        className={`group relative block overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] ${
+        className={`group relative block cursor-pointer overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] ${
           isHighlighted
             ? "border-primary ring-2 ring-primary/20 shadow-md"
             : "border-border"
@@ -672,7 +690,7 @@ const BusinessCard = forwardRef<
             letterAvatar
           )}
           <div className="absolute left-2 top-2 flex gap-1.5">{badges}</div>
-          <div className="absolute right-2 top-2">
+          <div className="absolute right-2 top-2" onClick={(e) => e.stopPropagation()}>
             <FavoriteButton
               businessId={biz.id}
               initialFavorited={biz.isFavorited}
@@ -703,18 +721,21 @@ const BusinessCard = forwardRef<
             </span>
           </div>
         </div>
-      </Link>
+      </div>
     );
   }
 
   return (
-    <Link
-      href={`/b/${biz.slug}`}
-      ref={ref as React.Ref<HTMLAnchorElement>}
+    <div
+      ref={ref as React.Ref<HTMLDivElement>}
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(biz)}
+      onKeyDown={(e) => { if (e.key === "Enter") onSelect(biz); }}
       onMouseEnter={() => onHover(biz.id)}
       onMouseLeave={() => onHover(null)}
       style={{ animationDelay: `${delay}ms` }}
-      className={`group relative flex overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.99] ${
+      className={`group relative flex cursor-pointer overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.99] ${
         isHighlighted
           ? "border-primary ring-2 ring-primary/20 shadow-md"
           : "border-border"
@@ -751,7 +772,7 @@ const BusinessCard = forwardRef<
               {[biz.city, biz.country].filter(Boolean).join(", ")}
             </p>
           </div>
-          <div className="shrink-0">
+          <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
             <FavoriteButton
               businessId={biz.id}
               initialFavorited={biz.isFavorited}
@@ -772,6 +793,6 @@ const BusinessCard = forwardRef<
           </span>
         </div>
       </div>
-    </Link>
+    </div>
   );
 });

@@ -25,12 +25,14 @@ export function WhenDropdown({
   onDateChange,
   onTimeChange,
   onClear,
+  variant = "default",
 }: {
   selectedDate: string | null; // YYYY-MM-DD
   selectedTime: TimeOfDay;
   onDateChange: (date: string | null) => void;
   onTimeChange: (time: TimeOfDay) => void;
   onClear: () => void;
+  variant?: "default" | "glass";
 }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -97,7 +99,13 @@ export function WhenDropdown({
   const hasSelection = selectedDate || selectedTime !== "anytime";
 
   return (
-    <div className="absolute left-0 top-full z-50 mt-1 w-[280px] overflow-hidden rounded-xl border border-border bg-card shadow-xl sm:w-[300px]">
+    <div
+      className={`absolute right-0 top-full z-50 mt-2 overflow-hidden rounded-xl shadow-xl ${
+        variant === "glass"
+          ? "w-[300px] border border-white/20 bg-black/60 backdrop-blur-xl sm:w-[340px]"
+          : "w-[280px] border border-border bg-card sm:w-[300px]"
+      }`}
+    >
       {/* Calendar */}
       <div className="p-3">
         <div className="mb-2 flex items-center justify-between">
@@ -105,25 +113,37 @@ export function WhenDropdown({
             type="button"
             onMouseDown={(e) => e.preventDefault()}
             onClick={prevMonth}
-            className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className={`rounded-md p-1 transition-colors ${
+              variant === "glass"
+                ? "text-white/50 hover:bg-white/10 hover:text-white"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            }`}
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="text-sm font-semibold text-foreground">
+          <span className={`text-sm font-semibold ${variant === "glass" ? "text-white" : "text-foreground"}`}>
             {monthLabel}
           </span>
           <button
             type="button"
             onMouseDown={(e) => e.preventDefault()}
             onClick={nextMonth}
-            className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className={`rounded-md p-1 transition-colors ${
+              variant === "glass"
+                ? "text-white/50 hover:bg-white/10 hover:text-white"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            }`}
           >
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
 
         {/* Day headers */}
-        <div className="mb-1 grid grid-cols-7 text-center text-[10px] font-medium text-muted-foreground">
+        <div
+          className={`mb-1 grid grid-cols-7 text-center text-[10px] font-medium ${
+            variant === "glass" ? "text-white/40" : "text-muted-foreground"
+          }`}
+        >
           {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
             <div key={d} className="py-1">
               {d}
@@ -148,15 +168,29 @@ export function WhenDropdown({
                 onClick={() => onDateChange(isSelected ? null : ds)}
                 className={`relative rounded-md py-1.5 text-xs transition-all ${
                   !inMonth || isPast
-                    ? "text-muted-foreground/30 cursor-default"
+                    ? variant === "glass"
+                      ? "text-white/15 cursor-default"
+                      : "text-muted-foreground/30 cursor-default"
                     : isSelected
-                      ? "bg-primary font-bold text-primary-foreground shadow-sm"
-                      : "text-foreground hover:bg-muted"
-                } ${isToday && !isSelected ? "font-bold text-primary" : ""}`}
+                      ? "bg-white/25 font-bold text-white shadow-sm"
+                      : variant === "glass"
+                        ? "text-white/80 hover:bg-white/10"
+                        : "text-foreground hover:bg-muted"
+                } ${
+                  isToday && !isSelected
+                    ? variant === "glass"
+                      ? "font-bold text-white"
+                      : "font-bold text-primary"
+                    : ""
+                }`}
               >
                 {date.getDate()}
                 {isToday && !isSelected && (
-                  <span className="absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary" />
+                  <span
+                    className={`absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full ${
+                      variant === "glass" ? "bg-white" : "bg-primary"
+                    }`}
+                  />
                 )}
               </button>
             );
@@ -165,9 +199,13 @@ export function WhenDropdown({
       </div>
 
       {/* Time of day */}
-      <div className="border-t border-border px-3 py-2.5">
+      <div className={`px-3 py-2.5 ${variant === "glass" ? "border-t border-white/10" : "border-t border-border"}`}>
         <div className="mb-2">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <span
+            className={`text-[10px] font-semibold uppercase tracking-wider ${
+              variant === "glass" ? "text-white/50" : "text-muted-foreground"
+            }`}
+          >
             Time of day
           </span>
         </div>
@@ -181,8 +219,12 @@ export function WhenDropdown({
                 onClick={() => onTimeChange(t)}
                 className={`rounded-lg px-2 py-1.5 text-center text-xs font-medium transition-all ${
                   selectedTime === t
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                    ? variant === "glass"
+                      ? "bg-white/25 text-white shadow-sm"
+                      : "bg-primary text-primary-foreground shadow-sm"
+                    : variant === "glass"
+                      ? "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                 }`}
               >
                 <div>{TIME_LABELS[t]}</div>
@@ -190,8 +232,12 @@ export function WhenDropdown({
                   <div
                     className={`mt-0.5 text-[9px] ${
                       selectedTime === t
-                        ? "text-primary-foreground/70"
-                        : "text-muted-foreground"
+                        ? variant === "glass"
+                          ? "text-white/60"
+                          : "text-primary-foreground/70"
+                        : variant === "glass"
+                          ? "text-white/30"
+                          : "text-muted-foreground"
                     }`}
                   >
                     {TIME_SUBLABELS[t]}
@@ -205,12 +251,16 @@ export function WhenDropdown({
 
       {/* Clear */}
       {hasSelection && (
-        <div className="border-t border-border px-3 py-2">
+        <div className={`px-3 py-2 ${variant === "glass" ? "border-t border-white/10" : "border-t border-border"}`}>
           <button
             type="button"
             onMouseDown={(e) => e.preventDefault()}
             onClick={onClear}
-            className="flex w-full items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-destructive"
+            className={`flex w-full items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-medium transition-colors ${
+              variant === "glass"
+                ? "text-white/50 hover:bg-white/10 hover:text-white"
+                : "text-muted-foreground hover:bg-muted hover:text-destructive"
+            }`}
           >
             <X className="h-3 w-3" />
             Clear date & time

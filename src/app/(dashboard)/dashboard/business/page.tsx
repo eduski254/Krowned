@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { EmptyState } from "@/components/dashboard/empty-state";
@@ -12,16 +13,14 @@ import {
 
 export default async function BusinessDashboardPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const effectiveUserId = await getEffectiveUserId();
+  if (!effectiveUserId) redirect("/login");
 
   // Get the user's business
   const { data: business } = await supabase
     .from("businesses")
     .select("id, name, plan_id, subscription_status, onboarding_completed_at")
-    .eq("owner_id", user.id)
+    .eq("owner_id", effectiveUserId)
     .maybeSingle();
 
   // Redirect to onboarding if business exists but hasn't completed setup

@@ -91,7 +91,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-black/20" />
 
         {/* Content */}
-        <div className="relative z-10 mx-auto w-full max-w-3xl px-4 py-16 sm:py-24 lg:py-28">
+        <div className="relative z-10 mx-auto w-full max-w-3xl px-4 py-8 sm:py-12 lg:py-14">
           <h1 className="font-heading text-3xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
             Beauty &amp; wellness, booked effortlessly
           </h1>

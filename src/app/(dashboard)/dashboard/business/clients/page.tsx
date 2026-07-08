@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { User, Phone, Mail } from "lucide-react";
@@ -15,15 +16,13 @@ interface ClientRow {
 
 export default async function BusinessClientsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const effectiveUserId = await getEffectiveUserId();
+  if (!effectiveUserId) redirect("/login");
 
   const { data: business } = await supabase
     .from("businesses")
     .select("id")
-    .eq("owner_id", user.id)
+    .eq("owner_id", effectiveUserId)
     .maybeSingle();
 
   if (!business) redirect("/dashboard/business");

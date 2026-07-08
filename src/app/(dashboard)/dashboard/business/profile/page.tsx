@@ -1,19 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
+import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import { BusinessProfileForm } from "./business-profile-form";
 import { BusinessImages } from "./business-images";
 
 export default async function BusinessProfilePage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const effectiveUserId = await getEffectiveUserId();
+  if (!effectiveUserId) redirect("/login");
 
   const { data: business } = await supabase
     .from("businesses")
     .select("*")
-    .eq("owner_id", user.id)
+    .eq("owner_id", effectiveUserId)
     .maybeSingle();
 
   const { data: categories } = await supabase

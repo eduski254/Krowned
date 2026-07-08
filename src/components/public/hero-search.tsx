@@ -120,158 +120,155 @@ export function HeroSearch({
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-2 sm:px-0">
-      {/* Main search bar container */}
-      <div className="rounded-2xl bg-background/95 p-2 shadow-2xl backdrop-blur-sm ring-1 ring-white/10 sm:p-3">
-        {/* Row 1: Search + Location — stack on mobile, side-by-side on sm+ */}
-        <div className="flex flex-col gap-1.5 sm:flex-row">
-          {/* Search field */}
-          <div ref={searchRef} className="relative flex-1 min-w-0">
-            <div className="group flex items-center gap-2 rounded-xl bg-background px-3 py-2.5 transition-all focus-within:ring-2 focus-within:ring-primary/30 sm:px-4 sm:py-3">
-              <Search className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-focus-within:text-primary sm:h-5 sm:w-5" />
-              <input
-                type="text"
-                value={qInput}
-                onChange={(e) => {
-                  setQInput(e.target.value);
-                  setShowSearch(e.target.value.length > 0);
+    <div className="relative mx-auto w-full max-w-3xl px-2 sm:px-0">
+      {/* Single-row search bar — glassmorphism */}
+      <div className="relative z-10 flex flex-col gap-1.5 overflow-visible rounded-2xl border border-white/20 bg-white/10 p-1.5 shadow-2xl backdrop-blur-lg sm:flex-row sm:items-center sm:gap-0 sm:rounded-full sm:p-1.5">
+        {/* Search field */}
+        <div ref={searchRef} className="relative flex-1 min-w-0">
+          <div className="group flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all focus-within:bg-white/10 sm:rounded-full sm:px-4">
+            <Search className="h-4 w-4 shrink-0 text-white/60 transition-colors group-focus-within:text-white" />
+            <input
+              type="text"
+              value={qInput}
+              onChange={(e) => {
+                setQInput(e.target.value);
+                setShowSearch(e.target.value.length > 0);
+              }}
+              onFocus={() => qInput.length > 0 && setShowSearch(true)}
+              onKeyDown={handleSearchKeyDown}
+              placeholder="Hair, nails, massage..."
+              className="w-full min-w-0 bg-transparent text-sm text-white placeholder:text-white/50 outline-none"
+            />
+            {qInput && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQInput("");
+                  setShowSearch(false);
                 }}
-                onFocus={() => qInput.length > 0 && setShowSearch(true)}
-                onKeyDown={handleSearchKeyDown}
-                placeholder="Hair, nails, massage..."
-                className="w-full min-w-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
-              />
-              {qInput && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQInput("");
-                    setShowSearch(false);
-                  }}
-                  className="shrink-0 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
-            {showSearch && (
-              <SearchDropdown
-                query={qInput}
-                businesses={businesses}
-                serviceNames={serviceNames}
-                onSelectService={handleSearchSelect}
-                onSelectBusiness={handleBusinessSelect}
-              />
+                className="shrink-0 rounded-full p-0.5 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             )}
           </div>
-
-          {/* Divider — hidden on mobile */}
-          <div className="hidden sm:flex sm:items-center">
-            <div className="h-8 w-px bg-border" />
-          </div>
-
-          {/* Location field */}
-          <div ref={locationRef} className="relative sm:w-44 md:w-48">
-            <div className="group flex items-center gap-2 rounded-xl bg-background px-3 py-2.5 transition-all focus-within:ring-2 focus-within:ring-primary/30 sm:px-4 sm:py-3">
-              <MapPin className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-focus-within:text-primary sm:h-5 sm:w-5" />
-              <input
-                type="text"
-                value={cityInput}
-                onChange={(e) => setCityInput(e.target.value)}
-                onFocus={() => setShowLocation(true)}
-                onKeyDown={handleCityKeyDown}
-                placeholder="City or area"
-                className="w-full min-w-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
-              />
-              {cityInput && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCityInput("");
-                    setShowLocation(false);
-                  }}
-                  className="shrink-0 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
-            {showLocation && (
-              <LocationDropdown onSelectLocation={handleLocationSelect} />
-            )}
-          </div>
+          {showSearch && (
+            <SearchDropdown
+              query={qInput}
+              businesses={businesses}
+              serviceNames={serviceNames}
+              onSelectService={handleSearchSelect}
+              onSelectBusiness={handleBusinessSelect}
+              variant="glass"
+            />
+          )}
         </div>
 
-        {/* Row 2: When + Search button */}
-        <div className="mt-1.5 flex items-center gap-1.5">
-          {/* When filter */}
-          <div ref={whenRef} className="relative flex-1 min-w-0">
-            <button
-              type="button"
-              onClick={() => setShowWhen(!showWhen)}
-              className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-all sm:px-4 sm:py-3 ${
-                whenLabel
-                  ? "bg-primary/5 font-medium text-primary ring-1 ring-primary/20"
-                  : "bg-background text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Calendar className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
-              <span className="flex-1 truncate">
-                {whenLabel ?? "Any date"}
-              </span>
-              {whenLabel && (
-                <span
-                  role="button"
-                  tabIndex={0}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setWhenDate(null);
-                    setWhenTime("anytime");
-                    setShowWhen(false);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.stopPropagation();
-                      setWhenDate(null);
-                      setWhenTime("anytime");
-                      setShowWhen(false);
-                    }
-                  }}
-                  className="shrink-0 rounded-full p-0.5 text-primary/60 hover:text-primary transition-colors cursor-pointer"
-                >
-                  <X className="h-3 w-3" />
-                </span>
-              )}
-            </button>
-            {showWhen && (
-              <WhenDropdown
-                selectedDate={whenDate}
-                selectedTime={whenTime}
-                onDateChange={(d) => setWhenDate(d)}
-                onTimeChange={(t) => setWhenTime(t)}
-                onClear={() => {
+        {/* Divider */}
+        <div className="hidden sm:block h-6 w-px bg-white/20" />
+
+        {/* Location field */}
+        <div ref={locationRef} className="relative sm:w-40 md:w-44">
+          <div className="group flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all focus-within:bg-white/10 sm:rounded-full sm:px-4">
+            <MapPin className="h-4 w-4 shrink-0 text-white/60 transition-colors group-focus-within:text-white" />
+            <input
+              type="text"
+              value={cityInput}
+              onChange={(e) => setCityInput(e.target.value)}
+              onFocus={() => setShowLocation(true)}
+              onKeyDown={handleCityKeyDown}
+              placeholder="City or area"
+              className="w-full min-w-0 bg-transparent text-sm text-white placeholder:text-white/50 outline-none"
+            />
+            {cityInput && (
+              <button
+                type="button"
+                onClick={() => {
+                  setCityInput("");
+                  setShowLocation(false);
+                }}
+                className="shrink-0 rounded-full p-0.5 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+          {showLocation && (
+            <LocationDropdown onSelectLocation={handleLocationSelect} variant="glass" />
+          )}
+        </div>
+
+        {/* Divider */}
+        <div className="hidden sm:block h-6 w-px bg-white/20" />
+
+        {/* When filter */}
+        <div ref={whenRef} className="relative sm:w-36 md:w-40">
+          <button
+            type="button"
+            onClick={() => setShowWhen(!showWhen)}
+            className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-all sm:rounded-full sm:px-4 ${
+              whenLabel
+                ? "bg-white/15 font-medium text-white"
+                : "text-white/60 hover:text-white hover:bg-white/10"
+            }`}
+          >
+            <Calendar className="h-4 w-4 shrink-0" />
+            <span className="flex-1 truncate">
+              {whenLabel ?? <span className="text-white/50">Any date</span>}
+            </span>
+            {whenLabel && (
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
                   setWhenDate(null);
                   setWhenTime("anytime");
                   setShowWhen(false);
                 }}
-              />
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.stopPropagation();
+                    setWhenDate(null);
+                    setWhenTime("anytime");
+                    setShowWhen(false);
+                  }
+                }}
+                className="shrink-0 rounded-full p-0.5 text-white/50 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="h-3 w-3" />
+              </span>
             )}
-          </div>
-
-          {/* Search button */}
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="flex shrink-0 items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl active:scale-[0.98] sm:px-6 sm:py-3"
-          >
-            <Search className="h-4 w-4" />
-            <span className="hidden sm:inline">Search</span>
           </button>
+          {showWhen && (
+            <WhenDropdown
+              selectedDate={whenDate}
+              selectedTime={whenTime}
+              onDateChange={(d) => setWhenDate(d)}
+              onTimeChange={(t) => setWhenTime(t)}
+              onClear={() => {
+                setWhenDate(null);
+                setWhenTime("anytime");
+                setShowWhen(false);
+              }}
+              variant="glass"
+            />
+          )}
         </div>
+
+        {/* Search button */}
+        <button
+          type="button"
+          onClick={handleSubmit}
+          className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white/20 border border-white/30 px-4 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition-all hover:bg-white/30 hover:shadow-xl active:scale-[0.98] sm:rounded-full sm:px-5 sm:py-2.5"
+        >
+          <Search className="h-4 w-4" />
+          <span className="sm:hidden">Search</span>
+        </button>
       </div>
 
       {/* Popular searches — below with clear spacing */}
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-2 px-2">
+      <div className="relative z-0 mt-8 flex flex-wrap items-center justify-center gap-2 px-2">
         <span className="text-xs text-white/60">Popular:</span>
         {["Braids", "Nails", "Massage", "Barber", "Facial"].map((term) => (
           <button
@@ -281,7 +278,7 @@ export function HeroSearch({
               setQInput(term);
               handleSubmitWithQuery(term);
             }}
-            className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm transition-all hover:bg-white/25 active:scale-95"
+            className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white active:scale-95"
           >
             {term}
           </button>

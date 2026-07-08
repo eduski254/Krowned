@@ -11,7 +11,6 @@ import {
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
 import { StarRating } from "@/components/star-rating";
-import Link from "next/link";
 import type { ExploreBusiness } from "@/lib/explore/actions";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
@@ -25,6 +24,7 @@ export function ExploreMap({
   highlightedId,
   onPinClick,
   onBoundsChanged,
+  onSelectBiz,
 }: {
   businesses: ExploreBusiness[];
   highlightedId: string | null;
@@ -35,6 +35,7 @@ export function ExploreMap({
     east: number;
     west: number;
   }) => void;
+  onSelectBiz?: (biz: ExploreBusiness) => void;
 }) {
   return (
     <APIProvider apiKey={API_KEY}>
@@ -54,6 +55,7 @@ export function ExploreMap({
           highlightedId={highlightedId}
           onPinClick={onPinClick}
           onBoundsChanged={onBoundsChanged}
+          onSelectBiz={onSelectBiz}
         />
       </Map>
     </APIProvider>
@@ -65,6 +67,7 @@ function MapContent({
   highlightedId,
   onPinClick,
   onBoundsChanged,
+  onSelectBiz,
 }: {
   businesses: ExploreBusiness[];
   highlightedId: string | null;
@@ -75,12 +78,13 @@ function MapContent({
     east: number;
     west: number;
   }) => void;
+  onSelectBiz?: (biz: ExploreBusiness) => void;
 }) {
   const map = useMap();
   const clustererRef = useRef<MarkerClusterer | null>(null);
-  const markersRef = useRef(new window.Map<string, Marker>());
+  const markersRef = useRef<globalThis.Map<string, Marker> | null>(null);
+  if (!markersRef.current) markersRef.current = new globalThis.Map();
   const [selectedBiz, setSelectedBiz] = useState<ExploreBusiness | null>(null);
-  const prevBizIdsRef = useRef<string>("");
 
   // Initialize clusterer
   useEffect(() => {
@@ -90,13 +94,10 @@ function MapContent({
     }
   }, [map]);
 
-  // Auto-fit bounds when businesses change
+  // Auto-fit bounds when filtered businesses change
+  const bizIds = businesses.map((b) => b.id).sort().join(",");
   useEffect(() => {
     if (!map || businesses.length === 0) return;
-
-    const bizIds = businesses.map((b) => b.id).sort().join(",");
-    if (bizIds === prevBizIdsRef.current) return;
-    prevBizIdsRef.current = bizIds;
 
     if (businesses.length === 1) {
       map.panTo({
@@ -112,21 +113,21 @@ function MapContent({
       bounds.extend({ lat: biz.latitude!, lng: biz.longitude! });
     }
     map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
-  }, [map, businesses]);
+  }, [map, bizIds]);
 
   // Update clusterer when markers change
   const setMarkerRef = useCallback(
     (marker: Marker | null, id: string) => {
       if (marker) {
-        markersRef.current.set(id, marker);
+        markersRef.current!.set(id, marker);
       } else {
-        markersRef.current.delete(id);
+        markersRef.current!.delete(id);
       }
 
       if (clustererRef.current) {
         clustererRef.current.clearMarkers();
         clustererRef.current.addMarkers(
-          Array.from(markersRef.current.values()),
+          Array.from(markersRef.current!.values()),
         );
       }
     },
@@ -192,9 +193,22 @@ function MapContent({
           onCloseClick={() => setSelectedBiz(null)}
           pixelOffset={[0, -44]}
         >
-          <Link
-            href={`/b/${selectedBiz.slug}`}
-            className="block max-w-[240px] overflow-hidden rounded-lg"
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => {
+              if (onSelectBiz) {
+                onSelectBiz(selectedBiz);
+                setSelectedBiz(null);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && onSelectBiz) {
+                onSelectBiz(selectedBiz);
+                setSelectedBiz(null);
+              }
+            }}
+            className="block max-w-[240px] cursor-pointer overflow-hidden rounded-lg"
           >
             {/* Cover image */}
             {selectedBiz.imageUrl ? (
@@ -233,7 +247,7 @@ function MapContent({
                 </span>
               </div>
             </div>
-          </Link>
+          </div>
         </InfoWindow>
       )}
     </>
