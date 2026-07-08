@@ -40,9 +40,9 @@
   --popover: #ffffff;
   --popover-foreground: #2e3043;
   --muted: #f5f3fb;               /* light section bg (faint lavender-gray, tuned to palette) */
-  --muted-foreground: #6c6b7e;    /* muted slate-violet secondary text */
-  --border: #e8e4f1;              /* hairline border (lavender-tinted) */
-  --input: #e8e4f1;
+  --muted-foreground: #6c6b7e;    /* muted slate-violet secondary text — WCAG AA 5.2:1 on white */
+  --border: #d0cbe0;              /* hairline border (lavender-tinted) */
+  --input: #8e89a5;               /* input border — WCAG AA 3.35:1 on white, 3.04:1 on muted */
   --ring: #5604ad;                /* focus ring = primary */
 
   /* Brand — Royal Violet primary */
@@ -55,7 +55,7 @@
 
   /* Brand — Teal Horizon accent (used sparingly) */
   --accent: #3b9bbb;              /* Teal Horizon */
-  --accent-foreground: #ffffff;
+  --accent-foreground: #0f1017;   /* dark text on teal — WCAG AA 5.96:1 */
 
   /* Status */
   --destructive: #dc2626;
@@ -96,44 +96,44 @@
    SEMANTIC TOKENS — DARK (.dark on <html>)
    --------------------------------------------------------------------------- */
 .dark {
-  --background: #2e3043;          /* Midnight Slate — true dark base */
-  --foreground: #f5f3fb;
-  --card: #363849;                /* lifted slate for cards */
-  --card-foreground: #f5f3fb;
-  --popover: #363849;
-  --popover-foreground: #f5f3fb;
-  --muted: #383a4d;
-  --muted-foreground: #a8a6ba;
-  --border: #44475c;
-  --input: #44475c;
-  --ring: #9e8ed4;
+  --background: #0f1017;          /* near-black with cool violet undertone */
+  --foreground: #f0eef6;          /* bright off-white text */
+  --card: #1a1b2e;                /* dark card surface */
+  --card-foreground: #f0eef6;
+  --popover: #1a1b2e;
+  --popover-foreground: #f0eef6;
+  --muted: #1e2035;               /* subtle raised surface */
+  --muted-foreground: #b8b5cc;    /* brighter muted text */
+  --border: #383b58;              /* subtle border */
+  --input: #656a90;               /* input border — WCAG AA 3.63:1 on bg, 3.24:1 on card */
+  --ring: #a78bfa;                /* brighter focus ring */
 
-  --primary: #7d3fc9;             /* lifted Royal Violet for contrast on slate */
-  --primary-foreground: #ffffff;
-  --secondary: #3a3550;
-  --secondary-foreground: #c9bdec;
-  --accent: #3b9bbb;              /* Teal Horizon */
-  --accent-foreground: #0d0f18;
+  --primary: #a575e2;             /* bright violet — WCAG AA 5.64:1 on bg */
+  --primary-foreground: #0f1017;  /* dark text on primary — WCAG AA 5.64:1 */
+  --secondary: #252740;
+  --secondary-foreground: #d4cbf0; /* brighter secondary text */
+  --accent: #4fb8d6;              /* brighter teal for dark mode */
+  --accent-foreground: #0f1017;
 
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --success: #22c55e;
-  --warning: #fbbf24;
-  --info: #60a5fa;
+  --destructive: #ef4444;         /* bright red — WCAG AA 5.04:1 on bg */
+  --destructive-foreground: #0f1017; /* dark text on red — WCAG AA 5.04:1 */
+  --success: #4ade80;
+  --warning: #fcd34d;
+  --info: #93c5fd;
 
   --brand-deep: #3d0479;
   --brand-dark: #5604ad;
-  --brand: #7d3fc9;
-  --brand-light: #9e8ed4;
-  --brand-lavender: #3a3550;
-  --brand-teal: #3b9bbb;
+  --brand: #a575e2;
+  --brand-light: #b8a4e3;
+  --brand-lavender: #252740;
+  --brand-teal: #4fb8d6;
   --brand-coral: #f5a97f;
   --brand-pink: #e26fa8;
 
   --gradient-hero: linear-gradient(
     120deg,
-    #3d0479 0%,
-    #5604ad 30%,
+    #2a0462 0%,
+    #4a0496 30%,
     #7d3fc9 52%,
     #d8568f 78%,
     #ec9a72 100%

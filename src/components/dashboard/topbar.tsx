@@ -25,7 +25,7 @@ export function Topbar({
   const initial = (userName || "?").charAt(0).toUpperCase();
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-border bg-card px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card/95 backdrop-blur-sm px-4 sm:px-6">
       <div className="flex items-center gap-1">
         <MobileNav items={navItems} userId={userId} />
         <nav className="hidden items-center gap-1 lg:flex">
