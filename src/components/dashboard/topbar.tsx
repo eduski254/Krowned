@@ -9,6 +9,7 @@ const PUBLIC_LINKS = [
   { href: "/explore", label: "Explore" },
   { href: "/how-it-works", label: "How it Works" },
   { href: "/for-professionals", label: "For Professionals" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export function Topbar({

@@ -40,10 +40,12 @@ export async function rescheduleBooking(
 
   if (!booking) return { success: false, error: "Booking not found." };
 
-  // Only the business owner can reschedule
+  // Allow either the business owner or the booking client to reschedule
   const ownerId = (booking.businesses as any)?.owner_id;
-  if (ownerId !== user.id) {
-    return { success: false, error: "Only the business owner can reschedule bookings." };
+  const isOwner = ownerId === user.id;
+  const isClient = booking.client_id === user.id;
+  if (!isOwner && !isClient) {
+    return { success: false, error: "Only the business owner or the booking client can reschedule." };
   }
 
   if (booking.status !== "confirmed") {

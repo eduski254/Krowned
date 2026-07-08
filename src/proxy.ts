@@ -18,6 +18,7 @@ const publicPaths = [
   "/contact",
   "/privacy",
   "/terms",
+  "/blog",
 ];
 
 function isPublicPath(pathname: string) {

@@ -16,6 +16,7 @@ import {
   Tag,
   AlertTriangle,
   FileText,
+  PenSquare,
   UserCircle,
   LifeBuoy,
   type LucideIcon,
@@ -39,6 +40,7 @@ export const iconMap: Record<string, LucideIcon> = {
   Tag,
   AlertTriangle,
   FileText,
+  PenSquare,
   UserCircle,
   LifeBuoy,
 };

@@ -51,7 +51,7 @@ export const adminNav: NavItem[] = [
   { label: "Reviews", href: "/dashboard/admin/reviews", icon: "Star" },
   { label: "Finance", href: "/dashboard/admin/finance", icon: "DollarSign" },
   { label: "Disputes", href: "/dashboard/admin/disputes", icon: "AlertTriangle" },
-  { label: "Content", href: "/dashboard/admin/content", icon: "FileText" },
+  { label: "Blog", href: "/dashboard/admin/blog", icon: "PenSquare" },
   { label: "Support Tickets", href: "/dashboard/admin/support", icon: "LifeBuoy" },
   { label: "Settings", href: "/dashboard/admin/settings", icon: "Settings" },
   { label: "My Profile", href: "/dashboard/profile", icon: "UserCircle" },

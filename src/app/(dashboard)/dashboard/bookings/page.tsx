@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
-import { CancelButton, ReviewButton } from "./booking-actions";
+import { CancelButton, RescheduleButton, ReviewButton } from "./booking-actions";
 
 export default async function ClientBookingsPage() {
   const supabase = await createClient();
@@ -99,6 +99,7 @@ export default async function ClientBookingsPage() {
                         {b.currency?.toUpperCase()}
                       </span>
                     )}
+                    {canCancel && <RescheduleButton bookingId={b.id} />}
                     {canCancel && <CancelButton bookingId={b.id} />}
                   </div>
                 </div>

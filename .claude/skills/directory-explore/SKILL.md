@@ -90,11 +90,12 @@ If only soft filters are active (no hard filters), show all results but sorted b
 ### 5. Map integration
 
 - **Lazy load**: `const ExploreMap = lazy(() => import("./explore-map"))` — prevents SSR crashes
+- **Use `globalThis.Map`** not `window.Map` for SSR safety: `useRef<globalThis.Map<string, Marker>>(null)`, lazy init with `if (!ref.current) ref.current = new globalThis.Map()`
 - **SVG pins**: Custom SVG path for location pin shape, white circle + first letter of listing name
-- **InfoWindow**: Shows cover image, name, category, city, rating, "View" link
-- **Auto-fit bounds**: `useEffect` watches the businesses array, builds `google.maps.LatLngBounds`, calls `map.fitBounds()` with padding. Tracks previous business IDs to avoid redundant fits.
+- **InfoWindow**: Shows cover image, name, category, city, rating — clickable to open preview overlay (not navigate away)
+- **Auto-fit bounds**: `useEffect` watches filtered businesses array, builds `google.maps.LatLngBounds`, calls `map.fitBounds()` with padding. Re-fits on every filter change.
 - **Pin click → list scroll**: Scroll the list panel (not the page!) to the matching card using manual offset calculation: `panel.scrollBy({ top: offset, behavior: "smooth" })`
-- **Hover sync**: Hovering a card highlights the map pin, clicking a pin highlights the card
+- **Dual highlight state**: `hoveredId` (transient, from card hover) + `pinnedId` (persistent, from map pin click). Derived: `highlightedId = hoveredId ?? pinnedId`. Pinned state persists when hovering other cards.
 
 ### 6. Location features
 
@@ -111,11 +112,61 @@ If only soft filters are active (no hard filters), show all results but sorted b
 
 ### 8. Hero search (landing page)
 
-- Reuses the exact same shared dropdown components
-- Three fields in a styled container: Search + Location (row 1), When + Search button (row 2)
+- Reuses the exact same shared dropdown components with `variant="glass"` prop
+- **Glassmorphism design**: `bg-white/10 backdrop-blur-lg border-white/20`, white opacity text (`text-white placeholder:text-white/50`)
+- **Single-row pill on desktop**: `sm:rounded-full`, all three fields side by side; stacks on mobile
+- **Stacking context**: search bar container uses `relative z-10`, popular chips use `relative z-0` so dropdowns render in front
 - Popular quick-search chips below
 - On submit: builds URLSearchParams and navigates to `/explore?q=...&city=...&date=...&time=...`
 - Explore page reads URL params as initial filter state
+
+### 9. Zillow-style preview overlay
+
+Instead of navigating to a detail page when clicking a listing card or map pin, show a slide-in preview overlay:
+
+- **Dark backdrop**: `fixed inset-0 bg-black/60 backdrop-blur-sm z-50`, click to dismiss
+- **Slide-in panel**: `fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-card`, uses `animate-slide-in-right`
+- **On-demand data**: Fetches full details from `/api/businesses/[slug]` (services, staff, hours, reviews, bookable status)
+- **Content**: Cover image, rating bar, Book Now + Full Profile buttons, services list, staff avatars, contact info, business hours, recent reviews
+- **Escape to close**: `useEffect` with `keydown` listener for Escape key
+- **Body scroll lock**: `document.body.style.overflow = "hidden"` on mount, restored on unmount
+- **Wired to both**: listing card clicks (`onSelect` callback) and map InfoWindow clicks (`onSelectBiz` callback)
+
+API route pattern (`/api/businesses/[slug]/route.ts`):
+```typescript
+// Returns: business, services[], staff[], hours[], reviews[], isBookable
+// Single GET endpoint, no auth required (public data)
+```
+
+Animation in globals.css:
+```css
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+```
+
+### 10. Glass variant for dropdowns
+
+All shared search components accept `variant?: "default" | "glass"`:
+
+- **Default**: solid `bg-card border-border` (for explore filter bar)
+- **Glass**: `bg-black/60 backdrop-blur-xl border-white/20`, white opacity text (for hero over gradients)
+- Applied to: `search-dropdown.tsx`, `location-dropdown.tsx`, `when-filter.tsx`
+- Glass calendar: day buttons use `hover:bg-white/20`, selected uses `bg-white/30`, today ring uses `ring-white/50`
+- Glass time buttons: `bg-white/10 border-white/20`, active: `bg-white/25`
+
+### 11. Portal-based tooltips for auth-gated actions
+
+For actions that require login (e.g., favorites), don't redirect — show a tooltip:
+
+- Use `createPortal(tooltip, document.body)` to escape any `overflow-hidden` container
+- Position with `getBoundingClientRect()` on the trigger element, render as `fixed` with `z-[100]`
+- Auto-dismiss with `setTimeout` (2.5s)
+- Example: favorite button shows "Log in to save favorites" tooltip above the heart icon
 
 ## File structure
 
@@ -123,22 +174,29 @@ If only soft filters are active (no hard filters), show all results but sorted b
 src/
   components/
     search/
-      search-dropdown.tsx    # Service + listing suggestions
-      location-dropdown.tsx  # Geolocation + history
-      when-filter.tsx        # Calendar + time-of-day
+      search-dropdown.tsx    # Service + listing suggestions (variant: default|glass)
+      location-dropdown.tsx  # Geolocation + history (variant: default|glass)
+      when-filter.tsx        # Calendar + time-of-day (variant: default|glass)
     public/
-      hero-search.tsx        # Landing page search bar
+      hero-search.tsx        # Landing page glass search bar
+    favorite-button.tsx      # Heart toggle with portal tooltip for logged-out users
   app/
     (public)/
       explore/
         page.tsx             # Server component — data fetching
-        explore-client.tsx   # Client component — filtering, layout, cards
-        explore-map.tsx      # Google Maps with pins + InfoWindows
+        explore-client.tsx   # Client component — filtering, layout, cards, preview
+        explore-map.tsx      # Google Maps with pins + InfoWindows + onSelectBiz
+        business-preview.tsx # Zillow-style slide-in overlay panel
+    api/
+      businesses/
+        [slug]/
+          route.ts           # GET business details (services, staff, hours, reviews)
     page.tsx                 # Homepage with HeroSearch
   lib/
     explore/
       actions.ts             # Type definitions (ExploreBusiness)
       utils.ts               # resolveCardImage helper
+    effective-user.ts        # getEffectiveUserId() — impersonation-aware user ID
 ```
 
 ## Adapting to a new project
@@ -222,6 +280,9 @@ The reference code uses semantic CSS tokens (`text-foreground`, `bg-card`, `bord
 1. **setState inside useMemo** — Never call `setState` during render. If you need a loading indicator, filtering is instant and doesn't need one.
 2. **Nested `<button>` elements** — Calendar buttons inside filter buttons cause hydration errors. Use `<span role="button">` for inner clickable elements.
 3. **`scrollIntoView` bubbling** — Don't use `scrollIntoView` for pin-click-to-card scroll. It bubbles to the body and hides the header. Use manual `panel.scrollBy({ top: offset })` instead.
-4. **`window.Map` in SSR** — Always lazy-load the map component. `useRef(new window.Map())` crashes during server rendering.
+4. **`window.Map` in SSR** — Always use `globalThis.Map` (not `window.Map`). Lazy-init: `if (!ref.current) ref.current = new globalThis.Map()`. Never put `new window.Map()` in `useRef()` initializer.
 5. **Input blur vs dropdown click** — Without `onMouseDown={e => e.preventDefault()}` on dropdown items, the input blurs before the click registers, closing the dropdown.
 6. **Dropdown overflow on mobile** — Use fixed widths (`w-[280px]`) instead of `left-0 right-0` to prevent dropdowns from extending off-screen.
+7. **Stacking context for dropdowns vs sibling elements** — Parent container needs `relative z-10` for child `z-50` dropdowns to render above sibling elements (e.g., popular chips at `z-0`). Just `z-50` on the dropdown alone won't work without an established stacking context.
+8. **Tooltip clipped by `overflow-hidden`** — Use `createPortal(tooltip, document.body)` with `getBoundingClientRect()` for fixed positioning. Never render tooltips inside containers with `overflow-hidden`.
+9. **`useState` for side effects** — Don't use `useState(() => { document.addEventListener... })`. Use `useEffect` with proper cleanup for event listeners.
