@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { login, loginWithGoogle, type AuthState } from "../actions";
 import { Spinner } from "@/components/spinner";
+import { PasswordInput } from "@/components/password-input";
 
 function MessageBanner() {
   const searchParams = useSearchParams();
@@ -84,12 +85,10 @@ export default function LoginPage() {
               Forgot password?
             </Link>
           </div>
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             required
-            className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="Your password"
           />
           {state?.fieldErrors?.password && (

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signup, loginWithGoogle, type AuthState } from "../actions";
 import { Spinner } from "@/components/spinner";
+import { PasswordInput } from "@/components/password-input";
 
 export default function SignupPage() {
   const searchParams = useSearchParams();
@@ -115,12 +116,10 @@ export default function SignupPage() {
               <label htmlFor="password" className="block text-sm font-medium text-foreground">
                 Password
               </label>
-              <input
+              <PasswordInput
                 id="password"
                 name="password"
-                type="password"
                 required
-                className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="At least 8 characters"
               />
               {state?.fieldErrors?.password && (

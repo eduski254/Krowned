@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { resetPassword, type AuthState } from "../actions";
 import { Spinner } from "@/components/spinner";
+import { PasswordInput } from "@/components/password-input";
 
 export default function ResetPasswordPage() {
   const [state, action, pending] = useActionState<AuthState, FormData>(
@@ -30,12 +31,10 @@ export default function ResetPasswordPage() {
           <label htmlFor="password" className="block text-sm font-medium text-foreground">
             New password
           </label>
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             required
-            className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="At least 8 characters"
           />
           {state?.fieldErrors?.password && (
