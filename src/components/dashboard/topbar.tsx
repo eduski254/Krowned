@@ -28,12 +28,6 @@ export function Topbar({
     <header className="flex h-16 items-center justify-between border-b border-border bg-card px-4 sm:px-6">
       <div className="flex items-center gap-1">
         <MobileNav items={navItems} userId={userId} />
-        <Link
-          href="/"
-          className="mr-4 hidden text-lg font-heading font-extrabold text-primary lg:block"
-        >
-          Zawadi
-        </Link>
         <nav className="hidden items-center gap-1 lg:flex">
           {PUBLIC_LINKS.map((link) => (
             <Link
