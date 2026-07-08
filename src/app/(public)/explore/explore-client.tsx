@@ -175,6 +175,7 @@ export function ExploreClient({
   const [showWhenDropdown, setShowWhenDropdown] = useState(false);
 
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const listPanelRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const locationRef = useRef<HTMLDivElement>(null);
   const whenRef = useRef<HTMLDivElement>(null);
@@ -269,7 +270,14 @@ export function ExploreClient({
   const handlePinClick = useCallback((id: string) => {
     setHighlightedId(id);
     const el = cardRefs.current.get(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    const panel = listPanelRef.current;
+    if (el && panel) {
+      // Scroll within the list panel only — don't touch the page scroll
+      const panelRect = panel.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      const offset = elRect.top - panelRect.top - panelRect.height / 2 + elRect.height / 2;
+      panel.scrollBy({ top: offset, behavior: "smooth" });
+    }
   }, []);
 
   const handleCardHover = useCallback((id: string | null) => {
@@ -448,6 +456,7 @@ export function ExploreClient({
       <div className="relative flex flex-1 overflow-hidden">
         {/* List panel */}
         <div
+          ref={listPanelRef}
           className={`flex-1 overflow-y-auto p-4 sm:p-6 lg:w-1/2 lg:flex-none ${
             mobileMapOpen ? "hidden lg:block" : ""
           }`}
