@@ -298,7 +298,7 @@ export function ExploreClient({
     <div className="flex h-[calc(100vh-57px)] flex-col">
       {/* ── Filters bar ── */}
       <div className="border-b border-border bg-background px-4 py-3 sm:px-6">
-        <div className="mx-auto flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center">
           {/* Search input + dropdown */}
           <div ref={searchRef} className="relative flex-1">
             <div className="group flex items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
