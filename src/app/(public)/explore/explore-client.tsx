@@ -167,7 +167,6 @@ export function ExploreClient({
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [mobileMapOpen, setMobileMapOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
-  const [isFiltering, setIsFiltering] = useState(false);
 
   // Dropdown visibility
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
@@ -198,21 +197,10 @@ export function ExploreClient({
   }, []);
 
   // Client-side filter + rank
-  const filtered = useMemo(() => {
-    setIsFiltering(true);
-    const result = filterAndRank(
-      allBusinesses,
-      q,
-      city,
-      category,
-      whenDate,
-      whenTime,
-      businessHours,
-    );
-    // Brief flash then clear
-    setTimeout(() => setIsFiltering(false), 80);
-    return result;
-  }, [allBusinesses, q, city, category, whenDate, whenTime, businessHours]);
+  const filtered = useMemo(
+    () => filterAndRank(allBusinesses, q, city, category, whenDate, whenTime, businessHours),
+    [allBusinesses, q, city, category, whenDate, whenTime, businessHours],
+  );
 
   const mappable = useMemo(
     () =>
@@ -477,9 +465,6 @@ export function ExploreClient({
                 {filtered.length} result
                 {filtered.length !== 1 ? "s" : ""}
               </p>
-              {isFiltering && (
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-              )}
             </div>
             <div className="flex items-center gap-2">
               <div className="hidden rounded-lg border border-border p-0.5 lg:flex">
