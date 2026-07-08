@@ -27,6 +27,7 @@ export type ExploreBusiness = {
   latitude: number | null;
   longitude: number | null;
   categoryName: string | null;
+  categorySlug: string | null;
   avgRating: number | null;
   reviewCount: number;
   isFavorited: boolean;
@@ -43,7 +44,7 @@ export async function searchByBounds(input: z.infer<typeof boundsSchema>) {
   let query = supabase
     .from("businesses")
     .select(
-      "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, latitude, longitude, primary_category_id, service_categories(name)",
+      "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, latitude, longitude, primary_category_id, service_categories(name, slug)",
     )
     .eq("is_published", true)
     .eq("verification_status", "verified")
@@ -112,7 +113,10 @@ export async function searchByBounds(input: z.infer<typeof boundsSchema>) {
       latitude: biz.latitude,
       longitude: biz.longitude,
       categoryName:
-        (biz.service_categories as unknown as { name: string } | null)?.name ??
+        (biz.service_categories as unknown as { name: string; slug: string } | null)?.name ??
+        null,
+      categorySlug:
+        (biz.service_categories as unknown as { name: string; slug: string } | null)?.slug ??
         null,
       avgRating: stats ? stats.sum / stats.count : null,
       reviewCount: stats?.count ?? 0,

@@ -17,30 +17,16 @@ export default async function ExplorePage({
     .select("id, name, slug")
     .order("sort_order");
 
-  // Build business query
-  let query = supabase
+  // Fetch ALL published businesses (client-side filtering handles the rest)
+  const { data: businesses } = await supabase
     .from("businesses")
     .select(
-      "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, latitude, longitude, primary_category_id, service_categories(name)",
+      "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, latitude, longitude, primary_category_id, service_categories(name, slug)",
     )
     .eq("is_published", true)
     .eq("verification_status", "verified")
-    .order("is_featured", { ascending: false });
-
-  if (params.q) {
-    query = query.ilike("name", `%${params.q}%`);
-  }
-  if (params.city) {
-    query = query.ilike("city", `%${params.city}%`);
-  }
-  if (params.category) {
-    const matchingCat = categories?.find((c) => c.slug === params.category);
-    if (matchingCat) {
-      query = query.eq("primary_category_id", matchingCat.id);
-    }
-  }
-
-  const { data: businesses } = await query.limit(100);
+    .order("is_featured", { ascending: false })
+    .limit(200);
 
   // Get average ratings
   const { data: reviewStats } = await supabase
@@ -74,6 +60,7 @@ export default async function ExplorePage({
 
   const serialized: ExploreBusiness[] = (businesses ?? []).map((biz) => {
     const stats = ratingMap.get(biz.id);
+    const cat = biz.service_categories as unknown as { name: string; slug: string } | null;
     return {
       id: biz.id,
       name: biz.name,
@@ -87,9 +74,8 @@ export default async function ExplorePage({
       is_featured: biz.is_featured,
       latitude: biz.latitude,
       longitude: biz.longitude,
-      categoryName:
-        (biz.service_categories as unknown as { name: string } | null)?.name ??
-        null,
+      categoryName: cat?.name ?? null,
+      categorySlug: cat?.slug ?? null,
       avgRating: stats ? stats.sum / stats.count : null,
       reviewCount: stats?.count ?? 0,
       isFavorited: favSet.has(biz.id),

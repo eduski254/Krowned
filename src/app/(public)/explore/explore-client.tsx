@@ -4,17 +4,25 @@ import {
   useState,
   useCallback,
   useRef,
-  useTransition,
+  useMemo,
   lazy,
   Suspense,
+  forwardRef,
 } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Search, MapPin, Map as MapIcon, List, LayoutList, LayoutGrid } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Map as MapIcon,
+  List,
+  LayoutList,
+  LayoutGrid,
+  X,
+  Loader2,
+} from "lucide-react";
 import { FavoriteButton } from "@/components/favorite-button";
 import { StarRating } from "@/components/star-rating";
 import type { ExploreBusiness } from "@/lib/explore/actions";
-import { searchByBounds } from "@/lib/explore/actions";
 
 const ExploreMap = lazy(() =>
   import("./explore-map").then((m) => ({ default: m.ExploreMap })),
@@ -22,8 +30,95 @@ const ExploreMap = lazy(() =>
 
 type Category = { id: string; name: string; slug: string };
 
+// ── Smart filter + rank ──────────────────────────────────────────
+
+function filterAndRank(
+  all: ExploreBusiness[],
+  q: string,
+  city: string,
+  categorySlug: string,
+): ExploreBusiness[] {
+  const qLower = q.toLowerCase().trim();
+  const cityLower = city.toLowerCase().trim();
+
+  // Score each business
+  const scored = all.map((biz) => {
+    let score = 0;
+    let passes = true;
+
+    // Category filter is hard — must match if set
+    if (categorySlug && biz.categorySlug !== categorySlug) {
+      passes = false;
+    }
+
+    // City filter — fuzzy match (partial)
+    if (cityLower) {
+      const bizCity = (biz.city ?? "").toLowerCase();
+      const bizCountry = (biz.country ?? "").toLowerCase();
+      if (bizCity.includes(cityLower) || bizCountry.includes(cityLower)) {
+        score += 10;
+      } else {
+        passes = false;
+      }
+    }
+
+    // Name/description search — soft, boosts ranking
+    if (qLower) {
+      const name = biz.name.toLowerCase();
+      const desc = (biz.description ?? "").toLowerCase();
+      const cat = (biz.categoryName ?? "").toLowerCase();
+
+      if (name === qLower) {
+        score += 100; // exact name match
+      } else if (name.startsWith(qLower)) {
+        score += 80; // starts with query
+      } else if (name.includes(qLower)) {
+        score += 50; // contains query in name
+      } else if (cat.includes(qLower)) {
+        score += 20; // matches category name
+      } else if (desc.includes(qLower)) {
+        score += 10; // matches description
+      } else {
+        // No match at all — downrank but still show if city/category match
+        score -= 50;
+      }
+    }
+
+    // Featured boost
+    if (biz.is_featured) score += 5;
+
+    // Rating boost
+    if (biz.avgRating) score += biz.avgRating;
+
+    return { biz, score, passes };
+  });
+
+  // If we have hard filters (category/city), only show matching
+  // If only q (search text), show all sorted by relevance
+  const hasHardFilter = !!categorySlug || !!cityLower;
+
+  let results: typeof scored;
+  if (hasHardFilter) {
+    results = scored.filter((s) => s.passes);
+  } else if (qLower) {
+    // Show all, but with name matches boosted to top
+    results = scored.filter((s) => s.score > -50);
+    // If nothing matches well, show everything
+    if (results.length === 0) results = scored;
+  } else {
+    results = scored;
+  }
+
+  // Sort by score descending
+  results.sort((a, b) => b.score - a.score);
+
+  return results.map((s) => s.biz);
+}
+
+// ── Main component ───────────────────────────────────────────────
+
 export function ExploreClient({
-  businesses: initialBusinesses,
+  businesses: allBusinesses,
   categories,
   initialFilters,
   isLoggedIn,
@@ -35,42 +130,47 @@ export function ExploreClient({
   isLoggedIn: boolean;
   hasMapKey: boolean;
 }) {
-  const router = useRouter();
-  const [businesses, setBusinesses] = useState(initialBusinesses);
+  const [q, setQ] = useState(initialFilters.q);
+  const [city, setCity] = useState(initialFilters.city);
+  const [category, setCategory] = useState(initialFilters.category);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [mobileMapOpen, setMobileMapOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
-  const [boundsChanged, setBoundsChanged] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const boundsRef = useRef<{
-    north: number;
-    south: number;
-    east: number;
-    west: number;
-  } | null>(null);
-  const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
-  const filtersRef = useRef(initialFilters);
+  const [isFiltering, setIsFiltering] = useState(false);
 
-  const handleBoundsChanged = useCallback(
-    (bounds: { north: number; south: number; east: number; west: number }) => {
-      boundsRef.current = bounds;
-      setBoundsChanged(true);
+  const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const filterTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // Client-side filter + rank (instant, no server round-trip)
+  const filtered = useMemo(
+    () => filterAndRank(allBusinesses, q, city, category),
+    [allBusinesses, q, city, category],
+  );
+
+  // Businesses with valid coordinates for map
+  const mappable = useMemo(
+    () =>
+      filtered.filter(
+        (b) =>
+          b.latitude != null &&
+          b.longitude != null &&
+          (b.latitude !== 0 || b.longitude !== 0),
+      ),
+    [filtered],
+  );
+
+  // Debounced filter update with brief loading flash
+  const updateFilter = useCallback(
+    (setter: (v: string) => void, value: string) => {
+      if (filterTimeoutRef.current) clearTimeout(filterTimeoutRef.current);
+      setIsFiltering(true);
+      filterTimeoutRef.current = setTimeout(() => {
+        setter(value);
+        setIsFiltering(false);
+      }, 150);
     },
     [],
   );
-
-  const handleRedoSearch = useCallback(() => {
-    if (!boundsRef.current) return;
-    setBoundsChanged(false);
-    startTransition(async () => {
-      const result = await searchByBounds({
-        ...boundsRef.current!,
-        q: filtersRef.current.q || undefined,
-        category: filtersRef.current.category || undefined,
-      });
-      setBusinesses(result.businesses);
-    });
-  }, []);
 
   const handlePinClick = useCallback((id: string) => {
     setHighlightedId(id);
@@ -84,104 +184,92 @@ export function ExploreClient({
     setHighlightedId(id);
   }, []);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
-  const formRef = useRef<HTMLFormElement>(null);
+  const activeFilterCount =
+    (q ? 1 : 0) + (city ? 1 : 0) + (category ? 1 : 0);
 
-  const pushFilters = useCallback(
-    (q: string, city: string, category: string) => {
-      filtersRef.current = { q, city, category };
-      const sp = new URLSearchParams();
-      if (q) sp.set("q", q);
-      if (city) sp.set("city", city);
-      if (category) sp.set("category", category);
-      router.push(`/explore${sp.toString() ? `?${sp}` : ""}`);
-    },
-    [router],
-  );
-
-  const handleFilterSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      const fd = new FormData(e.currentTarget);
-      pushFilters(
-        (fd.get("q") as string) || "",
-        (fd.get("city") as string) || "",
-        (fd.get("category") as string) || "",
-      );
-    },
-    [pushFilters],
-  );
-
-  const handleLiveChange = useCallback(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      if (!formRef.current) return;
-      const fd = new FormData(formRef.current);
-      pushFilters(
-        (fd.get("q") as string) || "",
-        (fd.get("city") as string) || "",
-        (fd.get("category") as string) || "",
-      );
-    }, 400);
-  }, [pushFilters]);
-
-  // Businesses with valid coordinates (for map pins)
-  const mappable = businesses.filter(
-    (b) => b.latitude != null && b.longitude != null && (b.latitude !== 0 || b.longitude !== 0),
-  );
+  const clearFilters = () => {
+    setQ("");
+    setCity("");
+    setCategory("");
+    setIsFiltering(false);
+  };
 
   return (
     <div className="flex h-[calc(100vh-57px)] flex-col">
       {/* Filters bar */}
       <div className="border-b border-border bg-background px-4 py-3 sm:px-6">
-        <form
-          ref={formRef}
-          onSubmit={handleFilterSubmit}
-          className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row"
-        >
-          <div className="flex flex-1 items-center gap-2 rounded-lg border border-input bg-background px-3 py-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center">
+          {/* Search input */}
+          <div className="group relative flex flex-1 items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+            <Search className="h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
             <input
-              name="q"
               type="text"
-              defaultValue={initialFilters.q}
+              value={q}
+              onChange={(e) => updateFilter(setQ, e.target.value)}
               placeholder="Search businesses..."
-              onChange={handleLiveChange}
               className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
             />
+            {q && (
+              <button
+                onClick={() => setQ("")}
+                className="rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
-          <div className="flex items-center gap-2 rounded-lg border border-input bg-background px-3 py-2">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
+
+          {/* City input */}
+          <div className="group relative flex items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 sm:w-44">
+            <MapPin className="h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
             <input
-              name="city"
               type="text"
-              defaultValue={initialFilters.city}
+              value={city}
+              onChange={(e) => updateFilter(setCity, e.target.value)}
               placeholder="City"
-              onChange={handleLiveChange}
               className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
             />
+            {city && (
+              <button
+                onClick={() => setCity("")}
+                className="rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
+
+          {/* Category select */}
           <select
-            name="category"
-            defaultValue={initialFilters.category}
-            onChange={handleLiveChange}
-            className="rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground"
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setIsFiltering(false);
+            }}
+            className="rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
           >
             <option value="">All categories</option>
-            {categories.filter((c) => c.slug !== "new-category").map((c) => (
-              <option key={c.id} value={c.slug}>
-                {c.name}
-              </option>
-            ))}
+            {categories
+              .filter((c) => c.slug !== "new-category")
+              .map((c) => (
+                <option key={c.id} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
           </select>
-          <button
-            type="submit"
-            className="rounded-lg bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-          >
-            Search
-          </button>
-        </form>
+
+          {/* Clear filters */}
+          {activeFilterCount > 0 && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="group inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-destructive/30 hover:bg-destructive/5 hover:text-destructive active:scale-95"
+            >
+              <X className="h-3.5 w-3.5" />
+              Clear ({activeFilterCount})
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main content */}
@@ -193,19 +281,25 @@ export function ExploreClient({
           }`}
         >
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {businesses.length} result{businesses.length !== 1 ? "s" : ""}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">
+                {filtered.length} result
+                {filtered.length !== 1 ? "s" : ""}
+              </p>
+              {isFiltering && (
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+              )}
+            </div>
             <div className="flex items-center gap-2">
               {/* View toggle — desktop only */}
               <div className="hidden rounded-lg border border-border p-0.5 lg:flex">
                 <button
                   type="button"
                   onClick={() => setViewMode("list")}
-                  className={`rounded-md p-1.5 transition-colors ${
+                  className={`rounded-md p-1.5 transition-all active:scale-90 ${
                     viewMode === "list"
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                   aria-label="List view"
                   aria-pressed={viewMode === "list"}
@@ -215,10 +309,10 @@ export function ExploreClient({
                 <button
                   type="button"
                   onClick={() => setViewMode("grid")}
-                  className={`rounded-md p-1.5 transition-colors ${
+                  className={`rounded-md p-1.5 transition-all active:scale-90 ${
                     viewMode === "grid"
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                   aria-label="Grid view"
                   aria-pressed={viewMode === "grid"}
@@ -231,7 +325,7 @@ export function ExploreClient({
                 <button
                   type="button"
                   onClick={() => setMobileMapOpen(true)}
-                  className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted lg:hidden"
+                  className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-all hover:bg-muted hover:shadow-sm active:scale-95 lg:hidden"
                 >
                   <MapIcon className="h-4 w-4" />
                   Map
@@ -240,7 +334,7 @@ export function ExploreClient({
             </div>
           </div>
 
-          {businesses.length > 0 ? (
+          {filtered.length > 0 ? (
             <div
               className={
                 viewMode === "grid"
@@ -248,7 +342,7 @@ export function ExploreClient({
                   : "space-y-4"
               }
             >
-              {businesses.map((biz) => (
+              {filtered.map((biz, i) => (
                 <BusinessCard
                   key={biz.id}
                   biz={biz}
@@ -256,6 +350,7 @@ export function ExploreClient({
                   isHighlighted={highlightedId === biz.id}
                   onHover={handleCardHover}
                   viewMode={viewMode}
+                  index={i}
                   ref={(el) => {
                     if (el) cardRefs.current.set(biz.id, el);
                     else cardRefs.current.delete(biz.id);
@@ -264,18 +359,27 @@ export function ExploreClient({
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-dashed border-border bg-card px-6 py-16 text-center">
-              <p className="text-lg font-semibold text-foreground">
+            <div className="rounded-xl border border-dashed border-border bg-card px-6 py-16 text-center animate-fade-in">
+              <Search className="mx-auto h-10 w-10 text-muted-foreground/40" />
+              <p className="mt-4 text-lg font-semibold text-foreground">
                 No businesses found
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
                 Try adjusting your search or filters.
               </p>
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 active:scale-95"
+                >
+                  Clear all filters
+                </button>
+              )}
             </div>
           )}
         </div>
 
-        {/* Map panel — desktop: visible in list mode, mobile: toggle */}
+        {/* Map panel */}
         {hasMapKey && (
           <div
             className={`${
@@ -284,36 +388,21 @@ export function ExploreClient({
                 : "hidden lg:block lg:w-1/2"
             }`}
           >
-            {/* Mobile back button */}
             {mobileMapOpen && (
               <button
                 type="button"
                 onClick={() => setMobileMapOpen(false)}
-                className="absolute left-4 top-4 z-30 flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground shadow-md hover:bg-muted"
+                className="absolute left-4 top-4 z-30 flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground shadow-md transition-all hover:bg-muted active:scale-95"
               >
                 <List className="h-4 w-4" />
                 List
               </button>
             )}
 
-            {/* Redo search button */}
-            {boundsChanged && (
-              <button
-                type="button"
-                onClick={handleRedoSearch}
-                disabled={isPending}
-                className="absolute left-1/2 top-4 z-30 -translate-x-1/2 rounded-full border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground shadow-lg hover:bg-muted disabled:opacity-60"
-              >
-                {isPending ? "Searching..." : "Redo search in this area"}
-              </button>
-            )}
-
             <Suspense
               fallback={
                 <div className="flex h-full items-center justify-center bg-muted">
-                  <p className="text-sm text-muted-foreground">
-                    Loading map...
-                  </p>
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 </div>
               }
             >
@@ -321,7 +410,7 @@ export function ExploreClient({
                 businesses={mappable}
                 highlightedId={highlightedId}
                 onPinClick={handlePinClick}
-                onBoundsChanged={handleBoundsChanged}
+                onBoundsChanged={() => {}}
               />
             </Suspense>
           </div>
@@ -340,9 +429,7 @@ export function ExploreClient({
   );
 }
 
-/* ---------- Business Card ---------- */
-
-import { forwardRef } from "react";
+/* ── Business Card ──────────────────────────────────────────────── */
 
 const BusinessCard = forwardRef<
   HTMLElement,
@@ -352,10 +439,20 @@ const BusinessCard = forwardRef<
     isHighlighted: boolean;
     onHover: (id: string | null) => void;
     viewMode: "list" | "grid";
+    index: number;
   }
->(function BusinessCard({ biz, isLoggedIn, isHighlighted, onHover, viewMode }, ref) {
-  const hasCords = biz.latitude != null && biz.longitude != null && (biz.latitude !== 0 || biz.longitude !== 0);
+>(function BusinessCard(
+  { biz, isLoggedIn, isHighlighted, onHover, viewMode, index },
+  ref,
+) {
+  const hasCords =
+    biz.latitude != null &&
+    biz.longitude != null &&
+    (biz.latitude !== 0 || biz.longitude !== 0);
   const imageUrl = biz.imageUrl;
+
+  // Staggered animation delay (cap at 200ms)
+  const delay = Math.min(index * 30, 200);
 
   const badges = (
     <>
@@ -369,22 +466,6 @@ const BusinessCard = forwardRef<
           Mobile
         </span>
       )}
-    </>
-  );
-
-  const cardInfo = (
-    <>
-      <div className="flex items-center gap-2">
-        <h3 className="truncate font-semibold text-foreground group-hover:text-primary transition-colors">
-          {biz.name}
-        </h3>
-      </div>
-      <p className="text-sm text-muted-foreground">
-        {biz.categoryName ?? ""}
-      </p>
-      <p className="text-sm text-muted-foreground">
-        {[biz.city, biz.country].filter(Boolean).join(", ")}
-      </p>
     </>
   );
 
@@ -402,28 +483,25 @@ const BusinessCard = forwardRef<
         ref={ref as React.Ref<HTMLAnchorElement>}
         onMouseEnter={() => onHover(biz.id)}
         onMouseLeave={() => onHover(null)}
-        className={`group relative block overflow-hidden rounded-xl border bg-card transition-all hover:shadow-lg ${
+        style={{ animationDelay: `${delay}ms` }}
+        className={`group relative block overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] ${
           isHighlighted
-            ? "border-primary ring-2 ring-primary/20"
+            ? "border-primary ring-2 ring-primary/20 shadow-md"
             : "border-border"
         }`}
       >
-        {/* Image banner */}
         <div className="relative aspect-[16/10] overflow-hidden bg-muted">
           {imageUrl ? (
             <img
               src={imageUrl}
               alt={biz.name}
               loading="lazy"
-              className="h-full w-full object-cover transition-transform group-hover:scale-105"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
           ) : (
             letterAvatar
           )}
-          {/* Overlay badges */}
-          <div className="absolute left-2 top-2 flex gap-1.5">
-            {badges}
-          </div>
+          <div className="absolute left-2 top-2 flex gap-1.5">{badges}</div>
           <div className="absolute right-2 top-2">
             <FavoriteButton
               businessId={biz.id}
@@ -434,9 +512,16 @@ const BusinessCard = forwardRef<
           </div>
         </div>
 
-        {/* Card body */}
         <div className="p-4">
-          {cardInfo}
+          <h3 className="truncate font-semibold text-foreground transition-colors group-hover:text-primary">
+            {biz.name}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {biz.categoryName ?? ""}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {[biz.city, biz.country].filter(Boolean).join(", ")}
+          </p>
           {biz.description && (
             <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
               {biz.description}
@@ -444,7 +529,9 @@ const BusinessCard = forwardRef<
           )}
           <div className="mt-3 flex items-center justify-between">
             <StarRating value={biz.avgRating} count={biz.reviewCount} />
-            <span className="text-sm font-medium text-primary">View &rarr;</span>
+            <span className="text-sm font-medium text-primary transition-transform group-hover:translate-x-0.5">
+              View &rarr;
+            </span>
           </div>
         </div>
       </Link>
@@ -458,42 +545,37 @@ const BusinessCard = forwardRef<
       ref={ref as React.Ref<HTMLAnchorElement>}
       onMouseEnter={() => onHover(biz.id)}
       onMouseLeave={() => onHover(null)}
-      className={`group relative flex overflow-hidden rounded-xl border bg-card transition-all hover:shadow-lg ${
+      style={{ animationDelay: `${delay}ms` }}
+      className={`group relative flex overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.99] ${
         isHighlighted
-          ? "border-primary ring-2 ring-primary/20"
+          ? "border-primary ring-2 ring-primary/20 shadow-md"
           : "border-border"
       }`}
     >
-      {/* Thumbnail */}
       <div className="relative hidden w-40 shrink-0 overflow-hidden bg-muted sm:block">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={biz.name}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
           letterAvatar
         )}
-        {/* Badges on thumbnail */}
         <div className="absolute left-1.5 top-1.5 flex flex-col gap-1">
           {badges}
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex min-w-0 flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="truncate font-semibold text-foreground group-hover:text-primary transition-colors">
+              <h3 className="truncate font-semibold text-foreground transition-colors group-hover:text-primary">
                 {biz.name}
               </h3>
-              {/* Inline badges for mobile (no thumbnail) */}
-              <div className="flex gap-1.5 sm:hidden">
-                {badges}
-              </div>
+              <div className="flex gap-1.5 sm:hidden">{badges}</div>
             </div>
             <p className="text-sm text-muted-foreground">
               {biz.categoryName ?? ""}
@@ -520,7 +602,9 @@ const BusinessCard = forwardRef<
 
         <div className="mt-auto flex items-center justify-between pt-3">
           <StarRating value={biz.avgRating} count={biz.reviewCount} />
-          <span className="text-sm font-medium text-primary">View &rarr;</span>
+          <span className="text-sm font-medium text-primary transition-transform group-hover:translate-x-0.5">
+            View &rarr;
+          </span>
         </div>
       </div>
     </Link>
