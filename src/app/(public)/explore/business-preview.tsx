@@ -13,6 +13,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { StarRating } from "@/components/star-rating";
+import { SocialLinksBar } from "@/components/social-icons";
 
 type BusinessDetail = {
   id: string;
@@ -26,6 +27,7 @@ type BusinessDetail = {
   address: string | null;
   phone: string | null;
   email: string | null;
+  social_links: Record<string, string> | null;
   booking_link_token: string | null;
   categoryName: string | null;
   avgRating: number | null;
@@ -298,16 +300,19 @@ export function BusinessPreview({
                         </div>
                       )}
                       {biz.phone && (
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <a href={`tel:${biz.phone}`} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
                           <Phone className="h-3.5 w-3.5 shrink-0" />
                           <span>{biz.phone}</span>
-                        </div>
+                        </a>
                       )}
                       {biz.email && (
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <a href={`mailto:${biz.email}`} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
                           <Mail className="h-3.5 w-3.5 shrink-0" />
                           <span>{biz.email}</span>
-                        </div>
+                        </a>
+                      )}
+                      {biz.social_links && Object.values(biz.social_links).some(Boolean) && (
+                        <SocialLinksBar socialLinks={biz.social_links} className="mt-1" />
                       )}
                     </div>
                   </section>

@@ -39,6 +39,116 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_comments: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          post_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          post_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blog_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_posts: {
+        Row: {
+          author_avatar_url: string | null
+          author_bio: string | null
+          author_id: string
+          author_name: string | null
+          body: string
+          cover_image_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          meta_description: string | null
+          meta_title: string | null
+          published_at: string | null
+          slug: string
+          status: Database["public"]["Enums"]["blog_post_status"]
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_avatar_url?: string | null
+          author_bio?: string | null
+          author_id: string
+          author_name?: string | null
+          body?: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["blog_post_status"]
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_avatar_url?: string | null
+          author_bio?: string | null
+          author_id?: string
+          author_name?: string | null
+          body?: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["blog_post_status"]
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           business_id: string
@@ -282,6 +392,7 @@ export type Database = {
           plan_id: string
           primary_category_id: string | null
           slug: string
+          social_links: Json | null
           stripe_billing_customer_id: string | null
           stripe_connect_account_id: string | null
           subscription_status:
@@ -324,6 +435,7 @@ export type Database = {
           plan_id: string
           primary_category_id?: string | null
           slug: string
+          social_links?: Json | null
           stripe_billing_customer_id?: string | null
           stripe_connect_account_id?: string | null
           subscription_status?:
@@ -366,6 +478,7 @@ export type Database = {
           plan_id?: string
           primary_category_id?: string | null
           slug?: string
+          social_links?: Json | null
           stripe_billing_customer_id?: string | null
           stripe_connect_account_id?: string | null
           subscription_status?:
@@ -1457,48 +1570,29 @@ export type Database = {
     Functions: {
       is_staff_of: { Args: { business_id: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
-      reserve_booking_slot:
-        | {
-            Args: {
-              p_business_id: string
-              p_client_id: string
-              p_client_note?: string
-              p_currency: string
-              p_ends_at: string
-              p_hold_minutes?: number
-              p_payment_method: Database["public"]["Enums"]["payment_method"]
-              p_platform_fee: number
-              p_service_amount: number
-              p_service_id: string
-              p_source: Database["public"]["Enums"]["booking_source"]
-              p_staff_chosen: boolean
-              p_staff_id: string
-              p_starts_at: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              p_business_id: string
-              p_client_id: string
-              p_client_note?: string
-              p_contact_id?: string
-              p_currency: string
-              p_ends_at: string
-              p_hold_minutes?: number
-              p_payment_method: Database["public"]["Enums"]["payment_method"]
-              p_platform_fee: number
-              p_service_amount: number
-              p_service_id: string
-              p_source: Database["public"]["Enums"]["booking_source"]
-              p_staff_chosen: boolean
-              p_staff_id: string
-              p_starts_at: string
-            }
-            Returns: string
-          }
+      reserve_booking_slot: {
+        Args: {
+          p_business_id: string
+          p_client_id: string
+          p_client_note?: string
+          p_contact_id?: string
+          p_currency: string
+          p_ends_at: string
+          p_hold_minutes?: number
+          p_payment_method: Database["public"]["Enums"]["payment_method"]
+          p_platform_fee: number
+          p_service_amount: number
+          p_service_id: string
+          p_source: Database["public"]["Enums"]["booking_source"]
+          p_staff_chosen: boolean
+          p_staff_id: string
+          p_starts_at: string
+        }
+        Returns: string
+      }
     }
     Enums: {
+      blog_post_status: "draft" | "published"
       booking_source: "marketplace" | "direct_link" | "manual"
       booking_status:
         | "pending_hold"
@@ -1669,6 +1763,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      blog_post_status: ["draft", "published"],
       booking_source: ["marketplace", "direct_link", "manual"],
       booking_status: [
         "pending_hold",

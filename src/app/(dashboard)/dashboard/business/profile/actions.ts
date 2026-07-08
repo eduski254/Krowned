@@ -16,6 +16,12 @@ const businessSchema = z.object({
   primary_category_id: z.string().uuid().optional().or(z.literal("")),
   phone: z.string().max(20).trim().optional().default(""),
   email: z.string().email().optional().or(z.literal("")),
+  social_instagram: z.string().max(500).trim().optional().default(""),
+  social_facebook: z.string().max(500).trim().optional().default(""),
+  social_twitter: z.string().max(500).trim().optional().default(""),
+  social_linkedin: z.string().max(500).trim().optional().default(""),
+  social_tiktok: z.string().max(500).trim().optional().default(""),
+  social_website: z.string().max(500).trim().optional().default(""),
   address: z.string().max(500).trim().optional().default(""),
   city: z.string().max(100).trim().optional().default(""),
   country: z.string().max(5).trim().optional().default(""),
@@ -47,11 +53,24 @@ export async function upsertBusiness(
   if (!user) return { error: "Not authenticated" };
 
   const businessId = formData.get("business_id") as string | null;
-  const { primary_category_id, email, latitude, longitude, location_notes, ...rest } = parsed.data;
+  const {
+    primary_category_id, email, latitude, longitude, location_notes,
+    social_instagram, social_facebook, social_twitter, social_linkedin, social_tiktok, social_website,
+    ...rest
+  } = parsed.data;
+
+  const socialLinks: Record<string, string> = {};
+  if (social_instagram) socialLinks.instagram = social_instagram;
+  if (social_facebook) socialLinks.facebook = social_facebook;
+  if (social_twitter) socialLinks.twitter = social_twitter;
+  if (social_linkedin) socialLinks.linkedin = social_linkedin;
+  if (social_tiktok) socialLinks.tiktok = social_tiktok;
+  if (social_website) socialLinks.website = social_website;
 
   const payload: Record<string, unknown> = {
     ...rest,
     email: email || null,
+    social_links: Object.keys(socialLinks).length > 0 ? socialLinks : null,
     primary_category_id: primary_category_id || null,
     location_notes: location_notes || null,
     owner_id: user.id,

@@ -82,6 +82,7 @@ export async function GET(
     address: business.address,
     phone: business.phone,
     email: business.email,
+    social_links: business.social_links ?? null,
     booking_link_token: business.booking_link_token,
     categoryName: (business.service_categories as unknown as { name: string } | null)?.name ?? null,
     avgRating,

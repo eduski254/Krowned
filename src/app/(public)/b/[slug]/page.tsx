@@ -6,6 +6,7 @@ import { Suspense, lazy } from "react";
 import { Clock, MapPin, Phone, Mail, Home, Star, ArrowLeft } from "lucide-react";
 import { StarRating } from "@/components/star-rating";
 import { FavoriteButton } from "@/components/favorite-button";
+import { SocialLinksBar } from "@/components/social-icons";
 import { PhotoGallery } from "./photo-gallery";
 
 const BusinessMiniMap = lazy(() =>
@@ -327,18 +328,19 @@ export default async function BusinessProfilePage({
                 </div>
               )}
               {business.phone && (
-                <div className="flex items-center gap-2 text-muted-foreground">
+                <a href={`tel:${business.phone}`} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
                   <Phone className="h-4 w-4 shrink-0" />
                   <span>{business.phone}</span>
-                </div>
+                </a>
               )}
               {business.email && (
-                <div className="flex items-center gap-2 text-muted-foreground">
+                <a href={`mailto:${business.email}`} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
                   <Mail className="h-4 w-4 shrink-0" />
                   <span>{business.email}</span>
-                </div>
+                </a>
               )}
             </div>
+            <SocialLinksBar socialLinks={business.social_links as Record<string, string> | null} className="mt-3 border-t border-border pt-3" />
           </div>
 
           {/* Hours */}

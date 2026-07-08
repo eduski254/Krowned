@@ -7,7 +7,7 @@ import {
   AddressAutocomplete,
   type AddressResult,
 } from "@/components/address-autocomplete";
-import { Copy, Check, Share2 } from "lucide-react";
+import { Copy, Check, Share2, ChevronDown, ChevronUp } from "lucide-react";
 
 type BusinessData = {
   id?: string;
@@ -23,6 +23,7 @@ type BusinessData = {
   latitude?: number | null;
   longitude?: number | null;
   location_notes?: string | null;
+  social_links?: Record<string, string> | null;
 } | null;
 
 export function BusinessProfileForm({
@@ -189,6 +190,9 @@ export function BusinessProfileForm({
           />
         </div>
       </div>
+
+      {/* Social links */}
+      <SocialLinksSection socialLinks={business?.social_links ?? null} />
 
       {/* Additional location info */}
       <div>
@@ -379,6 +383,54 @@ function SlugField({ defaultSlug }: { defaultSlug: string }) {
       <p className="mt-1 text-xs text-muted-foreground">
         This is your public business page link. Share it with clients.
       </p>
+    </div>
+  );
+}
+
+/* ── Social Links collapsible section ─────────────────────────────── */
+
+const SOCIAL_FIELDS = [
+  { key: "instagram", label: "Instagram", placeholder: "https://instagram.com/yourbusiness" },
+  { key: "facebook", label: "Facebook", placeholder: "https://facebook.com/yourbusiness" },
+  { key: "twitter", label: "X (Twitter)", placeholder: "https://x.com/yourbusiness" },
+  { key: "linkedin", label: "LinkedIn", placeholder: "https://linkedin.com/company/yourbusiness" },
+  { key: "tiktok", label: "TikTok", placeholder: "https://tiktok.com/@yourbusiness" },
+  { key: "website", label: "Website", placeholder: "https://yourbusiness.com" },
+] as const;
+
+function SocialLinksSection({ socialLinks }: { socialLinks: Record<string, string> | null }) {
+  const hasAny = socialLinks && Object.values(socialLinks).some(Boolean);
+  const [open, setOpen] = useState(!!hasAny);
+
+  return (
+    <div className="rounded-lg border border-border">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-foreground hover:bg-muted/50 transition-colors"
+      >
+        <span>Social Links</span>
+        {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+      </button>
+      {open && (
+        <div className="grid gap-3 border-t border-border px-4 py-4 sm:grid-cols-2">
+          {SOCIAL_FIELDS.map((f) => (
+            <div key={f.key}>
+              <label htmlFor={`social_${f.key}`} className="block text-xs font-medium text-muted-foreground">
+                {f.label}
+              </label>
+              <input
+                id={`social_${f.key}`}
+                name={`social_${f.key}`}
+                type="url"
+                defaultValue={socialLinks?.[f.key] ?? ""}
+                placeholder={f.placeholder}
+                className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
