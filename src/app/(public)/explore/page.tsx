@@ -6,7 +6,7 @@ import { resolveCardImage } from "@/lib/explore/utils";
 export default async function ExplorePage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string; city?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; city?: string; date?: string; time?: string }>;
 }) {
   const params = await searchParams;
   const supabase = await createClient();
@@ -138,6 +138,8 @@ export default async function ExplorePage({
         q: params.q ?? "",
         category: params.category ?? "",
         city: params.city ?? "",
+        date: params.date ?? "",
+        time: params.time ?? "",
       }}
       isLoggedIn={!!user}
       hasMapKey={!!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}

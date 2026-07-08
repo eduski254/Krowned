@@ -5,6 +5,12 @@ import { NotificationBell } from "./notification-bell";
 import { logoutAction } from "@/app/(auth)/actions";
 import type { NavItem } from "./nav-config";
 
+const PUBLIC_LINKS = [
+  { href: "/explore", label: "Explore" },
+  { href: "/how-it-works", label: "How it Works" },
+  { href: "/for-professionals", label: "For Professionals" },
+];
+
 export function Topbar({
   userId,
   userName,
@@ -20,8 +26,26 @@ export function Topbar({
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-border bg-card px-4 sm:px-6">
-      <MobileNav items={navItems} userId={userId} />
-      <div className="hidden lg:block" />
+      <div className="flex items-center gap-1">
+        <MobileNav items={navItems} userId={userId} />
+        <Link
+          href="/"
+          className="mr-4 hidden text-lg font-heading font-extrabold text-primary lg:block"
+        >
+          Zawadi
+        </Link>
+        <nav className="hidden items-center gap-1 lg:flex">
+          {PUBLIC_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
       <div className="flex items-center gap-3">
         <NotificationBell userId={userId} />
         <ThemeToggle />

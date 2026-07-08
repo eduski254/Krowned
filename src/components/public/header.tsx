@@ -32,7 +32,7 @@ export async function PublicHeader() {
   const initial = (fullName || "?").charAt(0).toUpperCase();
 
   return (
-    <header className="border-b border-border bg-background">
+    <header className="relative z-40 border-b border-border bg-background">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <Link
           href="/"

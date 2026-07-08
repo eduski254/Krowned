@@ -15,12 +15,17 @@ You are building **Zawadi**, a beauty & wellness booking marketplace (a from-scr
 - Admin data tables (`DataTable` component): search, column sort, pagination (20/page), CSV + PDF export (`jspdf` + `jspdf-autotable`). Applied to businesses, users, bookings.
 - Admin category management: CRUD, reorder, Lucide icon picker (shared `src/lib/category-icons.ts` map), super-admin-only, delete guarded by service-in-use check.
 - Quick fixes: category icons render as Lucide components, 12h AM/PM time display, per-service "Book" buttons on business profile.
+- Stripe integration: Connect Express (payouts), Billing (subscriptions w/ 14-day trial), booking prepay via Payment Intents, webhook handler, Resend transactional email (8 templates, .ics attachments).
+- Manual bookings: `business_contacts` table, calendar modal, staff override, pay-at-store.
+- Super admin: impersonation (cookie-based), users management (role filters, suspend/unsuspend, make/remove admin, delete), businesses management (verify/suspend/reject, view as).
+- Live search on `/explore`: client-side instant filtering + ranking, search dropdown (services + businesses), location (geolocation + history), When filter (calendar + time-of-day), Google Maps with SVG pins + InfoWindows + auto-fit bounds.
+- Homepage Booksy-style hero search: shared search components (`src/components/search/`), popular quick-search chips, navigates to `/explore` with URL params.
+- Dashboard topbar: public nav links (Explore, How it Works, For Professionals) for easy site navigation from any dashboard.
+- Full mobile responsiveness: all pages tested across mobile/tablet/desktop breakpoints.
 
 **NOT DONE / NEXT** (in priority order — don't build unless the task says so)
-1. **Stripe** — booking flow currently confirms as a STUB (no payment). Need: Payment Intents (prepay), Connect Express (vendor payouts), Billing (Free→Premium subscription, 14-day trial). `// REVIEW` markers in `booking-flow.tsx` and `actions.ts` where payment plugs in. Also: guest checkout + auto-account-creation, elevated confirmation page (add-to-calendar .ics, QR code, booking ref). Requires Resend for transactional email.
-2. **Analytics dashboards with charts** (admin overview + finance) — best after Stripe so there's real transaction data.
-3. **Live / fuzzy search-as-you-type** on `/explore`.
-4. **CMS** (deferred to v2).
+1. **Analytics dashboards with charts** (admin overview + finance) — best after Stripe so there's real transaction data.
+2. **CMS** (deferred to v2).
 
 ## Frontend / UI work — read the design skill first
 Before writing or editing **any** UI (pages, components, styling, theming), consult **`.claude/skills/zawadi-frontend/`** — read its `SKILL.md` and `tokens.css`, and check `inspiration/` for visual reference. Use Eddie's brand tokens, not default/generic styling. Brand tokens are currently PLACEHOLDERS pending Eddie's real values.

@@ -14,9 +14,9 @@ const TIME_LABELS: Record<TimeOfDay, string> = {
 
 const TIME_SUBLABELS: Record<TimeOfDay, string> = {
   anytime: "",
-  morning: "6am – 12pm",
-  afternoon: "12pm – 5pm",
-  evening: "5pm – 9pm",
+  morning: "6am - 12pm",
+  afternoon: "12pm - 5pm",
+  evening: "5pm - 9pm",
 };
 
 export function WhenDropdown({
@@ -40,23 +40,20 @@ export function WhenDropdown({
 
   const calDays = useMemo(() => {
     const first = new Date(viewYear, viewMonth, 1);
-    const startDay = first.getDay(); // 0=Sun
+    const startDay = first.getDay();
     const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
     const days: Array<{ date: Date; inMonth: boolean }> = [];
 
-    // Fill leading days from previous month
     for (let i = startDay - 1; i >= 0; i--) {
       const d = new Date(viewYear, viewMonth, -i);
       days.push({ date: d, inMonth: false });
     }
 
-    // Days in current month
     for (let d = 1; d <= daysInMonth; d++) {
       days.push({ date: new Date(viewYear, viewMonth, d), inMonth: true });
     }
 
-    // Fill trailing to complete the grid (up to 42 cells = 6 rows)
     while (days.length < 42) {
       const last = days[days.length - 1].date;
       const next = new Date(last);
@@ -100,7 +97,7 @@ export function WhenDropdown({
   const hasSelection = selectedDate || selectedTime !== "anytime";
 
   return (
-    <div className="absolute left-0 right-0 top-full z-50 mt-1 w-[300px] overflow-hidden rounded-xl border border-border bg-card shadow-xl sm:left-auto sm:right-0">
+    <div className="absolute left-0 top-full z-50 mt-1 w-[280px] overflow-hidden rounded-xl border border-border bg-card shadow-xl sm:w-[300px]">
       {/* Calendar */}
       <div className="p-3">
         <div className="mb-2 flex items-center justify-between">
@@ -264,23 +261,20 @@ export function isOpenAt(
   if (!date && time === "anytime") return true;
   if (hours.length === 0) return false;
 
-  // Get day of week from date (0=Sun)
   let dayOfWeek: number | null = null;
   if (date) {
     const d = new Date(date + "T00:00:00");
     dayOfWeek = d.getDay();
   }
 
-  // Find matching hours
   let candidates = hours;
   if (dayOfWeek !== null) {
     candidates = hours.filter((h) => h.day_of_week === dayOfWeek);
-    if (candidates.length === 0) return false; // closed that day
+    if (candidates.length === 0) return false;
   }
 
   if (time === "anytime") return candidates.length > 0;
 
-  // Time ranges
   const ranges: Record<string, [number, number]> = {
     morning: [6, 12],
     afternoon: [12, 17],
@@ -288,11 +282,9 @@ export function isOpenAt(
   };
   const [start, end] = ranges[time];
 
-  // Check if any candidate hours overlap with the time range
   return candidates.some((h) => {
     const openHour = parseTimeHour(h.open_time);
     const closeHour = parseTimeHour(h.close_time);
-    // Overlap check: business is open during some part of the time range
     return openHour < end && closeHour > start;
   });
 }

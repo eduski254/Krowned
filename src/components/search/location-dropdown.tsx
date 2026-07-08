@@ -53,7 +53,6 @@ export function LocationDropdown({
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
-          // Reverse geocode using a simple fetch to nominatim (free, no key)
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&zoom=10`,
           );
@@ -87,7 +86,7 @@ export function LocationDropdown({
   }, []);
 
   return (
-    <div className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-xl border border-border bg-card shadow-xl">
+    <div className="absolute left-0 top-full z-50 mt-1 w-full min-w-[220px] overflow-hidden rounded-xl border border-border bg-card shadow-xl sm:w-[280px]">
       {/* Your Location */}
       <div>
         <div className="px-3 pb-1 pt-2.5">

@@ -2,8 +2,10 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/public/header";
 import { Footer } from "@/components/public/footer";
+import { HeroSearch } from "@/components/public/hero-search";
 import { Star, Search, Calendar, CheckCircle, MapPin, ArrowRight } from "lucide-react";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
+import { resolveCardImage } from "@/lib/explore/utils";
 
 // REVIEW: Replace with a real licensed image before launch.
 // Swap this single constant to change the homepage hero background.
@@ -13,28 +15,68 @@ const HERO_BG_IMAGE =
 export default async function HomePage() {
   const supabase = await createClient();
 
-  // Fetch categories for the grid
-  const { data: categories } = await supabase
-    .from("service_categories")
-    .select("id, name, slug, icon")
-    .order("sort_order")
-    .limit(8);
+  // Fetch categories, businesses, services in parallel
+  const [catRes, bizRes, svcRes] = await Promise.all([
+    supabase
+      .from("service_categories")
+      .select("id, name, slug, icon")
+      .order("sort_order")
+      .limit(8),
+    supabase
+      .from("businesses")
+      .select(
+        "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, primary_category_id, service_categories(name, slug)",
+      )
+      .eq("is_published", true)
+      .eq("verification_status", "verified")
+      .order("is_featured", { ascending: false })
+      .limit(200),
+    supabase
+      .from("services")
+      .select("name, business_id")
+      .eq("is_active", true),
+  ]);
 
-  // Fetch featured/top businesses
-  const { data: topBusinesses } = await supabase
-    .from("businesses")
-    .select("id, name, slug, logo_url, city, country, is_featured")
-    .eq("is_published", true)
-    .eq("verification_status", "verified")
-    .order("is_featured", { ascending: false })
-    .limit(6);
+  const categories = catRes.data ?? [];
+  const businesses = bizRes.data ?? [];
+  const services = svcRes.data ?? [];
+
+  // Build search businesses for the hero dropdown
+  const searchBusinesses = businesses.map((biz) => {
+    const cat = biz.service_categories as unknown as { name: string; slug: string } | null;
+    return {
+      id: biz.id,
+      name: biz.name,
+      slug: biz.slug,
+      description: biz.description,
+      imageUrl: resolveCardImage(biz),
+      categoryName: cat?.name ?? null,
+      city: biz.city,
+      avgRating: null as number | null,
+    };
+  });
+
+  // Build service names with counts
+  const publishedBizIds = new Set(businesses.map((b) => b.id));
+  const svcMap = new Map<string, Set<string>>();
+  for (const s of services) {
+    if (!publishedBizIds.has(s.business_id)) continue;
+    const key = s.name.trim();
+    if (!svcMap.has(key)) svcMap.set(key, new Set());
+    svcMap.get(key)!.add(s.business_id);
+  }
+  const serviceNames = Array.from(svcMap.entries())
+    .map(([name, bizIds]) => ({ name, count: bizIds.size }))
+    .sort((a, b) => b.count - a.count);
+
+  const topBusinesses = businesses.slice(0, 6);
 
   return (
     <div className="flex min-h-full flex-col">
       <PublicHeader />
 
       {/* Hero — full viewport with background image + gradient overlay */}
-      <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden text-center">
+      <section className="relative flex min-h-[85dvh] items-center justify-center overflow-hidden text-center sm:min-h-[100dvh]">
         {/* Background image */}
         <img
           src={HERO_BG_IMAGE}
@@ -49,45 +91,21 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-black/20" />
 
         {/* Content */}
-        <div className="relative z-10 mx-auto max-w-3xl px-4 py-20 sm:py-28">
-          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-5xl lg:text-6xl">
+        <div className="relative z-10 mx-auto w-full max-w-3xl px-4 py-16 sm:py-24 lg:py-28">
+          <h1 className="font-heading text-3xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
             Beauty &amp; wellness, booked effortlessly
           </h1>
-          <p className="mt-6 text-lg text-white/90 drop-shadow-sm">
+          <p className="mx-auto mt-4 max-w-xl text-base text-white/90 drop-shadow-sm sm:mt-6 sm:text-lg">
             Discover top professionals near you. Book in seconds. Grow your business with Zawadi.
           </p>
 
-          {/* Hero search bar */}
-          <form
-            action="/explore"
-            method="GET"
-            className="mx-auto mt-10 flex max-w-xl flex-col gap-2 rounded-xl bg-background/95 p-2 shadow-lg backdrop-blur-sm sm:flex-row"
-          >
-            <div className="flex flex-1 items-center gap-2 rounded-lg bg-background px-3 py-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
-              <input
-                name="q"
-                type="text"
-                placeholder="What service are you looking for?"
-                className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
-              />
-            </div>
-            <div className="flex flex-1 items-center gap-2 rounded-lg bg-background px-3 py-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              <input
-                name="city"
-                type="text"
-                placeholder="Location"
-                className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
-              />
-            </div>
-            <button
-              type="submit"
-              className="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-            >
-              Search
-            </button>
-          </form>
+          {/* Hero search bar — Booksy-style with dropdowns */}
+          <div className="mt-8 sm:mt-10">
+            <HeroSearch
+              businesses={searchBusinesses}
+              serviceNames={serviceNames}
+            />
+          </div>
         </div>
       </section>
 

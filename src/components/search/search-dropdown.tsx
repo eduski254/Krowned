@@ -2,9 +2,19 @@
 
 import { useMemo } from "react";
 import { Scissors, Building2 } from "lucide-react";
-import type { ExploreBusiness } from "@/lib/explore/actions";
 
 export type ServiceSuggestion = { name: string; count: number };
+
+export type SearchBusiness = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  imageUrl: string | null;
+  categoryName: string | null;
+  city: string | null;
+  avgRating: number | null;
+};
 
 export function SearchDropdown({
   query,
@@ -14,7 +24,7 @@ export function SearchDropdown({
   onSelectBusiness,
 }: {
   query: string;
-  businesses: ExploreBusiness[];
+  businesses: SearchBusiness[];
   serviceNames: ServiceSuggestion[];
   onSelectService: (name: string) => void;
   onSelectBusiness: (slug: string, name: string) => void;

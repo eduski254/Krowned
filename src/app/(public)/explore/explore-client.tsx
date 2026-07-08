@@ -29,14 +29,14 @@ import type { ExploreBusiness } from "@/lib/explore/actions";
 import {
   SearchDropdown,
   type ServiceSuggestion,
-} from "./search-dropdown";
-import { LocationDropdown, addToLocationHistory } from "./location-dropdown";
+} from "@/components/search/search-dropdown";
+import { LocationDropdown, addToLocationHistory } from "@/components/search/location-dropdown";
 import {
   WhenDropdown,
   formatWhenLabel,
   isOpenAt,
   type TimeOfDay,
-} from "./when-filter";
+} from "@/components/search/when-filter";
 
 const ExploreMap = lazy(() =>
   import("./explore-map").then((m) => ({ default: m.ExploreMap })),
@@ -148,7 +148,7 @@ export function ExploreClient({
   categories: Category[];
   serviceNames: ServiceSuggestion[];
   businessHours: BusinessHours;
-  initialFilters: { q: string; category: string; city: string };
+  initialFilters: { q: string; category: string; city: string; date: string; time: string };
   isLoggedIn: boolean;
   hasMapKey: boolean;
 }) {
@@ -160,8 +160,10 @@ export function ExploreClient({
   const [city, setCity] = useState(initialFilters.city);
   const [cityInput, setCityInput] = useState(initialFilters.city);
   const [category, setCategory] = useState(initialFilters.category);
-  const [whenDate, setWhenDate] = useState<string | null>(null);
-  const [whenTime, setWhenTime] = useState<TimeOfDay>("anytime");
+  const [whenDate, setWhenDate] = useState<string | null>(initialFilters.date || null);
+  const [whenTime, setWhenTime] = useState<TimeOfDay>(
+    (["morning", "afternoon", "evening"].includes(initialFilters.time) ? initialFilters.time : "anytime") as TimeOfDay,
+  );
 
   // UI state
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
@@ -294,7 +296,7 @@ export function ExploreClient({
     <div className="flex h-[calc(100vh-57px)] flex-col">
       {/* ── Filters bar ── */}
       <div className="border-b border-border bg-background px-4 py-3 sm:px-6">
-        <div className="flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="flex max-w-7xl flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           {/* Search input + dropdown */}
           <div ref={searchRef} className="relative flex-1">
             <div className="group flex items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
