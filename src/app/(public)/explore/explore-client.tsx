@@ -410,17 +410,27 @@ export function ExploreClient({
               <Calendar className="h-4 w-4" />
               <span className="whitespace-nowrap">{whenLabel ?? "When"}</span>
               {whenLabel && (
-                <button
+                <span
+                  role="button"
+                  tabIndex={0}
                   onClick={(e) => {
                     e.stopPropagation();
                     setWhenDate(null);
                     setWhenTime("anytime");
                     setShowWhenDropdown(false);
                   }}
-                  className="rounded-full p-0.5 text-primary/60 hover:text-primary transition-colors"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.stopPropagation();
+                      setWhenDate(null);
+                      setWhenTime("anytime");
+                      setShowWhenDropdown(false);
+                    }
+                  }}
+                  className="rounded-full p-0.5 text-primary/60 hover:text-primary transition-colors cursor-pointer"
                 >
                   <X className="h-3 w-3" />
-                </button>
+                </span>
               )}
             </button>
             {showWhenDropdown && (
