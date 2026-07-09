@@ -460,15 +460,27 @@ export function ExploreClient({
         {/* List panel */}
         <div
           ref={listPanelRef}
-          className={`flex-1 overflow-y-auto p-4 sm:p-6 lg:w-1/2 lg:flex-none ${
+          style={{ boxShadow: "4px 0 16px rgba(0, 0, 0, 0.1)" }}
+          className={`relative z-10 flex-1 overflow-y-auto p-4 sm:p-6 lg:w-1/2 lg:flex-none ${
             mobileMapOpen ? "hidden lg:block" : ""
           }`}
         >
           <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">
-                {filtered.length} result
-                {filtered.length !== 1 ? "s" : ""}
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">
+                {(() => {
+                  const catName = category ? categories.find((c) => c.slug === category)?.name : null;
+                  const parts: string[] = [];
+                  if (q) parts.push(q);
+                  if (catName && !q) parts.push(catName);
+                  if (city) parts.push(city);
+                  if (parts.length === 0) parts.push("All");
+                  parts.push("Beauty & Wellness");
+                  return parts.join(" · ");
+                })()}
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                {filtered.length} listing{filtered.length !== 1 ? "s" : ""} available
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -671,10 +683,10 @@ const BusinessCard = forwardRef<
         onKeyDown={(e) => { if (e.key === "Enter") onSelect(biz); }}
         onMouseEnter={() => onHover(biz.id)}
         onMouseLeave={() => onHover(null)}
-        style={{ animationDelay: `${delay}ms` }}
-        className={`group relative block cursor-pointer overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] ${
+        style={{ animationDelay: `${delay}ms`, boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }}
+        className={`group relative block cursor-pointer overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 active:scale-[0.98] ${
           isHighlighted
-            ? "border-primary ring-2 ring-primary/20 shadow-md"
+            ? "border-primary ring-2 ring-primary/20"
             : "border-border"
         }`}
       >
@@ -734,10 +746,10 @@ const BusinessCard = forwardRef<
       onKeyDown={(e) => { if (e.key === "Enter") onSelect(biz); }}
       onMouseEnter={() => onHover(biz.id)}
       onMouseLeave={() => onHover(null)}
-      style={{ animationDelay: `${delay}ms` }}
-      className={`group relative flex cursor-pointer overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.99] ${
+      style={{ animationDelay: `${delay}ms`, boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }}
+      className={`group relative flex cursor-pointer overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 active:scale-[0.99] ${
         isHighlighted
-          ? "border-primary ring-2 ring-primary/20 shadow-md"
+          ? "border-primary ring-2 ring-primary/20"
           : "border-border"
       }`}
     >

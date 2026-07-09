@@ -123,7 +123,8 @@ export default async function HomePage() {
               <Link
                 key={cat.id}
                 href={`/explore?category=${cat.slug}`}
-                className="group relative flex flex-col items-center justify-center rounded-xl border border-border bg-card p-8 text-center transition-shadow hover:shadow-lg"
+                style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }}
+                className="group relative flex flex-col items-center justify-center rounded-xl border border-border bg-card p-8 text-center transition-all hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] hover:-translate-y-0.5"
               >
                 {cat.icon && CATEGORY_ICONS[cat.icon] && (() => {
                   const Icon = CATEGORY_ICONS[cat.icon];
@@ -156,7 +157,8 @@ export default async function HomePage() {
                 <Link
                   key={biz.id}
                   href={`/b/${biz.slug}`}
-                  className="group rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-lg"
+                  style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }}
+                  className="group rounded-xl border border-border bg-card p-6 transition-all hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] hover:-translate-y-0.5"
                 >
                   <div className="flex items-center gap-4">
                     {biz.logo_url ? (
@@ -255,7 +257,7 @@ export default async function HomePage() {
             { name: "Wanjiku M.", text: "As a salon owner, Zawadi has helped me fill empty slots and grow my client base.", rating: 5 },
             { name: "David O.", text: "Finally a platform that understands our market. Clean, fast, and reliable.", rating: 5 },
           ].map((t) => (
-            <div key={t.name} className="rounded-xl border border-border bg-card p-6">
+            <div key={t.name} style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }} className="rounded-xl border border-border bg-card p-6">
               <div className="flex gap-0.5 mb-3">
                 {Array.from({ length: t.rating }).map((_, i) => (
                   <Star key={i} className="h-4 w-4 fill-warning text-warning" />
