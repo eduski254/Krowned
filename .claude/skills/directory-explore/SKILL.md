@@ -159,7 +159,60 @@ All shared search components accept `variant?: "default" | "glass"`:
 - Glass calendar: day buttons use `hover:bg-white/20`, selected uses `bg-white/30`, today ring uses `ring-white/50`
 - Glass time buttons: `bg-white/10 border-white/20`, active: `bg-white/25`
 
-### 11. Portal-based tooltips for auth-gated actions
+### 11. Card elevation & shadow treatment
+
+Listing cards use a consistent shadow + hover lift pattern:
+
+- **Base shadow**: `style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }}` (inline style — doesn't map cleanly to Tailwind)
+- **Hover shadow**: `hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)]` (Tailwind arbitrary value, deeper on hover)
+- **Hover lift**: `hover:-translate-y-0.5` (subtle upward shift for interactive cards)
+- Applied to: listing cards (grid + list), homepage category cards, top professionals cards, testimonial cards (shadow only, no lift for non-interactive)
+
+### 12. Panel depth shadow (listings over map)
+
+The listings panel casts a right-edge shadow so the map appears to sit *under* it:
+
+```tsx
+<div
+  className="relative z-10 ..."
+  style={{ boxShadow: "4px 0 16px rgba(0, 0, 0, 0.1)" }}
+>
+```
+
+- `relative z-10` establishes stacking context above the map (which is at default z-index)
+- Shadow direction: `4px 0 16px` casts to the right only
+
+### 13. Contextual listing header (Zillow-style)
+
+Replace a plain "X results" counter with a contextual title + subtitle:
+
+```
+Braids in Nairobi — Beauty & Wellness    ← dynamic title (filters + domain suffix)
+12 listings available                     ← subtitle with count
+```
+
+Build the title dynamically from active filters:
+- Search query → shown first (e.g., "Braids")
+- Category name → appended if active
+- City → "in {city}"
+- Fallback: just "Beauty & Wellness" with no filters
+
+### 14. Clickable contact info
+
+In business contact cards (preview panel + full profile page):
+- Phone: `<a href="tel:{phone}">` with hover color transition
+- Email: `<a href="mailto:{email}">` with hover color transition
+- Social links: `<SocialLinksBar>` component renders branded SVG icons (Instagram, Facebook, X, LinkedIn, TikTok, Website) as `<a target="_blank">` links
+
+### 15. BusinessPreview reuse
+
+The `BusinessPreview` slide-in panel is reusable beyond the explore page:
+- Import from `@/app/(public)/explore/business-preview`
+- Used in: explore page (card/map click), favorites dashboard (card click)
+- Props: `slug` (to fetch data), `imageUrl` (for immediate cover display), `onClose` callback
+- Pattern: render cards as `<button>` instead of `<Link>`, track `selectedSlug` state, conditionally render `<BusinessPreview>`
+
+### 16. Portal-based tooltips for auth-gated actions
 
 For actions that require login (e.g., favorites), don't redirect — show a tooltip:
 
@@ -180,6 +233,7 @@ src/
     public/
       hero-search.tsx        # Landing page glass search bar
     favorite-button.tsx      # Heart toggle with portal tooltip for logged-out users
+    social-icons.tsx         # SocialLinksBar — branded SVG icons (IG, FB, X, LinkedIn, TikTok, Web)
   app/
     (public)/
       explore/
@@ -286,3 +340,4 @@ The reference code uses semantic CSS tokens (`text-foreground`, `bg-card`, `bord
 7. **Stacking context for dropdowns vs sibling elements** — Parent container needs `relative z-10` for child `z-50` dropdowns to render above sibling elements (e.g., popular chips at `z-0`). Just `z-50` on the dropdown alone won't work without an established stacking context.
 8. **Tooltip clipped by `overflow-hidden`** — Use `createPortal(tooltip, document.body)` with `getBoundingClientRect()` for fixed positioning. Never render tooltips inside containers with `overflow-hidden`.
 9. **`useState` for side effects** — Don't use `useState(() => { document.addEventListener... })`. Use `useEffect` with proper cleanup for event listeners.
+10. **Inline shadow + Tailwind hover** — Use inline `style={{ boxShadow: "..." }}` for the base shadow and Tailwind arbitrary value `hover:shadow-[...]` for hover. The base shadow value doesn't map to a standard Tailwind class.

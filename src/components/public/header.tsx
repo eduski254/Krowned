@@ -34,7 +34,7 @@ export async function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <Link
           href="/"
           className="text-xl font-heading font-extrabold text-primary"
