@@ -23,15 +23,15 @@ const supabase = createClient(
 const PASSWORD = "Test1234!";
 
 async function createUser(email: string, fullName: string) {
-  // Check if user already exists in profiles
-  const { data: existing } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
+  // Check if user already exists in auth
+  const { data: allUsers } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+  const existing = allUsers?.users?.find((u) => u.email === email || u.email === email.toLowerCase());
 
   if (existing) {
-    console.log(`  User ${email} already exists (${existing.id}), skipping creation.`);
+    // Reset password to known test password
+    await supabase.auth.admin.updateUserById(existing.id, { password: PASSWORD });
+    console.log(`  User ${email} already exists (${existing.id}), password reset.`);
+    await supabase.from("profiles").upsert({ id: existing.id, full_name: fullName }, { onConflict: "id" });
     return existing.id;
   }
 
@@ -44,21 +44,6 @@ async function createUser(email: string, fullName: string) {
   });
 
   if (error) {
-    if (error.message.includes("already been registered")) {
-      // User exists in auth but maybe profile trigger created the row
-      const { data: users } = await supabase.auth.admin.listUsers({ perPage: 1000 });
-      const found = users?.users?.find((u) => u.email === email.toLowerCase() || u.email === email);
-      if (found) {
-        console.log(`  User ${email} exists in auth (${found.id}), reusing.`);
-        // Ensure profile exists
-        await supabase.from("profiles").upsert({
-          id: found.id,
-          email: email,
-          full_name: fullName,
-        }, { onConflict: "id" });
-        return found.id;
-      }
-    }
     throw new Error(`Failed to create user ${email}: ${error.message}`);
   }
 
@@ -162,9 +147,9 @@ async function seedMagnateCuts() {
 
   // Add services
   const services = [
-    { name: "Classic Haircut", duration_minutes: 30, price_amount: 1500, currency: "KES" },
-    { name: "Beard Trim & Shape", duration_minutes: 20, price_amount: 800, currency: "KES" },
-    { name: "Hot Towel Shave", duration_minutes: 45, price_amount: 2000, currency: "KES" },
+    { name: "Classic Haircut", duration_minutes: 30, price_amount: 150000, currency: "KES" },
+    { name: "Beard Trim & Shape", duration_minutes: 20, price_amount: 80000, currency: "KES" },
+    { name: "Hot Towel Shave", duration_minutes: 45, price_amount: 200000, currency: "KES" },
   ];
 
   for (const svc of services) {
@@ -339,9 +324,9 @@ async function seedEdwinOmandi() {
 
   // Services
   const services = [
-    { name: "Gel Manicure", duration_minutes: 45, price_amount: 2500, currency: "KES" },
-    { name: "Classic Pedicure", duration_minutes: 60, price_amount: 3000, currency: "KES" },
-    { name: "Full Body Massage", duration_minutes: 90, price_amount: 5000, currency: "KES" },
+    { name: "Gel Manicure", duration_minutes: 45, price_amount: 250000, currency: "KES" },
+    { name: "Classic Pedicure", duration_minutes: 60, price_amount: 300000, currency: "KES" },
+    { name: "Full Body Massage", duration_minutes: 90, price_amount: 500000, currency: "KES" },
   ];
 
   for (const svc of services) {
@@ -390,14 +375,22 @@ async function seedEdwinOmandi() {
 
 async function verifySuperAdmin() {
   console.log("\n--- 5. Verify edwinnchaga@gmail.com (Super Admin) ---");
-  const { data, error } = await supabase
+  const { data: allUsers } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+  const authUser = allUsers?.users?.find((u) => u.email === "edwinnchaga@gmail.com");
+
+  if (!authUser) {
+    console.log("  WARNING: edwinnchaga@gmail.com NOT FOUND in auth!");
+    return;
+  }
+
+  const { data } = await supabase
     .from("profiles")
-    .select("id, full_name, platform_role, email")
-    .eq("email", "edwinnchaga@gmail.com")
+    .select("id, full_name, platform_role")
+    .eq("id", authUser.id)
     .maybeSingle();
 
   if (!data) {
-    console.log("  WARNING: edwinnchaga@gmail.com NOT FOUND in profiles!");
+    console.log("  WARNING: Profile not found for auth user!");
     return;
   }
 
