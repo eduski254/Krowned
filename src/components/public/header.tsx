@@ -35,11 +35,17 @@ export async function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <Link
-          href="/"
-          className="text-xl font-heading font-extrabold text-primary"
-        >
-          Layd
+        <Link href="/" className="flex items-center">
+          <img
+            src="/brand/logo-white.png"
+            alt="Krown"
+            className="h-8 w-auto hidden dark:block"
+          />
+          <img
+            src="/brand/logo-black.png"
+            alt="Krown"
+            className="h-8 w-auto block dark:hidden"
+          />
         </Link>
 
         {/* Desktop nav */}

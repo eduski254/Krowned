@@ -86,8 +86,17 @@ export function Sidebar({
   return (
     <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border lg:bg-card">
       <div className="flex h-16 items-center border-b border-border px-6">
-        <Link href="/" className="text-xl font-heading font-extrabold text-primary">
-          Layd
+        <Link href="/" className="flex items-center">
+          <img
+            src="/brand/logo-white.png"
+            alt="Krown"
+            className="h-7 w-auto dark:block hidden"
+          />
+          <img
+            src="/brand/logo-black.png"
+            alt="Krown"
+            className="h-7 w-auto dark:hidden block"
+          />
         </Link>
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-4">

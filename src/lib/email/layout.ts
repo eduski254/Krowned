@@ -1,10 +1,10 @@
 /**
- * Shared HTML email layout wrapper for all Layd transactional emails.
+ * Shared HTML email layout wrapper for all Krown transactional emails.
  * Uses inline styles for maximum email client compatibility.
  */
 
-const BRAND_PRIMARY = "#C86B3C";
-const BRAND_DARK = "#3B2417";
+const BRAND_PRIMARY = "#D9B36C";
+const BRAND_DARK = "#0C0B0A";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadibooking.vercel.app";
 
@@ -27,7 +27,7 @@ export function emailLayout(
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Layd</title>
+  <title>Krown</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f4f4f7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
   ${preheader ? `<div style="display:none;max-height:0;overflow:hidden;">${preheader}</div>` : ""}
@@ -38,7 +38,7 @@ export function emailLayout(
           <!-- Header -->
           <tr>
             <td style="background-color:${BRAND_PRIMARY};padding:24px 32px;text-align:center;">
-              <span style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:1px;">Layd</span>
+              <span style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:1px;">Krown</span>
             </td>
           </tr>
           <!-- Body -->
@@ -50,8 +50,8 @@ export function emailLayout(
           <!-- Footer -->
           <tr>
             <td style="padding:20px 32px;border-top:1px solid #e8e8ed;text-align:center;font-size:12px;color:#9ca3af;">
-              <p style="margin:0;">You received this email because you have an account on Layd.</p>
-              <p style="margin:8px 0 0;">&copy; ${new Date().getFullYear()} Layd. All rights reserved.</p>
+              <p style="margin:0;">You received this email because you have an account on Krown.</p>
+              <p style="margin:8px 0 0;">&copy; ${new Date().getFullYear()} Krown. All rights reserved.</p>
               ${manageLink}
             </td>
           </tr>

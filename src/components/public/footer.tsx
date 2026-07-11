@@ -6,7 +6,16 @@ export function Footer() {
       <div className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <span className="text-lg font-heading font-extrabold text-primary">Layd</span>
+            <img
+              src="/brand/logo-white.png"
+              alt="Krown"
+              className="h-7 w-auto hidden dark:block"
+            />
+            <img
+              src="/brand/logo-black.png"
+              alt="Krown"
+              className="h-7 w-auto block dark:hidden"
+            />
             <p className="mt-3 text-sm text-muted-foreground">
               Beauty &amp; wellness, booked effortlessly.
             </p>
@@ -34,7 +43,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          Layd &mdash; Beauty &amp; Wellness Marketplace
+          Krown &mdash; Beauty &amp; Wellness Marketplace
         </div>
       </div>
     </footer>

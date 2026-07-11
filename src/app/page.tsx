@@ -9,8 +9,7 @@ import { resolveCardImage } from "@/lib/explore/utils";
 
 // REVIEW: Replace with a real licensed image before launch.
 // Swap this single constant to change the homepage hero background.
-const HERO_BG_IMAGE =
-  "https://images.unsplash.com/photo-1592647420148-bfcc177e2117?auto=format&fit=crop&w=1920&q=80";
+const HERO_BG_IMAGE = "/brand/hero-salon.png";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -96,7 +95,7 @@ export default async function HomePage() {
             Beauty &amp; wellness, booked effortlessly
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base text-white/90 drop-shadow-sm sm:mt-6 sm:text-lg">
-            Discover top professionals near you. Book in seconds. Grow your business with Layd.
+            Discover top professionals near you. Book in seconds. Grow your business with Krown.
           </p>
 
           {/* Hero search bar — Booksy-style with dropdowns */}
@@ -209,7 +208,7 @@ export default async function HomePage() {
       {/* How it works */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-          How Layd Works
+          How Krown Works
         </h2>
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           {[
@@ -235,7 +234,7 @@ export default async function HomePage() {
             Are you a beauty professional?
           </h2>
           <p className="mt-4 text-lg opacity-90">
-            Join Layd and reach thousands of new clients. Manage bookings, staff, and payments all in one place.
+            Join Krown and reach thousands of new clients. Manage bookings, staff, and payments all in one place.
           </p>
           <Link
             href="/for-professionals"
@@ -253,8 +252,8 @@ export default async function HomePage() {
         </h2>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {[
-            { name: "Amani K.", text: "Found my new favorite hair stylist through Layd. The booking was so easy!", rating: 5 },
-            { name: "Wanjiku M.", text: "As a salon owner, Layd has helped me fill empty slots and grow my client base.", rating: 5 },
+            { name: "Amani K.", text: "Found my new favorite hair stylist through Krown. The booking was so easy!", rating: 5 },
+            { name: "Wanjiku M.", text: "As a salon owner, Krown has helped me fill empty slots and grow my client base.", rating: 5 },
             { name: "David O.", text: "Finally a platform that understands our market. Clean, fast, and reliable.", rating: 5 },
           ].map((t) => (
             <div key={t.name} style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }} className="rounded-xl border border-border bg-card p-6">

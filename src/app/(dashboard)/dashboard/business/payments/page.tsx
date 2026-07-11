@@ -66,7 +66,7 @@ export default async function BusinessPaymentsPage() {
             Subscription (Stripe Billing)
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Your Layd Pro subscription for the booking engine and premium features.
+            Your Krown Pro subscription for the booking engine and premium features.
           </p>
           <div className="mt-4">
             <span

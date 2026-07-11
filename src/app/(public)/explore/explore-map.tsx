@@ -171,7 +171,7 @@ function MapContent({
               {/* Pin body */}
               <path
                 d="M16 0C7.163 0 0 7.163 0 16c0 10 14.4 23.1 15 23.7.3.2.7.3 1 .3s.7-.1 1-.3c.6-.6 15-13.7 15-23.7C32 7.163 24.837 0 16 0z"
-                fill={highlightedId === biz.id ? "#7B4B2A" : "#C86B3C"}
+                fill={highlightedId === biz.id ? "#8A6A2F" : "#D9B36C"}
               />
               {/* White inner circle */}
               <circle cx="16" cy="15" r="7" fill="white" />
@@ -182,7 +182,7 @@ function MapContent({
                 textAnchor="middle"
                 fontSize="10"
                 fontWeight="700"
-                fill={highlightedId === biz.id ? "#7B4B2A" : "#C86B3C"}
+                fill={highlightedId === biz.id ? "#8A6A2F" : "#D9B36C"}
                 fontFamily="system-ui, sans-serif"
               >
                 {biz.name.charAt(0)}

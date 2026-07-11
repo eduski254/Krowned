@@ -64,17 +64,17 @@ function formatMonth(key: string) {
 
 // Brand-aligned hardcoded colors (Recharts SVG needs resolved values)
 const COLORS = {
-  revenue: "#C86B3C",  // Terracotta
-  fees: "#7B4B2A",     // Warm Brown
-  tips: "#E6A34A",     // Gold
-  net: "#3B2417",      // Deep Espresso
+  revenue: "#D9B36C",  // Gold
+  fees: "#8A6A2F",     // Bronze
+  tips: "#F2E7D3",     // Cream
+  net: "#1C1A17",      // Charcoal
 };
 
 const PIE_COLORS = [
-  "#C86B3C",  // Terracotta
-  "#7B4B2A",  // Warm Brown
-  "#E6A34A",  // Gold
-  "#3B2417",  // Deep Espresso
+  "#D9B36C",  // Gold
+  "#8A6A2F",  // Bronze
+  "#F2E7D3",  // Cream
+  "#1C1A17",  // Charcoal
 ];
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {

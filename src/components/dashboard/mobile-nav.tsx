@@ -74,10 +74,19 @@ export function MobileNav({
             <div className="flex h-16 items-center justify-between border-b border-border px-6">
               <Link
                 href="/"
-                className="text-xl font-heading font-extrabold text-primary"
+                className="flex items-center"
                 onClick={() => setOpen(false)}
               >
-                Layd
+                <img
+                  src="/brand/logo-white.png"
+                  alt="Krown"
+                  className="h-7 w-auto dark:block hidden"
+                />
+                <img
+                  src="/brand/logo-black.png"
+                  alt="Krown"
+                  className="h-7 w-auto dark:hidden block"
+                />
               </Link>
               <button
                 onClick={() => setOpen(false)}

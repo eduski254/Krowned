@@ -2,8 +2,7 @@ import Link from "next/link";
 
 // REVIEW: Replace with a real licensed image before launch.
 // Swap this single constant to change the auth panel background.
-const AUTH_HERO_IMAGE =
-  "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80";
+const AUTH_HERO_IMAGE = "/brand/hero-tools.png";
 
 export default function AuthLayout({
   children,
@@ -29,11 +28,12 @@ export default function AuthLayout({
 
         {/* Text content */}
         <div className="relative z-10 max-w-md text-center text-white">
-          <Link
-            href="/"
-            className="font-heading text-4xl font-extrabold tracking-tight drop-shadow-md hover:opacity-90 transition-opacity"
-          >
-            Layd
+          <Link href="/" className="hover:opacity-90 transition-opacity">
+            <img
+              src="/brand/logo-white.png"
+              alt="Krown"
+              className="h-12 w-auto drop-shadow-md"
+            />
           </Link>
           <p className="mt-4 text-lg text-white/90 drop-shadow-sm">
             Discover and book top beauty &amp; wellness professionals near you.

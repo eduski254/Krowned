@@ -276,7 +276,7 @@ function SlugField({ defaultSlug }: { defaultSlug: string }) {
     // Use native share on mobile if available
     if (navigator.share) {
       navigator
-        .share({ title: "Check out my business on Layd", url: fullUrl })
+        .share({ title: "Check out my business on Krown", url: fullUrl })
         .catch(() => {});
       return;
     }

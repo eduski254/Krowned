@@ -54,7 +54,7 @@ export function generateICSString(input: ICSEventInput): string {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Layd//Booking//EN",
+    "PRODID:-//Krown//Booking//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VTIMEZONE",

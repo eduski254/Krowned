@@ -1,17 +1,13 @@
 /* ============================================================================
-   Layd — Global styles & brand theme (Tailwind v4)
+   Krown — Global styles & brand theme (Tailwind v4)
    ----------------------------------------------------------------------------
    SINGLE SOURCE OF TRUTH for all brand colors, fonts, gradients, and radii.
    Change the brand here and the whole app updates. Never hardcode brand
    values in components — always use the semantic tokens / Tailwind utilities
    that map to these (bg-background, text-foreground, bg-primary, etc.).
 
-   ⚠️  COLOR VALUES BELOW ARE APPROXIMATED FROM THE ZAWADI MOCKUPS + STYLE GUIDE.
-       Replace with EXACT brand hex codes from the official brand stylesheet
-       when available. Search for "VERIFY" to find every value to confirm.
-
-   Light theme is the default. Dark theme activates via a `.dark` class on
-   <html> (wire a theme toggle, e.g. next-themes, in app code).
+   Light theme: clean white/cream surfaces, dark text, gold accents.
+   Dark theme: signature black/gold luxury palette.
    ============================================================================ */
 
 @import "tailwindcss";
@@ -21,121 +17,118 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ---------------------------------------------------------------------------
-   SEMANTIC TOKENS — LIGHT (default)
+   SEMANTIC TOKENS — LIGHT (default) — clean & warm
    --------------------------------------------------------------------------- */
 :root {
   --radius: 0.625rem; /* 10px base; pills use rounded-full */
 
-  /* Official Layd palette:
-     Terracotta    #C86B3C  (primary)
-     Gold          #E6A34A  (secondary / warm highlight)
-     Deep Espresso #3B2417  (dark surface / deep text)
-     Warm Brown    #7B4B2A  (accent) */
+  /* Official Krown palette:
+     Near-black  #0C0B0A
+     Charcoal    #1C1A17
+     Bronze      #8A6A2F
+     Gold        #D9B36C  (primary — buttons, links, focus rings)
+     Cream       #F2E7D3 */
 
   /* Surfaces & text */
-  --background: #ffffff;          /* page base (white) */
-  --foreground: #3B2417;          /* Deep Espresso ink */
-  --card: #ffffff;                /* card surface */
-  --card-foreground: #3B2417;
+  --background: #ffffff;          /* White page base */
+  --foreground: #0C0B0A;          /* Near-black text */
+  --card: #ffffff;                /* White card surface */
+  --card-foreground: #0C0B0A;
   --popover: #ffffff;
-  --popover-foreground: #3B2417;
-  --muted: #F5E9DA;               /* Cream section bg */
-  --muted-foreground: #7B6655;    /* warm brown secondary text — WCAG AA 4.58:1 on white */
-  --border: #D4C4B0;              /* hairline border (warm tan) */
-  --input: #9C8977;               /* input border — WCAG AA 3.41:1 on white */
-  --ring: #C86B3C;                /* focus ring = primary */
+  --popover-foreground: #0C0B0A;
+  --muted: #F5F1EB;               /* Warm off-white muted bg */
+  --muted-foreground: #6B5D4F;    /* Warm gray secondary text */
+  --border: #E8E0D6;              /* Warm light border */
+  --input: #E8E0D6;               /* Input border */
+  --ring: #D9B36C;                /* Gold focus ring */
 
-  /* Brand — Terracotta primary */
-  --primary: #C86B3C;             /* Terracotta */
-  --primary-foreground: #ffffff;
+  /* Brand — Gold primary */
+  --primary: #B8942F;             /* Darker gold for light bg contrast */
+  --primary-foreground: #0C0B0A;  /* Near-black text on gold */
 
-  /* Brand — Cream / Gold secondary surface */
-  --secondary: #F5E9DA;           /* Cream fill */
-  --secondary-foreground: #5C3318;/* deep brown text on cream — WCAG AA 7.2:1 */
+  /* Brand — Cream secondary surface */
+  --secondary: #F5F1EB;           /* Warm off-white */
+  --secondary-foreground: #0C0B0A;
 
-  /* Brand — Warm Brown accent (used sparingly) */
-  --accent: #7B4B2A;              /* Warm Brown */
-  --accent-foreground: #ffffff;   /* white text on warm brown — WCAG AA 7.1:1 */
+  /* Brand — Bronze accent */
+  --accent: #8A6A2F;              /* Bronze */
+  --accent-foreground: #ffffff;
 
   /* Status */
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --success: #16a34a;
-  --warning: #E6A34A;             /* Gold (aligned to brand) */
+  --warning: #ca8a04;
   --info: #2563eb;
 
-  /* Brand scale (for gradients, ramps, deliberate one-offs) */
-  --brand-deep: #3B2417;          /* Deep Espresso (footer) */
-  --brand-dark: #7B4B2A;          /* Warm Brown */
-  --brand: #C86B3C;               /* Terracotta */
-  --brand-light: #E6A34A;         /* Gold */
-  --brand-lavender: #F5E9DA;      /* Cream */
-  --brand-teal: #7B4B2A;          /* Warm Brown (replaces teal) */
-  --brand-coral: #E6A34A;         /* Gold (replaces coral) */
-  --brand-pink: #C86B3C;          /* Terracotta (replaces pink) */
+  /* Brand scale */
+  --brand-deep: #0C0B0A;          /* Near-black */
+  --brand-dark: #1C1A17;          /* Charcoal */
+  --brand: #D9B36C;               /* Gold */
+  --brand-light: #F2E7D3;         /* Cream */
+  --brand-lavender: #F5F1EB;      /* Warm off-white */
+  --brand-teal: #8A6A2F;          /* Bronze */
+  --brand-coral: #D9B36C;         /* Gold */
+  --brand-pink: #8A6A2F;          /* Bronze */
 
-  /* Signature hero/CTA gradient (Deep Espresso → Warm Brown → Terracotta → Gold → Cream, ~120°). */
+  /* Signature hero gradient (Near-black → Charcoal → Bronze → Gold, ~120°). */
   --gradient-hero: linear-gradient(
     120deg,
-    #3B2417 0%,
-    #7B4B2A 26%,
-    #C86B3C 48%,
-    #E6A34A 78%,
-    #F5E9DA 100%
+    #0C0B0A 0%,
+    #1C1A17 30%,
+    #8A6A2F 60%,
+    #D9B36C 100%
   );
 
-  /* Fonts — wired to next/font in layout.tsx (see SKILL.md).
-     Heading: Futura → Jost (geometric Google fallback) until real Futura files.
-     Body: Montserrat. */
+  /* Fonts */
   --font-heading: var(--font-jost), "Futura", "Century Gothic", ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ---------------------------------------------------------------------------
-   SEMANTIC TOKENS — DARK (.dark on <html>)
+   SEMANTIC TOKENS — DARK (.dark on <html>) — signature black/gold luxury
    --------------------------------------------------------------------------- */
 .dark {
-  --background: #1A120D;          /* deep espresso dark bg */
-  --foreground: #F5E9DA;          /* cream text */
-  --card: #261A12;                /* dark card surface */
-  --card-foreground: #F5E9DA;
-  --popover: #261A12;
-  --popover-foreground: #F5E9DA;
-  --muted: #2E1F15;               /* subtle raised surface */
-  --muted-foreground: #C4A98E;    /* warm muted text */
-  --border: #4A3526;              /* subtle warm border */
-  --input: #7B6655;               /* input border */
-  --ring: #E6A34A;                /* gold focus ring */
+  --background: #0C0B0A;          /* Near-black page base */
+  --foreground: #F2E7D3;          /* Cream text */
+  --card: #1C1A17;                /* Charcoal card surface */
+  --card-foreground: #F2E7D3;
+  --popover: #1C1A17;
+  --popover-foreground: #F2E7D3;
+  --muted: #1C1A17;               /* Charcoal muted bg */
+  --muted-foreground: #9E7E42;    /* Bronze secondary text */
+  --border: #2A2622;              /* subtle warm border */
+  --input: #3D3831;               /* input border */
+  --ring: #D9B36C;                /* Gold focus ring */
 
-  --primary: #E6A34A;             /* Gold — bright on dark bg, WCAG AA 8.2:1 */
-  --primary-foreground: #1A120D;  /* dark text on gold */
-  --secondary: #2E1F15;
-  --secondary-foreground: #E6CDB0; /* warm cream text */
-  --accent: #C86B3C;              /* Terracotta accent for dark */
-  --accent-foreground: #ffffff;
+  --primary: #D9B36C;             /* Gold */
+  --primary-foreground: #0C0B0A;  /* Near-black text on gold */
+  --secondary: #2A2622;           /* raised charcoal */
+  --secondary-foreground: #F2E7D3;
+  --accent: #8A6A2F;
+  --accent-foreground: #F2E7D3;
 
   --destructive: #ef4444;
-  --destructive-foreground: #1A120D;
+  --destructive-foreground: #0C0B0A;
   --success: #4ade80;
   --warning: #fcd34d;
   --info: #93c5fd;
 
-  --brand-deep: #3B2417;
-  --brand-dark: #7B4B2A;
-  --brand: #E6A34A;
-  --brand-light: #C86B3C;
-  --brand-lavender: #2E1F15;
-  --brand-teal: #C86B3C;
-  --brand-coral: #E6A34A;
-  --brand-pink: #C86B3C;
+  --brand-deep: #0C0B0A;
+  --brand-dark: #1C1A17;
+  --brand: #D9B36C;
+  --brand-light: #F2E7D3;
+  --brand-lavender: #1C1A17;
+  --brand-teal: #8A6A2F;
+  --brand-coral: #D9B36C;
+  --brand-pink: #8A6A2F;
 
   --gradient-hero: linear-gradient(
     120deg,
-    #1A120D 0%,
-    #3B2417 30%,
-    #7B4B2A 52%,
-    #C86B3C 78%,
-    #E6A34A 100%
+    #0C0B0A 0%,
+    #1C1A17 30%,
+    #8A6A2F 60%,
+    #D9B36C 100%
   );
 }
 
