@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 
 // Nav items that can have badges
 const BADGE_ITEMS = ["/dashboard/support", "/dashboard/admin/support"];
+const BOOKING_BADGE_ITEMS = ["/dashboard/business/calendar"];
 
 export function Sidebar({
   items,
@@ -31,9 +32,13 @@ export function Sidebar({
       const data = await res.json();
       const newBadges: Record<string, number> = {};
       if (data.support > 0) {
-        // Apply to all support nav items
         for (const href of BADGE_ITEMS) {
           newBadges[href] = data.support;
+        }
+      }
+      if (data.bookings > 0) {
+        for (const href of BOOKING_BADGE_ITEMS) {
+          newBadges[href] = data.bookings;
         }
       }
       setBadges(newBadges);

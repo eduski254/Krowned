@@ -15,6 +15,7 @@ const PUBLIC_LINKS = [
 ];
 
 const BADGE_ITEMS = ["/dashboard/support", "/dashboard/admin/support"];
+const BOOKING_BADGE_ITEMS = ["/dashboard/business/calendar"];
 
 export function MobileNav({
   items,
@@ -36,6 +37,11 @@ export function MobileNav({
       if (data.support > 0) {
         for (const href of BADGE_ITEMS) {
           newBadges[href] = data.support;
+        }
+      }
+      if (data.bookings > 0) {
+        for (const href of BOOKING_BADGE_ITEMS) {
+          newBadges[href] = data.bookings;
         }
       }
       setBadges(newBadges);

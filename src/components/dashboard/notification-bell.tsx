@@ -5,6 +5,38 @@ import { Bell, Calendar, Star, LifeBuoy, MessageSquare, X } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
+/** Play a short notification bubble sound */
+function playNotificationSound() {
+  try {
+    const ctx = new AudioContext();
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    // Bubble-like tone
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.08);
+    oscillator.frequency.exponentialRampToValueAtTime(1047, ctx.currentTime + 0.15);
+
+    // Quick fade in/out
+    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+    gainNode.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.1);
+    gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.25);
+
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.25);
+
+    // Cleanup
+    oscillator.onended = () => ctx.close();
+  } catch {
+    // Audio not supported or user hasn't interacted yet — silently skip
+  }
+}
+
 type NotificationItem = {
   id: string;
   type: string;
@@ -90,6 +122,7 @@ export function NotificationBell({ userId }: { userId?: string }) {
 
           setItems((prev) => [newItem, ...prev].slice(0, 20));
           setUnreadCount((prev) => prev + 1);
+          playNotificationSound();
         },
       )
       .subscribe();
