@@ -5,8 +5,6 @@ import {
   useCallback,
   useRef,
   useMemo,
-  lazy,
-  Suspense,
   forwardRef,
   useEffect,
 } from "react";
@@ -19,7 +17,6 @@ import {
   LayoutList,
   LayoutGrid,
   X,
-  Loader2,
   Calendar,
 } from "lucide-react";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -37,9 +34,7 @@ import {
   type TimeOfDay,
 } from "@/components/search/when-filter";
 
-const ExploreMap = lazy(() =>
-  import("./explore-map").then((m) => ({ default: m.ExploreMap })),
-);
+import { ExploreMap } from "./explore-map";
 import { BusinessPreview } from "./business-preview";
 
 type Category = { id: string; name: string; slug: string };
@@ -90,11 +85,12 @@ function filterAndRank(
       }
     }
 
-    // Name/description search — soft boost
+    // Name/description/category search — hard filter + boost
     if (qLower) {
       const name = biz.name.toLowerCase();
       const desc = (biz.description ?? "").toLowerCase();
       const cat = (biz.categoryName ?? "").toLowerCase();
+      const svcNames = (biz.serviceNames ?? []).map((s: string) => s.toLowerCase());
 
       if (name === qLower) {
         score += 100;
@@ -104,10 +100,13 @@ function filterAndRank(
         score += 50;
       } else if (cat.includes(qLower)) {
         score += 20;
+      } else if (svcNames.some((s: string) => s.includes(qLower))) {
+        score += 15;
       } else if (desc.includes(qLower)) {
         score += 10;
       } else {
-        score -= 50;
+        // No match — exclude this business
+        passes = false;
       }
     }
 
@@ -117,14 +116,9 @@ function filterAndRank(
     return { biz, score, passes };
   });
 
-  const hasHardFilter = !!categorySlug || !!cityLower || !!whenDate || whenTime !== "anytime";
-
   let results: typeof scored;
-  if (hasHardFilter) {
+  if (qLower || categorySlug || cityLower || whenDate || whenTime !== "anytime") {
     results = scored.filter((s) => s.passes);
-  } else if (qLower) {
-    results = scored.filter((s) => s.score > -50);
-    if (results.length === 0) results = scored;
   } else {
     results = scored;
   }
@@ -381,7 +375,7 @@ export function ExploreClient({
           >
             <option value="">All categories</option>
             {categories
-              .filter((c) => c.slug !== "new-category")
+              .filter((c) => c.slug !== "new-category" && !c.slug.includes("test"))
               .map((c) => (
                 <option key={c.id} value={c.slug}>
                   {c.name}
@@ -481,6 +475,9 @@ export function ExploreClient({
               </h2>
               <p className="text-xs text-muted-foreground">
                 {filtered.length} listing{filtered.length !== 1 ? "s" : ""} available
+                {(whenDate || whenTime !== "anytime") && filtered.length === allBusinesses.length && (
+                  <span className="ml-1 text-primary">— all open at that time</span>
+                )}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -589,21 +586,13 @@ export function ExploreClient({
               </button>
             )}
 
-            <Suspense
-              fallback={
-                <div className="flex h-full items-center justify-center bg-muted">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                </div>
-              }
-            >
-              <ExploreMap
-                businesses={mappable}
-                highlightedId={highlightedId}
-                onPinClick={handlePinClick}
-                onBoundsChanged={() => {}}
-                onSelectBiz={setPreviewBiz}
-              />
-            </Suspense>
+            <ExploreMap
+              businesses={mappable}
+              highlightedId={highlightedId}
+              onPinClick={handlePinClick}
+              onBoundsChanged={() => {}}
+              onSelectBiz={setPreviewBiz}
+            />
           </div>
         )}
 

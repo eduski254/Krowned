@@ -11,16 +11,16 @@ Zawadi is a beauty & wellness booking marketplace (Kenya-first, built to scale g
 
 **Never hardcode a brand value. Always use the semantic tokens.**
 
-- ❌ `bg-[#7c3aed]`, `style={{ color: '#171221' }}`, `font-family: 'Jost'`, a raw gradient
+- ❌ `bg-[#C86B3C]`, `style={{ color: '#3B2417' }}`, `font-family: 'Jost'`, a raw gradient
 - ✅ `bg-primary`, `text-foreground`, `font-heading`, `bg-gradient-hero`
 
 The tokens live in **`src/app/globals.css`** — that is the single source of truth. Every color, font, gradient, and radius is defined there once, with a light set and a `.dark` set. If you hardcode a value, it won't respond to the theme switch and it won't update when the brand is adjusted. If you need a brand value that doesn't have a token yet, add a token in globals.css rather than inlining a hex.
 
 ## Brand identity (what it should feel like)
 
-- **Light-first.** Default surfaces are white / very-light lavender-gray; text is near-black. Purple is the *accent and emotional punch* (CTAs, icons, active states, links, key bands) — **not** the page background. A full dark theme exists via toggle.
-- **Purple is primary**, teal is a sparing accent. Don't overuse teal.
-- **Signature element:** the purple→warm-coral diagonal gradient (`bg-gradient-hero`). Use it for hero moments and major CTA bands ("Become a Vendor", partner sections) — deliberately, not everywhere. This is the thing the brand is remembered by; keep it special.
+- **Light-first.** Default surfaces are white / cream; text is deep espresso. Terracotta is the *accent and emotional punch* (CTAs, icons, active states, links, key bands) — **not** the page background. A full dark theme exists via toggle.
+- **Terracotta is primary**, warm brown is a sparing accent. Don't overuse brown.
+- **Signature element:** the espresso→terracotta→gold diagonal gradient (`bg-gradient-hero`). Use it for hero moments and major CTA bands ("Become a Vendor", partner sections) — deliberately, not everywhere. This is the thing the brand is remembered by; keep it special.
 - **Tone of copy:** plain, active, confident, friendly. "Book it." not "Submit your booking request." Sentence case. See globals + the marketing voice in the mockups.
 
 ## Tokens available (defined in globals.css)
@@ -33,7 +33,7 @@ Gradient: `.bg-gradient-hero`
 Fonts: `font-heading` (Futura→Jost), `font-body` (Montserrat)
 Radius: `rounded-sm/md/lg/xl` (base 10px); pills use `rounded-full`
 
-> ⚠️ The core palette is now the **official Zawadi brand colors**: Royal Violet `#5604ad` (primary), Lavender Glow `#9e8ed4` (secondary), Midnight Slate `#2e3043` (dark surface / ink), Teal Horizon `#3b9bbb` (accent). A few derived/supporting values (neutrals, the warm coral gradient tail from the mockups) remain marked `VERIFY` in globals.css. When Eddie confirms those, they get swapped — components never change, because they only reference tokens.
+> The core palette is the **official Zawadi brand colors**: Terracotta `#C86B3C` (primary), Gold `#E6A34A` (secondary/highlight), Deep Espresso `#3B2417` (dark surface / ink), Warm Brown `#7B4B2A` (accent). Components never change, because they only reference tokens.
 
 ## Typography
 
@@ -56,7 +56,7 @@ Reference the mockups in `inspiration/` for exact look. General patterns:
 - **Cards:** `bg-card border border-border rounded-xl` with soft shadow; used for pro listings, categories, testimonials, dashboard stat tiles.
 - **Inputs:** `bg-background border border-input rounded-lg`, focus ring `ring-ring`. The hero search bar is a grouped multi-field control (service / location / category / Search button).
 - **Badges/ribbons:** "Featured", "Verified" — small pills; Featured uses brand/secondary fills, Verified pairs with a check icon. Corner ribbons on featured pro cards.
-- **Category cards:** image with a purple-tinted overlay, label, and a pill "Explore" button (matches landing mockup).
+- **Category cards:** image with a warm-tinted overlay, label, and a pill "Explore" button (matches landing mockup).
 - **Pro cards:** photo, name + verified badge, location, price range, rating, Book button.
 - **Icon circles:** soft `secondary`/lavender fill with a `primary` icon (the "How it works" steps).
 - **Gradient bands:** `bg-gradient-hero` full-width sections with white text + an illustration; reserved for major conversion moments.

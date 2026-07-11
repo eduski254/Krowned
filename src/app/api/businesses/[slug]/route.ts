@@ -48,7 +48,9 @@ export async function GET(
       .limit(5),
   ]);
 
-  const services = servicesRes.data ?? [];
+  const services = (servicesRes.data ?? []).filter(
+    (s) => s.name.trim().length >= 3 && !/^test/i.test(s.name.trim()),
+  );
   const staff = staffRes.data ?? [];
   const hours = hoursRes.data ?? [];
   const reviews = reviewsRes.data ?? [];

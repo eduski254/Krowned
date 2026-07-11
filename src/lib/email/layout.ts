@@ -3,8 +3,8 @@
  * Uses inline styles for maximum email client compatibility.
  */
 
-const BRAND_PRIMARY = "#5604ad";
-const BRAND_DARK = "#2e3043";
+const BRAND_PRIMARY = "#C86B3C";
+const BRAND_DARK = "#3B2417";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadibooking.vercel.app";
 

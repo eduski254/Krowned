@@ -101,7 +101,11 @@ export async function getAvailableSlots(
     .eq("business_id", businessId)
     .eq("day_of_week", dayOfWeek);
 
-  if (!hoursRows?.length) return { slots: [], timezone: tz, date };
+  // If no business hours for this day, check if any staff have explicit schedules
+  // (allows staff-driven availability even when business_hours isn't set for the day)
+  if (!hoursRows?.length) {
+    // We'll check staff_schedules below; for now, don't short-circuit
+  }
 
   // 4. Get qualified staff (mapped to this service + active)
   let staffQuery = supabase
@@ -168,14 +172,35 @@ export async function getAvailableSlots(
     return true;
   });
 
-  // 6. For each business-hours window, generate 30-min grid slots
+  // 6. Determine time windows for slot generation.
+  // Use business_hours if available; otherwise derive windows from staff_schedules.
+  type TimeWindow = { openMinutes: number; closeMinutes: number };
+  const timeWindows: TimeWindow[] = [];
+
+  if (hoursRows?.length) {
+    for (const h of hoursRows) {
+      if (!h.open_time || !h.close_time) continue;
+      timeWindows.push({ openMinutes: timeToMinutes(h.open_time), closeMinutes: timeToMinutes(h.close_time) });
+    }
+  } else if (schedules.length) {
+    // No business hours for this day — use the union of staff schedule windows
+    let minOpen = Infinity;
+    let maxClose = 0;
+    for (const s of schedules) {
+      minOpen = Math.min(minOpen, timeToMinutes(s.start_time));
+      maxClose = Math.max(maxClose, timeToMinutes(s.end_time));
+    }
+    if (minOpen < maxClose) {
+      timeWindows.push({ openMinutes: minOpen, closeMinutes: maxClose });
+    }
+  }
+
+  if (timeWindows.length === 0) return { slots: [], timezone: tz, date };
+
   const allSlots: AvailableSlot[] = [];
 
-  for (const hours of hoursRows) {
-    if (!hours.open_time || !hours.close_time) continue;
-
-    const openMinutes = timeToMinutes(hours.open_time);
-    const closeMinutes = timeToMinutes(hours.close_time);
+  for (const window of timeWindows) {
+    const { openMinutes, closeMinutes } = window;
 
     for (let slotStart = openMinutes; slotStart + service.duration_minutes <= closeMinutes; slotStart += SLOT_GRID_MINUTES) {
       const slotStartUtc = localTimeToUtc(date, minutesToTime(slotStart), tz);
@@ -388,14 +413,27 @@ export async function getAvailableDateRange(
     return { dates: [], timezone: biz.timezone };
   }
 
-  const { data: hours } = await supabase
-    .from("business_hours")
-    .select("day_of_week")
-    .eq("business_id", businessId);
+  const [hoursResult, staffScheduleResult] = await Promise.all([
+    supabase
+      .from("business_hours")
+      .select("day_of_week")
+      .eq("business_id", businessId),
+    supabase
+      .from("staff_schedules")
+      .select("day_of_week, staff!inner(business_id)")
+      .eq("staff.business_id", businessId),
+  ]);
 
-  if (!hours?.length) return { dates: [], timezone: biz.timezone };
+  const hours = hoursResult.data ?? [];
+  const staffScheds = staffScheduleResult.data ?? [];
 
-  const openDays = new Set(hours.map((h) => h.day_of_week));
+  // A day is available if business_hours OR any staff has a schedule for it
+  const openDays = new Set([
+    ...hours.map((h) => h.day_of_week),
+    ...staffScheds.map((s) => s.day_of_week),
+  ]);
+
+  if (openDays.size === 0) return { dates: [], timezone: biz.timezone };
   const tz = biz.timezone;
   const now = new Date();
   const dates: string[] = [];

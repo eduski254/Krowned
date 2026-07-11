@@ -31,6 +31,7 @@ export type ExploreBusiness = {
   avgRating: number | null;
   reviewCount: number;
   isFavorited: boolean;
+  serviceNames?: string[];
 };
 
 

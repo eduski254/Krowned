@@ -19,6 +19,9 @@ const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? "DEMO_MAP_ID";
 const DEFAULT_CENTER = { lat: -1.2921, lng: 36.8219 };
 const DEFAULT_ZOOM = 12;
 
+// Singleton flag to prevent multiple APIProvider script injections
+let apiProviderMounted = false;
+
 export function ExploreMap({
   businesses,
   highlightedId,
@@ -37,8 +40,13 @@ export function ExploreMap({
   }) => void;
   onSelectBiz?: (biz: ExploreBusiness) => void;
 }) {
+  useEffect(() => {
+    apiProviderMounted = true;
+    return () => { apiProviderMounted = false; };
+  }, []);
+
   return (
-    <APIProvider apiKey={API_KEY}>
+    <APIProvider apiKey={API_KEY} libraries={["marker"]}>
       <Map
         className="h-full w-full"
         defaultCenter={DEFAULT_CENTER}
@@ -163,7 +171,7 @@ function MapContent({
               {/* Pin body */}
               <path
                 d="M16 0C7.163 0 0 7.163 0 16c0 10 14.4 23.1 15 23.7.3.2.7.3 1 .3s.7-.1 1-.3c.6-.6 15-13.7 15-23.7C32 7.163 24.837 0 16 0z"
-                fill={highlightedId === biz.id ? "#5604ad" : "#7c3aed"}
+                fill={highlightedId === biz.id ? "#7B4B2A" : "#C86B3C"}
               />
               {/* White inner circle */}
               <circle cx="16" cy="15" r="7" fill="white" />
@@ -174,7 +182,7 @@ function MapContent({
                 textAnchor="middle"
                 fontSize="10"
                 fontWeight="700"
-                fill={highlightedId === biz.id ? "#5604ad" : "#7c3aed"}
+                fill={highlightedId === biz.id ? "#7B4B2A" : "#C86B3C"}
                 fontFamily="system-ui, sans-serif"
               >
                 {biz.name.charAt(0)}
@@ -220,7 +228,7 @@ function MapContent({
                 />
               </div>
             ) : (
-              <div className="flex h-20 w-full items-center justify-center bg-purple-50 text-2xl font-bold text-purple-600">
+              <div className="flex h-20 w-full items-center justify-center bg-secondary text-2xl font-bold text-primary">
                 {selectedBiz.name.charAt(0)}
               </div>
             )}
@@ -242,7 +250,7 @@ function MapContent({
                   count={selectedBiz.reviewCount}
                   size="xs"
                 />
-                <span className="text-xs font-semibold text-purple-600">
+                <span className="text-xs font-semibold text-primary">
                   View &rarr;
                 </span>
               </div>

@@ -153,7 +153,7 @@ export function DataTable<T>({
       head: [columns.map((c) => c.header)],
       body: sorted.map((row) => columns.map((col) => getStringValue(row, col))),
       styles: { fontSize: 8, cellPadding: 2 },
-      headStyles: { fillColor: [86, 4, 173] }, // brand primary #5604ad
+      headStyles: { fillColor: [200, 107, 60] }, // brand primary #C86B3C
     });
 
     doc.save(`${exportFilename}.pdf`);

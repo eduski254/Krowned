@@ -78,6 +78,8 @@ export default async function ExplorePage({
   for (const s of services) {
     if (!publishedBizIds.has(s.business_id)) continue;
     const key = s.name.trim();
+    // Skip placeholder/test service names
+    if (key.length < 3 || /^test/i.test(key)) continue;
     if (!svcMap.has(key)) svcMap.set(key, new Set());
     svcMap.get(key)!.add(s.business_id);
   }
@@ -98,6 +100,13 @@ export default async function ExplorePage({
       open_time: h.open_time,
       close_time: h.close_time,
     });
+  }
+
+  // Build a map of business_id → service names for search matching
+  const bizServiceNames = new Map<string, string[]>();
+  for (const s of services) {
+    if (!bizServiceNames.has(s.business_id)) bizServiceNames.set(s.business_id, []);
+    bizServiceNames.get(s.business_id)!.push(s.name);
   }
 
   // Serialize businesses
@@ -125,6 +134,7 @@ export default async function ExplorePage({
       avgRating: stats ? stats.sum / stats.count : null,
       reviewCount: stats?.count ?? 0,
       isFavorited: favSet.has(biz.id),
+      serviceNames: bizServiceNames.get(biz.id) ?? [],
     };
   });
 

@@ -42,7 +42,7 @@ export default async function ClientDashboardPage() {
   // Upcoming bookings
   const { data: upcomingBookings } = await supabase
     .from("bookings")
-    .select("id, starts_at, status, services(name), businesses(name)")
+    .select("id, starts_at, status, services(name), businesses(name, timezone)")
     .eq("client_id", user.id)
     .in("status", ["pending", "confirmed"])
     .gte("starts_at", new Date().toISOString())
@@ -115,12 +115,14 @@ export default async function ClientDashboardPage() {
                     {new Date(booking.starts_at).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
+                      timeZone: (booking.businesses as unknown as { name: string; timezone: string } | null)?.timezone ?? "Africa/Nairobi",
                     })}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {new Date(booking.starts_at).toLocaleTimeString("en-US", {
                       hour: "numeric",
                       minute: "2-digit",
+                      timeZone: (booking.businesses as unknown as { name: string; timezone: string } | null)?.timezone ?? "Africa/Nairobi",
                     })}
                   </p>
                   <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">

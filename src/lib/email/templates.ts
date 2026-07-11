@@ -367,7 +367,7 @@ export function supportTicketReplyEmail(data: {
     <p>Hi ${data.recipientName}, ${label} replied to your support ticket.</p>
     <p style="font-size:13px;color:#6b7280;margin:4px 0 12px;">Subject: <strong>${data.ticketSubject}</strong></p>
     <div style="margin:16px 0;padding:16px;background:#f9fafb;border-radius:8px;border:1px solid #e8e8ed;">
-      <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#5604ad;">${label}</p>
+      <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#C86B3C;">${label}</p>
       <p style="margin:0;color:#374151;white-space:pre-wrap;">${data.message.slice(0, 500)}</p>
     </div>
     ${emailButton("View Conversation", `${SITE_URL}/dashboard/support/${data.ticketId}`)}`,

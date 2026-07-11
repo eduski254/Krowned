@@ -223,7 +223,7 @@ export function BusinessPreview({
                           </div>
                           <div className="flex items-center gap-3">
                             <span className="text-sm font-semibold text-foreground">
-                              {(s.price_amount / 100).toFixed(0)}{" "}
+                              {(s.price_amount / 100).toLocaleString()}{" "}
                               <span className="text-xs text-muted-foreground">
                                 {s.currency?.toUpperCase()}
                               </span>

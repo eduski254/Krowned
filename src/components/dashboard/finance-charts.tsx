@@ -64,17 +64,17 @@ function formatMonth(key: string) {
 
 // Brand-aligned hardcoded colors (Recharts SVG needs resolved values)
 const COLORS = {
-  revenue: "#5604ad",  // Royal Violet
-  fees: "#3b9bbb",     // Teal Horizon
-  tips: "#f5a97f",     // Coral
-  net: "#9e8ed4",      // Lavender Glow
+  revenue: "#C86B3C",  // Terracotta
+  fees: "#7B4B2A",     // Warm Brown
+  tips: "#E6A34A",     // Gold
+  net: "#3B2417",      // Deep Espresso
 };
 
 const PIE_COLORS = [
-  "#5604ad",  // Royal Violet
-  "#3b9bbb",  // Teal Horizon
-  "#f5a97f",  // Coral
-  "#9e8ed4",  // Lavender Glow
+  "#C86B3C",  // Terracotta
+  "#7B4B2A",  // Warm Brown
+  "#E6A34A",  // Gold
+  "#3B2417",  // Deep Espresso
 ];
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {

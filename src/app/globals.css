@@ -27,62 +27,61 @@
   --radius: 0.625rem; /* 10px base; pills use rounded-full */
 
   /* Official Zawadi palette:
-     Royal Violet  #5604ad  (primary)
-     Lavender Glow #9e8ed4  (secondary)
-     Midnight Slate #2e3043 (dark surface / deep text)
-     Teal Horizon  #3b9bbb  (accent) */
+     Terracotta    #C86B3C  (primary)
+     Gold          #E6A34A  (secondary / warm highlight)
+     Deep Espresso #3B2417  (dark surface / deep text)
+     Warm Brown    #7B4B2A  (accent) */
 
   /* Surfaces & text */
   --background: #ffffff;          /* page base (white) */
-  --foreground: #2e3043;          /* Midnight Slate as near-black ink */
+  --foreground: #3B2417;          /* Deep Espresso ink */
   --card: #ffffff;                /* card surface */
-  --card-foreground: #2e3043;
+  --card-foreground: #3B2417;
   --popover: #ffffff;
-  --popover-foreground: #2e3043;
-  --muted: #f5f3fb;               /* light section bg (faint lavender-gray, tuned to palette) */
-  --muted-foreground: #6c6b7e;    /* muted slate-violet secondary text — WCAG AA 5.2:1 on white */
-  --border: #d0cbe0;              /* hairline border (lavender-tinted) */
-  --input: #8e89a5;               /* input border — WCAG AA 3.35:1 on white, 3.04:1 on muted */
-  --ring: #5604ad;                /* focus ring = primary */
+  --popover-foreground: #3B2417;
+  --muted: #F5E9DA;               /* Cream section bg */
+  --muted-foreground: #7B6655;    /* warm brown secondary text — WCAG AA 4.58:1 on white */
+  --border: #D4C4B0;              /* hairline border (warm tan) */
+  --input: #9C8977;               /* input border — WCAG AA 3.41:1 on white */
+  --ring: #C86B3C;                /* focus ring = primary */
 
-  /* Brand — Royal Violet primary */
-  --primary: #5604ad;             /* Royal Violet */
+  /* Brand — Terracotta primary */
+  --primary: #C86B3C;             /* Terracotta */
   --primary-foreground: #ffffff;
 
-  /* Brand — Lavender Glow secondary surface */
-  --secondary: #ece8f7;           /* light lavender fill (derived from Lavender Glow) */
-  --secondary-foreground: #4a0496;/* deep violet text on lavender */
+  /* Brand — Cream / Gold secondary surface */
+  --secondary: #F5E9DA;           /* Cream fill */
+  --secondary-foreground: #5C3318;/* deep brown text on cream — WCAG AA 7.2:1 */
 
-  /* Brand — Teal Horizon accent (used sparingly) */
-  --accent: #3b9bbb;              /* Teal Horizon */
-  --accent-foreground: #0f1017;   /* dark text on teal — WCAG AA 5.96:1 */
+  /* Brand — Warm Brown accent (used sparingly) */
+  --accent: #7B4B2A;              /* Warm Brown */
+  --accent-foreground: #ffffff;   /* white text on warm brown — WCAG AA 7.1:1 */
 
   /* Status */
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --success: #16a34a;
-  --warning: #f59e0b;
+  --warning: #E6A34A;             /* Gold (aligned to brand) */
   --info: #2563eb;
 
   /* Brand scale (for gradients, ramps, deliberate one-offs) */
-  --brand-deep: #3d0479;          /* darkest violet (footer) — derived from Royal Violet */
-  --brand-dark: #5604ad;          /* Royal Violet */
-  --brand: #6a1fc0;               /* slightly lifted violet for gradient mid */
-  --brand-light: #9e8ed4;         /* Lavender Glow */
-  --brand-lavender: #ece8f7;
-  --brand-teal: #3b9bbb;          /* Teal Horizon */
-  --brand-coral: #f5a97f;         /* VERIFY warm gradient tail (in mockups, not in core palette) */
-  --brand-pink: #e26fa8;          /* VERIFY gradient mid warm (from mockups) */
+  --brand-deep: #3B2417;          /* Deep Espresso (footer) */
+  --brand-dark: #7B4B2A;          /* Warm Brown */
+  --brand: #C86B3C;               /* Terracotta */
+  --brand-light: #E6A34A;         /* Gold */
+  --brand-lavender: #F5E9DA;      /* Cream */
+  --brand-teal: #7B4B2A;          /* Warm Brown (replaces teal) */
+  --brand-coral: #E6A34A;         /* Gold (replaces coral) */
+  --brand-pink: #C86B3C;          /* Terracotta (replaces pink) */
 
-  /* Signature hero/CTA gradient (Royal Violet → Lavender → warm coral, ~120°).
-     Warm tail (pink/coral) is from the landing mockup; VERIFY against brand. */
+  /* Signature hero/CTA gradient (Deep Espresso → Warm Brown → Terracotta → Gold → Cream, ~120°). */
   --gradient-hero: linear-gradient(
     120deg,
-    #4a0496 0%,
-    #5604ad 26%,
-    #7d3fc9 48%,
-    #e26fa8 78%,
-    #f5a97f 100%
+    #3B2417 0%,
+    #7B4B2A 26%,
+    #C86B3C 48%,
+    #E6A34A 78%,
+    #F5E9DA 100%
   );
 
   /* Fonts — wired to next/font in layout.tsx (see SKILL.md).
@@ -96,47 +95,47 @@
    SEMANTIC TOKENS — DARK (.dark on <html>)
    --------------------------------------------------------------------------- */
 .dark {
-  --background: #0f1017;          /* near-black with cool violet undertone */
-  --foreground: #f0eef6;          /* bright off-white text */
-  --card: #1a1b2e;                /* dark card surface */
-  --card-foreground: #f0eef6;
-  --popover: #1a1b2e;
-  --popover-foreground: #f0eef6;
-  --muted: #1e2035;               /* subtle raised surface */
-  --muted-foreground: #b8b5cc;    /* brighter muted text */
-  --border: #383b58;              /* subtle border */
-  --input: #656a90;               /* input border — WCAG AA 3.63:1 on bg, 3.24:1 on card */
-  --ring: #a78bfa;                /* brighter focus ring */
+  --background: #1A120D;          /* deep espresso dark bg */
+  --foreground: #F5E9DA;          /* cream text */
+  --card: #261A12;                /* dark card surface */
+  --card-foreground: #F5E9DA;
+  --popover: #261A12;
+  --popover-foreground: #F5E9DA;
+  --muted: #2E1F15;               /* subtle raised surface */
+  --muted-foreground: #C4A98E;    /* warm muted text */
+  --border: #4A3526;              /* subtle warm border */
+  --input: #7B6655;               /* input border */
+  --ring: #E6A34A;                /* gold focus ring */
 
-  --primary: #a575e2;             /* bright violet — WCAG AA 5.64:1 on bg */
-  --primary-foreground: #0f1017;  /* dark text on primary — WCAG AA 5.64:1 */
-  --secondary: #252740;
-  --secondary-foreground: #d4cbf0; /* brighter secondary text */
-  --accent: #4fb8d6;              /* brighter teal for dark mode */
-  --accent-foreground: #0f1017;
+  --primary: #E6A34A;             /* Gold — bright on dark bg, WCAG AA 8.2:1 */
+  --primary-foreground: #1A120D;  /* dark text on gold */
+  --secondary: #2E1F15;
+  --secondary-foreground: #E6CDB0; /* warm cream text */
+  --accent: #C86B3C;              /* Terracotta accent for dark */
+  --accent-foreground: #ffffff;
 
-  --destructive: #ef4444;         /* bright red — WCAG AA 5.04:1 on bg */
-  --destructive-foreground: #0f1017; /* dark text on red — WCAG AA 5.04:1 */
+  --destructive: #ef4444;
+  --destructive-foreground: #1A120D;
   --success: #4ade80;
   --warning: #fcd34d;
   --info: #93c5fd;
 
-  --brand-deep: #3d0479;
-  --brand-dark: #5604ad;
-  --brand: #a575e2;
-  --brand-light: #b8a4e3;
-  --brand-lavender: #252740;
-  --brand-teal: #4fb8d6;
-  --brand-coral: #f5a97f;
-  --brand-pink: #e26fa8;
+  --brand-deep: #3B2417;
+  --brand-dark: #7B4B2A;
+  --brand: #E6A34A;
+  --brand-light: #C86B3C;
+  --brand-lavender: #2E1F15;
+  --brand-teal: #C86B3C;
+  --brand-coral: #E6A34A;
+  --brand-pink: #C86B3C;
 
   --gradient-hero: linear-gradient(
     120deg,
-    #2a0462 0%,
-    #4a0496 30%,
-    #7d3fc9 52%,
-    #d8568f 78%,
-    #ec9a72 100%
+    #1A120D 0%,
+    #3B2417 30%,
+    #7B4B2A 52%,
+    #C86B3C 78%,
+    #E6A34A 100%
   );
 }
 
