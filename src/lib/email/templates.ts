@@ -410,3 +410,39 @@ export function supportTicketStatusEmail(data: {
   );
   return build(subject, html);
 }
+
+// ── 12. Booking Reminder (24h before, to client) ────────────────────
+
+export function bookingReminderEmail(data: {
+  clientName: string;
+  bookingId: string;
+  serviceName: string;
+  businessName: string;
+  staffName: string;
+  startsAt: Date;
+  durationMinutes: number;
+  timezone: string;
+  address?: string;
+}): EmailOutput {
+  const ref = bookingRef(data.bookingId);
+  const subject = `Reminder: ${data.serviceName} tomorrow — ${ref}`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">See you tomorrow, ${data.clientName}!</h2>
+    <p>Just a friendly reminder that you have an appointment coming up:</p>
+    ${bookingDetailsTable({
+      ref,
+      service: data.serviceName,
+      business: data.businessName,
+      date: formatDate(data.startsAt),
+      time: formatTime(data.startsAt, data.timezone),
+      duration: data.durationMinutes,
+      staff: data.staffName,
+    })}
+    ${data.address ? `<p style="font-size:14px;"><strong>Location:</strong> ${data.address}</p>` : ""}
+    <p style="font-size:14px;">Need to reschedule or cancel? You can manage your booking from your dashboard.</p>
+    ${emailButton("View My Bookings", `${SITE_URL}/dashboard/bookings`)}
+    <p style="color:#6b7280;font-size:13px;">We look forward to seeing you!</p>`,
+    `Reminder: ${data.serviceName} at ${data.businessName} tomorrow`,
+  );
+  return build(subject, html);
+}
