@@ -28,9 +28,13 @@ async function createUser(email: string, fullName: string) {
   const existing = allUsers?.users?.find((u) => u.email === email || u.email === email.toLowerCase());
 
   if (existing) {
-    // Reset password to known test password
-    await supabase.auth.admin.updateUserById(existing.id, { password: PASSWORD });
-    console.log(`  User ${email} already exists (${existing.id}), password reset.`);
+    // Reset password, confirm email, fix metadata
+    await supabase.auth.admin.updateUserById(existing.id, {
+      password: PASSWORD,
+      email_confirm: true,
+      user_metadata: { full_name: fullName, email_verified: true },
+    });
+    console.log(`  User ${email} already exists (${existing.id}), password reset + email confirmed.`);
     await supabase.from("profiles").upsert({ id: existing.id, full_name: fullName }, { onConflict: "id" });
     return existing.id;
   }
