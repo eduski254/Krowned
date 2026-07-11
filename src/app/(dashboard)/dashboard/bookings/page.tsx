@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/dashboard/empty-state";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
 import { CancelButton, RescheduleButton, ReviewButton } from "./booking-actions";
+import { formatBookingDate, formatBookingTime, DEFAULT_TIMEZONE } from "@/lib/format-date";
 
 export default async function ClientBookingsPage() {
   const supabase = await createClient();
@@ -15,7 +16,7 @@ export default async function ClientBookingsPage() {
   const { data: bookings } = await supabase
     .from("bookings")
     .select(
-      "id, starts_at, ends_at, status, payment_method, service_amount, currency, services(name), businesses(name), staff(display_name)",
+      "id, starts_at, ends_at, status, payment_method, service_amount, currency, services(name), businesses(name, timezone), staff(display_name)",
     )
     .eq("client_id", user.id)
     .order("starts_at", { ascending: false })
@@ -68,17 +69,9 @@ export default async function ClientBookingsPage() {
                         : ""}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {new Date(b.starts_at).toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}{" "}
+                      {formatBookingDate(b.starts_at, (b.businesses as any)?.timezone ?? DEFAULT_TIMEZONE)}{" "}
                       at{" "}
-                      {new Date(b.starts_at).toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
+                      {formatBookingTime(b.starts_at, (b.businesses as any)?.timezone ?? DEFAULT_TIMEZONE)}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">

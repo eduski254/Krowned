@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, Calendar, ArrowRight } from "lucide-react";
+import { formatBookingDateTime, DEFAULT_TIMEZONE } from "@/lib/format-date";
 
 export default async function BookingSuccessPage({
   searchParams,
@@ -21,7 +22,7 @@ export default async function BookingSuccessPage({
       id, starts_at, ends_at, status, service_amount, currency,
       services(name, duration_minutes),
       staff(display_name),
-      businesses(name, slug)
+      businesses(name, slug, timezone)
     `)
     .eq("id", booking_id)
     .eq("client_id", user.id)
@@ -34,18 +35,8 @@ export default async function BookingSuccessPage({
   const biz = booking.businesses as any;
   const ref = "ZW-" + booking.id.replace(/-/g, "").slice(0, 8).toUpperCase();
 
-  const startDate = new Date(booking.starts_at);
-  const dateStr = startDate.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-  const timeStr = startDate.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const tz = biz?.timezone ?? DEFAULT_TIMEZONE;
+  const dateTimeStr = formatBookingDateTime(booking.starts_at, tz);
 
   return (
     <div className="mx-auto max-w-lg px-4 py-16 text-center">
@@ -75,7 +66,7 @@ export default async function BookingSuccessPage({
         </div>
         <div className="flex justify-between">
           <span className="text-sm text-muted-foreground">Date & Time</span>
-          <span className="text-sm text-foreground">{dateStr} at {timeStr}</span>
+          <span className="text-sm text-foreground">{dateTimeStr}</span>
         </div>
         {booking.service_amount != null && (
           <>

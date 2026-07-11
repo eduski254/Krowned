@@ -1,6 +1,7 @@
 "use client";
 
 import { DataTable, type Column } from "./DataTable";
+import { formatBookingDate, formatBookingTime, DEFAULT_TIMEZONE } from "@/lib/format-date";
 
 interface Booking {
   id: string;
@@ -10,7 +11,7 @@ interface Booking {
   service_amount: number | null;
   currency: string | null;
   services: { name: string } | null;
-  businesses: { name: string } | null;
+  businesses: { name: string; timezone?: string } | null;
   clients: { full_name: string } | null;
 }
 
@@ -50,11 +51,15 @@ const columns: Column<Booking>[] = [
     header: "Date",
     sortable: true,
     value: (r) => r.starts_at,
-    render: (r) => (
-      <span className="text-muted-foreground">
-        {new Date(r.starts_at).toLocaleDateString()}
-      </span>
-    ),
+    render: (r) => {
+      const tz = r.businesses?.timezone ?? DEFAULT_TIMEZONE;
+      return (
+        <span className="text-muted-foreground">
+          {formatBookingDate(r.starts_at, tz, { includeYear: false })}{" "}
+          {formatBookingTime(r.starts_at, tz)}
+        </span>
+      );
+    },
   },
   {
     key: "status",

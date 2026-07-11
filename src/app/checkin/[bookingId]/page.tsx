@@ -26,7 +26,7 @@ export default async function CheckInPage({
 
   // Load related data in parallel
   const [bizRes, svcRes, clientRes, contactRes, staffRes] = await Promise.all([
-    supabase.from("businesses").select("id, name, owner_id").eq("id", booking.business_id).single(),
+    supabase.from("businesses").select("id, name, owner_id, timezone").eq("id", booking.business_id).single(),
     supabase.from("services").select("name, duration_minutes").eq("id", booking.service_id).single(),
     booking.client_id
       ? supabase.from("profiles").select("full_name").eq("id", booking.client_id).single()
@@ -78,6 +78,7 @@ export default async function CheckInPage({
         durationMinutes={svc?.duration_minutes ?? 0}
         staffName={staffRow?.display_name ?? "Unassigned"}
         startsAt={booking.starts_at}
+        timezone={biz?.timezone ?? "Africa/Nairobi"}
         serviceAmount={booking.service_amount}
         currency={booking.currency}
         checkedInAt={booking.checked_in_at}

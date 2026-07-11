@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/dashboard/empty-state";
 import { Calendar } from "lucide-react";
 import { OwnerCancelButton, RescheduleButton } from "./calendar-actions";
 import { CalendarHeader } from "./calendar-header";
+import { formatBookingDate, formatBookingTime, DEFAULT_TIMEZONE } from "@/lib/format-date";
 
 export default async function BusinessCalendarPage() {
   const supabase = await createClient();
@@ -13,7 +14,7 @@ export default async function BusinessCalendarPage() {
 
   const { data: business } = await supabase
     .from("businesses")
-    .select("id")
+    .select("id, timezone")
     .eq("owner_id", effectiveUserId)
     .maybeSingle();
 
@@ -94,15 +95,8 @@ export default async function BusinessCalendarPage() {
                   </div>
                   <div className="flex flex-wrap items-center gap-3 text-sm">
                     <span className="text-foreground">
-                      {new Date(b.starts_at).toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      })}{" "}
-                      {new Date(b.starts_at).toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
+                      {formatBookingDate(b.starts_at, business.timezone ?? DEFAULT_TIMEZONE, { includeYear: false })}{" "}
+                      {formatBookingTime(b.starts_at, business.timezone ?? DEFAULT_TIMEZONE)}
                     </span>
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${

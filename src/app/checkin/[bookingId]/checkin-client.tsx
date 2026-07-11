@@ -13,6 +13,7 @@ interface Props {
   durationMinutes: number;
   staffName: string;
   startsAt: string;
+  timezone: string;
   serviceAmount: number | null;
   currency: string | null;
   checkedInAt: string | null;
@@ -26,6 +27,7 @@ export function CheckInClient({
   durationMinutes,
   staffName,
   startsAt,
+  timezone,
   serviceAmount,
   currency,
   checkedInAt: initialCheckedIn,
@@ -34,18 +36,19 @@ export function CheckInClient({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const startDate = new Date(startsAt);
-  const dateStr = startDate.toLocaleDateString("en-US", {
+  const dateStr = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
     weekday: "short",
     month: "short",
     day: "numeric",
     year: "numeric",
-  });
-  const timeStr = startDate.toLocaleTimeString("en-US", {
+  }).format(new Date(startsAt));
+  const timeStr = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  });
+  }).format(new Date(startsAt));
 
   const bookingRef = "ZW-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
 
@@ -74,16 +77,18 @@ export function CheckInClient({
           <div>
             <p className="font-semibold text-success">Checked in</p>
             <p className="text-xs text-success/80">
-              {new Date(checkedInAt!).toLocaleTimeString("en-US", {
+              {new Intl.DateTimeFormat("en-US", {
+                timeZone: timezone,
                 hour: "numeric",
                 minute: "2-digit",
                 hour12: true,
-              })}{" "}
+              }).format(new Date(checkedInAt!))}{" "}
               &middot;{" "}
-              {new Date(checkedInAt!).toLocaleDateString("en-US", {
+              {new Intl.DateTimeFormat("en-US", {
+                timeZone: timezone,
                 month: "short",
                 day: "numeric",
-              })}
+              }).format(new Date(checkedInAt!))}
             </p>
           </div>
         </div>

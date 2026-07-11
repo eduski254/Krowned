@@ -10,6 +10,7 @@ import {
   Star,
   TrendingUp,
 } from "lucide-react";
+import { formatBookingTime, DEFAULT_TIMEZONE } from "@/lib/format-date";
 
 export default async function BusinessDashboardPage() {
   const supabase = await createClient();
@@ -19,7 +20,7 @@ export default async function BusinessDashboardPage() {
   // Get the user's business
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, plan_id, subscription_status, onboarding_completed_at")
+    .select("id, name, plan_id, subscription_status, onboarding_completed_at, timezone")
     .eq("owner_id", effectiveUserId)
     .maybeSingle();
 
@@ -161,10 +162,7 @@ export default async function BusinessDashboardPage() {
               </div>
               <div className="text-right">
                 <p className="text-sm font-medium text-foreground">
-                  {new Date(b.starts_at).toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
+                  {formatBookingTime(b.starts_at, business.timezone ?? DEFAULT_TIMEZONE)}
                 </p>
                 <span
                   className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${

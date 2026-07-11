@@ -12,7 +12,7 @@ export default async function AdminBookingsPage() {
   const { data: bookings } = await supabase
     .from("bookings")
     .select(
-      "id, starts_at, status, source, service_amount, currency, services(name), businesses(name), clients:client_id(full_name)",
+      "id, starts_at, status, source, service_amount, currency, services(name), businesses(name, timezone), clients:client_id(full_name)",
     )
     .order("created_at", { ascending: false })
     .limit(500);
@@ -25,7 +25,7 @@ export default async function AdminBookingsPage() {
     service_amount: b.service_amount,
     currency: b.currency,
     services: b.services as unknown as { name: string } | null,
-    businesses: b.businesses as unknown as { name: string } | null,
+    businesses: b.businesses as unknown as { name: string; timezone?: string } | null,
     clients: b.clients as unknown as { full_name: string } | null,
   }));
 
