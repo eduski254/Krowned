@@ -33,7 +33,7 @@ export default function AuthLayout({
             href="/"
             className="font-heading text-4xl font-extrabold tracking-tight drop-shadow-md hover:opacity-90 transition-opacity"
           >
-            Zawadi
+            Layd
           </Link>
           <p className="mt-4 text-lg text-white/90 drop-shadow-sm">
             Discover and book top beauty &amp; wellness professionals near you.

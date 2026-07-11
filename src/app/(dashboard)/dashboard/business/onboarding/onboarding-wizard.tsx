@@ -160,7 +160,7 @@ export function OnboardingWizard({
             You&apos;re all set!
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Your business is live on Zawadi. Clients can now find and book you.
+            Your business is live on Layd. Clients can now find and book you.
           </p>
         </div>
 
@@ -330,7 +330,7 @@ function StepBasics({
           Tell us about your business
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          This is how clients will find you on Zawadi.
+          This is how clients will find you on Layd.
         </p>
       </div>
 

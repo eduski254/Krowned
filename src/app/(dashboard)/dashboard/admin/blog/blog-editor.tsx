@@ -326,7 +326,7 @@ export function BlogEditor({ post }: { post?: PostData }) {
                 type="text"
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
-                placeholder="e.g. Zawadi Team"
+                placeholder="e.g. Layd Team"
                 className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
@@ -336,7 +336,7 @@ export function BlogEditor({ post }: { post?: PostData }) {
                 type="text"
                 value={authorBio}
                 onChange={(e) => setAuthorBio(e.target.value)}
-                placeholder="e.g. The Zawadi editorial team"
+                placeholder="e.g. The Layd editorial team"
                 className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>

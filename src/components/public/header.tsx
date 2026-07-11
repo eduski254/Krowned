@@ -39,7 +39,7 @@ export async function PublicHeader() {
           href="/"
           className="text-xl font-heading font-extrabold text-primary"
         >
-          Zawadi
+          Layd
         </Link>
 
         {/* Desktop nav */}

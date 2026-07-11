@@ -18,7 +18,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-semibold">1. Acceptance of Terms</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            By using Zawadi, you agree to these terms. If you do not agree, do not use the platform.
+            By using Layd, you agree to these terms. If you do not agree, do not use the platform.
           </p>
         </section>
         <section>
@@ -31,7 +31,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-semibold">3. Bookings</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Zawadi facilitates bookings between clients and service providers. We are not a party to
+            Layd facilitates bookings between clients and service providers. We are not a party to
             the service itself. Cancellation policies are set by individual businesses.
           </p>
         </section>
@@ -53,7 +53,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-semibold">6. Limitation of Liability</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Zawadi is provided &ldquo;as is&rdquo; without warranty. We are not liable for the
+            Layd is provided &ldquo;as is&rdquo; without warranty. We are not liable for the
             quality of services provided by businesses listed on the platform.
           </p>
         </section>

@@ -87,7 +87,7 @@ export function Sidebar({
     <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border lg:bg-card">
       <div className="flex h-16 items-center border-b border-border px-6">
         <Link href="/" className="text-xl font-heading font-extrabold text-primary">
-          Zawadi
+          Layd
         </Link>
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-4">

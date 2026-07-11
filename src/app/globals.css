@@ -1,5 +1,5 @@
 /* ============================================================================
-   Zawadi — Global styles & brand theme (Tailwind v4)
+   Layd — Global styles & brand theme (Tailwind v4)
    ----------------------------------------------------------------------------
    SINGLE SOURCE OF TRUTH for all brand colors, fonts, gradients, and radii.
    Change the brand here and the whole app updates. Never hardcode brand
@@ -26,7 +26,7 @@
 :root {
   --radius: 0.625rem; /* 10px base; pills use rounded-full */
 
-  /* Official Zawadi palette:
+  /* Official Layd palette:
      Terracotta    #C86B3C  (primary)
      Gold          #E6A34A  (secondary / warm highlight)
      Deep Espresso #3B2417  (dark surface / deep text)

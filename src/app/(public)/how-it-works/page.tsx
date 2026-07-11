@@ -6,7 +6,7 @@ export default function HowItWorksPage() {
     <div>
       {/* Hero */}
       <section className="bg-gradient-hero px-4 py-16 text-center text-primary-foreground">
-        <h1 className="text-3xl font-bold sm:text-4xl">How Zawadi Works</h1>
+        <h1 className="text-3xl font-bold sm:text-4xl">How Layd Works</h1>
         <p className="mt-4 text-lg opacity-90">
           Book beauty and wellness services in three simple steps.
         </p>
@@ -20,7 +20,7 @@ export default function HowItWorksPage() {
               step: "1",
               icon: Search,
               title: "Discover professionals near you",
-              desc: "Browse by category, location, or name. Filter by price, rating, and availability. Every professional is verified before they appear on Zawadi.",
+              desc: "Browse by category, location, or name. Filter by price, rating, and availability. Every professional is verified before they appear on Layd.",
             },
             {
               step: "2",
@@ -52,7 +52,7 @@ export default function HowItWorksPage() {
       <section className="bg-muted px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-center text-2xl font-bold text-foreground">
-            Why Zawadi?
+            Why Layd?
           </h2>
           <div className="mt-10 grid gap-6 sm:grid-cols-3">
             {[

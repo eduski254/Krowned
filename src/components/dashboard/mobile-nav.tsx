@@ -77,7 +77,7 @@ export function MobileNav({
                 className="text-xl font-heading font-extrabold text-primary"
                 onClick={() => setOpen(false)}
               >
-                Zawadi
+                Layd
               </Link>
               <button
                 onClick={() => setOpen(false)}

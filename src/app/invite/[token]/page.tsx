@@ -120,7 +120,7 @@ export default async function InviteAcceptPage({
         </h1>
         <p className="mt-2 text-muted-foreground">
           {staff.display_name}, you&apos;ve been invited to join{" "}
-          <strong>{businessName}</strong> as a team member on Zawadi.
+          <strong>{businessName}</strong> as a team member on Layd.
         </p>
         <AcceptInviteButton token={token} />
       </div>
@@ -135,7 +135,7 @@ export default async function InviteAcceptPage({
       </h1>
       <p className="mt-2 text-muted-foreground">
         {staff.display_name}, you&apos;ve been invited to join{" "}
-        <strong>{businessName}</strong> as a team member on Zawadi.
+        <strong>{businessName}</strong> as a team member on Layd.
       </p>
       <p className="mt-4 text-sm text-muted-foreground">
         Create an account or log in with <strong>{staff.invited_email}</strong>{" "}

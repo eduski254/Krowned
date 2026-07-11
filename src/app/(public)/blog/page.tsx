@@ -3,8 +3,8 @@ import { BlogGrid } from "./blog-client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog | Zawadi",
-  description: "Tips, trends, and insights on beauty, wellness, and self-care from the Zawadi team.",
+  title: "Blog | Layd",
+  description: "Tips, trends, and insights on beauty, wellness, and self-care from the Layd team.",
 };
 
 export default async function BlogPage() {
@@ -29,7 +29,7 @@ export default async function BlogPage() {
       cover_image_url: p.cover_image_url,
       tags: (p.tags ?? []) as string[],
       published_at: p.published_at,
-      author_name: p.author_name || authorProfile?.full_name || "Zawadi Team",
+      author_name: p.author_name || authorProfile?.full_name || "Layd Team",
       author_avatar: p.author_avatar_url || authorProfile?.avatar_url || null,
       reading_time: Math.max(1, Math.ceil(wordCount / 200)),
     };
@@ -43,7 +43,7 @@ export default async function BlogPage() {
       {/* Header */}
       <div className="mb-10 text-center">
         <h1 className="text-4xl font-bold font-heading text-foreground sm:text-5xl">
-          The Zawadi Blog
+          The Layd Blog
         </h1>
         <p className="mt-3 text-lg text-muted-foreground max-w-2xl mx-auto">
           Tips, trends, and insights on beauty, wellness, and self-care.

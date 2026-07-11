@@ -7,7 +7,7 @@ export default function ForProfessionalsPage() {
       {/* Hero */}
       <section className="bg-gradient-hero px-4 py-20 text-center text-primary-foreground">
         <h1 className="text-3xl font-bold font-heading sm:text-4xl lg:text-5xl">
-          Grow your business with Zawadi
+          Grow your business with Layd
         </h1>
         <p className="mt-4 text-lg opacity-90 max-w-xl mx-auto">
           Reach new clients, manage bookings, staff, and payments all in one platform. Start free, upgrade when you&apos;re ready.

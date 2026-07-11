@@ -16,7 +16,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Zawadi — Book Beauty & Wellness",
+  title: "Layd — Book Beauty & Wellness",
   description:
     "Discover and book top beauty & wellness professionals near you.",
 };

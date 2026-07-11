@@ -923,7 +923,7 @@ function generateICS({
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Zawadi//Booking//EN",
+    "PRODID:-//Layd//Booking//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     // Minimal VTIMEZONE — the TZID is an IANA name, which all modern

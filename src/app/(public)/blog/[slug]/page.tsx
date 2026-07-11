@@ -19,10 +19,10 @@ export async function generateMetadata({
     .eq("status", "published")
     .single();
 
-  if (!post) return { title: "Post Not Found | Zawadi" };
+  if (!post) return { title: "Post Not Found | Layd" };
 
   return {
-    title: `${post.meta_title || post.title} | Zawadi Blog`,
+    title: `${post.meta_title || post.title} | Layd Blog`,
     description: post.meta_description || post.excerpt || undefined,
     openGraph: {
       title: post.meta_title || post.title,
@@ -72,7 +72,7 @@ export default async function BlogPostPage({
     .limit(3);
 
   const authorProfile = post.author as unknown as { full_name: string; avatar_url: string | null } | null;
-  const authorName = post.author_name || authorProfile?.full_name || "Zawadi Team";
+  const authorName = post.author_name || authorProfile?.full_name || "Layd Team";
   const authorAvatar = post.author_avatar_url || authorProfile?.avatar_url || null;
   const authorBio = post.author_bio || null;
 
