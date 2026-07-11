@@ -13,6 +13,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
+import { randomBytes } from "crypto";
 import "dotenv/config";
 
 const supabase = createClient(
@@ -101,6 +102,7 @@ async function seedMagnateCuts() {
         owner_id: userId,
         name: "Magnate Cuts & Grooming",
         slug: "magnate-cuts-grooming",
+        booking_link_token: "magnate-cuts-" + randomBytes(4).toString("hex"),
         description: "Premium barbershop offering classic cuts, beard grooming, and hot towel shaves in a modern setting.",
         primary_category_id: categoryId,
         plan_id: starterPlanId,
@@ -278,6 +280,7 @@ async function seedEdwinOmandi() {
         owner_id: userId,
         name: "Serene Nails & Spa",
         slug: "serene-nails-spa",
+        booking_link_token: "serene-nails-" + randomBytes(4).toString("hex"),
         description: "Luxury nail artistry and relaxation spa offering gel nails, pedicures, and full-body massages.",
         primary_category_id: categoryId,
         plan_id: proPlanId,
