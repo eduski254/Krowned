@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useTransition, useRef } from "react";
 import { X, Search, AlertTriangle, CheckCircle, Plus, User } from "lucide-react";
 import { Spinner } from "@/components/spinner";
 import { createManualBooking, type ManualBookingResult } from "@/lib/booking/manual-booking-action";
+import { localToUtcIso } from "@/lib/format-date";
 
 interface Service {
   id: string;
@@ -27,6 +28,7 @@ interface Contact {
 
 interface Props {
   businessId: string;
+  timezone: string;
   services: Service[];
   staffMembers: Staff[];
   onClose: () => void;
@@ -35,7 +37,7 @@ interface Props {
 
 type Step = "details" | "confirm" | "done";
 
-export function NewBookingModal({ businessId, services, staffMembers, onClose, onCreated }: Props) {
+export function NewBookingModal({ businessId, timezone, services, staffMembers, onClose, onCreated }: Props) {
   const [step, setStep] = useState<Step>("details");
 
   // Form state
@@ -121,7 +123,10 @@ export function NewBookingModal({ businessId, services, staffMembers, onClose, o
     setError(null);
     if (!override) setConflict(null);
 
-    const slotStart = new Date(`${date}T${time}:00`).toISOString();
+    // Convert business-local date/time to UTC ISO string.
+    // The owner enters time in the business timezone; we need to find
+    // the UTC equivalent. Use Intl to determine the tz offset.
+    const slotStart = localToUtcIso(`${date}T${time}:00`, timezone);
     const contact = contactMode === "search" && selectedContact
       ? { type: "existing" as const, contactId: selectedContact.id }
       : {

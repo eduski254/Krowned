@@ -7,11 +7,12 @@ import { NewBookingModal } from "./new-booking-modal";
 
 interface Props {
   businessId: string;
+  timezone: string;
   services: { id: string; name: string; duration_minutes: number; price_amount: number; currency: string }[];
   staffMembers: { id: string; display_name: string }[];
 }
 
-export function CalendarHeader({ businessId, services, staffMembers }: Props) {
+export function CalendarHeader({ businessId, timezone, services, staffMembers }: Props) {
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
@@ -34,6 +35,7 @@ export function CalendarHeader({ businessId, services, staffMembers }: Props) {
       {showModal && (
         <NewBookingModal
           businessId={businessId}
+          timezone={timezone}
           services={services}
           staffMembers={staffMembers}
           onClose={() => setShowModal(false)}
