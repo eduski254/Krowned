@@ -15,6 +15,7 @@ interface Plan {
 interface Props {
   currentTier: string;
   subscriptionStatus: string | null;
+  hasRealSubscription: boolean;
   seatCount: number;
   cancelAtPeriodEnd: boolean;
   trialEndsAt: string | null;
@@ -30,6 +31,7 @@ const TIER_ICONS: Record<string, React.ReactNode> = {
 export function SubscriptionCard({
   currentTier,
   subscriptionStatus,
+  hasRealSubscription,
   seatCount,
   cancelAtPeriodEnd,
   trialEndsAt,
@@ -118,7 +120,7 @@ export function SubscriptionCard({
             ) : (
               <CreditCard className="h-3.5 w-3.5" />
             )}
-            Manage
+            {hasRealSubscription ? "Manage" : "Activate Subscription"}
           </button>
         )}
       </div>
@@ -127,8 +129,14 @@ export function SubscriptionCard({
         <p className="text-sm text-destructive">{error}</p>
       )}
 
-      {/* Plan cards (show when on free or for comparison) */}
-      {currentTier === "free" && (
+      {/* Plan cards (show when on free or when no real Stripe subscription) */}
+      {(currentTier === "free" || !hasRealSubscription) && (
+        <>
+        {!hasRealSubscription && currentTier !== "free" && (
+          <p className="text-sm text-muted-foreground">
+            Your plan needs to be activated with a payment method. Choose a plan below to start your 14-day free trial.
+          </p>
+        )}
         <div className="grid gap-3 sm:grid-cols-3">
           {paidPlans.map((plan) => (
             <div
@@ -175,6 +183,7 @@ export function SubscriptionCard({
             </div>
           ))}
         </div>
+        </>
       )}
     </div>
   );

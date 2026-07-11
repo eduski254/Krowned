@@ -38,7 +38,7 @@ export default async function BusinessSettingsPage() {
   // Fetch subscription details
   const { data: subscription } = await admin
     .from("subscriptions")
-    .select("seat_count, cancel_at_period_end, trial_ends_at, status")
+    .select("seat_count, cancel_at_period_end, trial_ends_at, status, stripe_subscription_id")
     .eq("business_id", business.id)
     .in("status", ["trialing", "active", "past_due"])
     .maybeSingle();
@@ -84,6 +84,7 @@ export default async function BusinessSettingsPage() {
           <SubscriptionCard
             currentTier={currentTier}
             subscriptionStatus={business.subscription_status}
+            hasRealSubscription={!!subscription?.stripe_subscription_id}
             seatCount={subscription?.seat_count ?? 1}
             cancelAtPeriodEnd={subscription?.cancel_at_period_end ?? false}
             trialEndsAt={subscription?.trial_ends_at ?? null}
