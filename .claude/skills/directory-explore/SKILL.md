@@ -182,12 +182,12 @@ The listings panel casts a right-edge shadow so the map appears to sit *under* i
 - `relative z-10` establishes stacking context above the map (which is at default z-index)
 - Shadow direction: `4px 0 16px` casts to the right only
 
-### 13. Contextual listing header (Zillow-style)
+### 13. Contextual listing header (Zillow-style) — sticky
 
 Replace a plain "X results" counter with a contextual title + subtitle:
 
 ```
-Braids in Nairobi — Beauty & Wellness    ← dynamic title (filters + domain suffix)
+Braids in DC — Beauty & Wellness         ← dynamic title (filters + domain suffix)
 12 listings available                     ← subtitle with count
 ```
 
@@ -197,14 +197,31 @@ Build the title dynamically from active filters:
 - City → "in {city}"
 - Fallback: just "Beauty & Wellness" with no filters
 
-### 14. Clickable contact info
+The header bar (title + count + view mode buttons + map toggle) is **sticky** at the top of the list panel:
+- `sticky top-0 z-10` inside the scrollable panel (not the page header)
+- `bg-background/95 backdrop-blur-sm border-b border-border` for legibility
+- Content below lives in its own `p-4 sm:p-6` wrapper
+- The outer scroll container has NO padding (padding is on the content wrapper only)
+
+### 14. Hide/Show Map toggle
+
+Desktop toggle button to hide the map and expand listings to full width:
+- `mapVisible` state (default: `true`)
+- When hidden: list panel becomes `w-full`, grid expands to `lg:grid-cols-3 xl:grid-cols-4`
+- When visible: list panel is `lg:w-1/2 lg:flex-none`, grid stays `sm:grid-cols-2`
+- Panel shadow only renders when map is visible
+- Map component conditionally renders: `{hasMapKey && mapVisible && (...)}`
+- Button highlights with primary accent when map is hidden (`border-primary/30 bg-primary/5 text-primary`)
+- Hidden on mobile (mobile uses full-screen map overlay toggle instead)
+
+### 15. Clickable contact info
 
 In business contact cards (preview panel + full profile page):
 - Phone: `<a href="tel:{phone}">` with hover color transition
 - Email: `<a href="mailto:{email}">` with hover color transition
 - Social links: `<SocialLinksBar>` component renders branded SVG icons (Instagram, Facebook, X, LinkedIn, TikTok, Website) as `<a target="_blank">` links
 
-### 15. BusinessPreview reuse
+### 16. BusinessPreview reuse
 
 The `BusinessPreview` slide-in panel is reusable beyond the explore page:
 - Import from `@/app/(public)/explore/business-preview`
@@ -212,7 +229,7 @@ The `BusinessPreview` slide-in panel is reusable beyond the explore page:
 - Props: `slug` (to fetch data), `imageUrl` (for immediate cover display), `onClose` callback
 - Pattern: render cards as `<button>` instead of `<Link>`, track `selectedSlug` state, conditionally render `<BusinessPreview>`
 
-### 16. Portal-based tooltips for auth-gated actions
+### 17. Portal-based tooltips for auth-gated actions
 
 For actions that require login (e.g., favorites), don't redirect — show a tooltip:
 
@@ -317,7 +334,7 @@ The reference code uses semantic CSS tokens (`text-foreground`, `bg-card`, `bord
 |-----------|--------|
 | Mobile (<640px) | Single column, stacked filters, map behind toggle button |
 | Tablet (640-1023px) | Filters wrap in rows, grid cards 2-col, map behind toggle |
-| Desktop (1024px+) | Filters in single row, list panel (50%) + map panel (50%) side by side |
+| Desktop (1024px+) | Filters in single row, list panel (50%) + map panel (50%) side by side; or full-width 4-col grid when map hidden |
 
 ## Packages required
 
