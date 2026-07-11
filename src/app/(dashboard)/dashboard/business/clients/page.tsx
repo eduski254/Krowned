@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import { EmptyState } from "@/components/dashboard/empty-state";
@@ -15,11 +15,12 @@ interface ClientRow {
 }
 
 export default async function BusinessClientsPage() {
-  const supabase = await createClient();
   const effectiveUserId = await getEffectiveUserId();
   if (!effectiveUserId) redirect("/login");
 
-  const { data: business } = await supabase
+  const admin = createAdminClient();
+
+  const { data: business } = await admin
     .from("businesses")
     .select("id")
     .eq("owner_id", effectiveUserId)
@@ -27,8 +28,8 @@ export default async function BusinessClientsPage() {
 
   if (!business) redirect("/dashboard/business");
 
-  // Fetch registered clients (from bookings with client_id)
-  const { data: bookings } = await supabase
+  // Fetch bookings with client profiles (admin bypasses RLS on profiles)
+  const { data: bookings } = await admin
     .from("bookings")
     .select("client_id, contact_id, clients:client_id(id, full_name, avatar_url, phone)")
     .eq("business_id", business.id)
@@ -58,7 +59,7 @@ export default async function BusinessClientsPage() {
   });
 
   // Fetch business contacts
-  const { data: contacts } = await supabase
+  const { data: contacts } = await admin
     .from("business_contacts")
     .select("id, name, phone, email")
     .eq("business_id", business.id)

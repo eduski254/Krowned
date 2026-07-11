@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getEffectiveUserId } from "@/lib/effective-user";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { redirect } from "next/navigation";
 import { VisibilityToggle } from "./visibility-toggle";
 import { HoursEditor } from "./hours-editor";
@@ -48,6 +49,24 @@ export default async function BusinessSettingsPage() {
     .eq("business_id", business.id)
     .order("day_of_week");
 
+  // Sync Connect status from Stripe if account exists but charges not yet enabled
+  let chargesEnabled = business.charges_enabled ?? false;
+  if (business.stripe_connect_account_id && !chargesEnabled && isStripeConfigured()) {
+    try {
+      const stripe = getStripe();
+      const account = await stripe.accounts.retrieve(business.stripe_connect_account_id);
+      chargesEnabled = account.charges_enabled ?? false;
+      if (chargesEnabled !== (business.charges_enabled ?? false)) {
+        await admin
+          .from("businesses")
+          .update({ charges_enabled: chargesEnabled })
+          .eq("id", business.id);
+      }
+    } catch {
+      // Stripe API error — use DB value
+    }
+  }
+
   const currentTier = (business.plans as any)?.tier ?? "free";
 
   return (
@@ -85,7 +104,7 @@ export default async function BusinessSettingsPage() {
             </h2>
             <ConnectCard
               hasConnectAccount={!!business.stripe_connect_account_id}
-              chargesEnabled={business.charges_enabled ?? false}
+              chargesEnabled={chargesEnabled}
             />
           </div>
         )}
