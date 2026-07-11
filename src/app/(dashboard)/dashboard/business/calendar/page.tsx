@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import { EmptyState } from "@/components/dashboard/empty-state";
@@ -25,7 +26,8 @@ export default async function BusinessCalendarPage() {
   const thirtyDays = new Date(now);
   thirtyDays.setDate(thirtyDays.getDate() + 30);
 
-  const { data: bookings } = await supabase
+  const admin = createAdminClient();
+  const { data: bookings } = await admin
     .from("bookings")
     .select(
       `id, starts_at, ends_at, status, source,
