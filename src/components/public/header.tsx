@@ -38,12 +38,12 @@ export async function PublicHeader() {
         <Link href="/" className="flex items-center">
           <img
             src="/brand/logo-white.png"
-            alt="Krown"
+            alt="Krowned"
             className="h-8 w-auto hidden dark:block"
           />
           <img
             src="/brand/logo-black.png"
-            alt="Krown"
+            alt="Krowned"
             className="h-8 w-auto block dark:hidden"
           />
         </Link>

@@ -3,9 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/public/header";
 import { Footer } from "@/components/public/footer";
 import { HeroSearch } from "@/components/public/hero-search";
-import { Star, Search, Calendar, CheckCircle, MapPin, ArrowRight } from "lucide-react";
+import { Star, Search, Calendar, CheckCircle, ArrowRight } from "lucide-react";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { resolveCardImage } from "@/lib/explore/utils";
+import { FeaturedCarousel } from "@/components/public/featured-carousel";
 
 // REVIEW: Replace with a real licensed image before launch.
 // Swap this single constant to change the homepage hero background.
@@ -68,7 +69,7 @@ export default async function HomePage() {
     .map(([name, bizIds]) => ({ name, count: bizIds.size }))
     .sort((a, b) => b.count - a.count);
 
-  const topBusinesses = businesses.slice(0, 6);
+  const featuredBusinesses = businesses.filter((b) => b.is_featured);
 
   return (
     <div className="flex min-h-full flex-col">
@@ -92,10 +93,10 @@ export default async function HomePage() {
         {/* Content */}
         <div className="relative z-10 mx-auto w-full max-w-3xl px-4 py-8 sm:py-12 lg:py-14">
           <h1 className="font-heading text-3xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
-            Beauty &amp; wellness, booked effortlessly
+            Your crown, booked.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base text-white/90 drop-shadow-sm sm:mt-6 sm:text-lg">
-            Discover top professionals near you. Book in seconds. Grow your business with Krown.
+            Find braiders, loc techs, and textured-hair stylists in the DMV. Book your next appointment in seconds.
           </p>
 
           {/* Hero search bar — Booksy-style with dropdowns */}
@@ -112,10 +113,10 @@ export default async function HomePage() {
       {categories && categories.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-            Browse by Category
+            Browse by Style
           </h2>
           <p className="mt-2 text-center text-muted-foreground">
-            Find exactly what you need
+            Whatever your texture needs, we got you
           </p>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {categories.filter((cat) => cat.slug !== "new-category").map((cat) => (
@@ -141,57 +142,31 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Top professionals */}
-      {topBusinesses && topBusinesses.length > 0 && (
+      {/* Top professionals — featured carousel */}
+      {featuredBusinesses.length > 0 && (
         <section className="bg-muted px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-              Top Professionals
+              Top Stylists
             </h2>
             <p className="mt-2 text-center text-muted-foreground">
-              Trusted by thousands of happy clients
+              The DMV&apos;s finest braiders, loc techs, and stylists
             </p>
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {topBusinesses.map((biz) => (
-                <Link
-                  key={biz.id}
-                  href={`/b/${biz.slug}`}
-                  style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }}
-                  className="group rounded-xl border border-border bg-card p-6 transition-all hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] hover:-translate-y-0.5"
-                >
-                  <div className="flex items-center gap-4">
-                    {biz.logo_url ? (
-                      <img
-                        src={biz.logo_url}
-                        alt=""
-                        className="h-14 w-14 rounded-lg object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-primary/10 text-xl font-bold text-primary">
-                        {biz.name.charAt(0)}
-                      </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="truncate font-semibold text-foreground group-hover:text-primary transition-colors">
-                          {biz.name}
-                        </h3>
-                        {biz.is_featured && (
-                          <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                            Featured
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {[biz.city, biz.country].filter(Boolean).join(", ")}
-                      </p>
-                    </div>
-                  </div>
-                  <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                    View profile <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
-                </Link>
-              ))}
+            <div className="mt-10">
+              <FeaturedCarousel
+                businesses={featuredBusinesses.map((biz) => {
+                  const cat = biz.service_categories as unknown as { name: string; slug: string } | null;
+                  return {
+                    id: biz.id,
+                    name: biz.name,
+                    slug: biz.slug,
+                    imageUrl: resolveCardImage(biz),
+                    categoryName: cat?.name ?? null,
+                    city: biz.city,
+                    country: biz.country,
+                  };
+                })}
+              />
             </div>
             <div className="mt-8 text-center">
               <Link
@@ -208,13 +183,13 @@ export default async function HomePage() {
       {/* How it works */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-          How Krown Works
+          How It Works
         </h2>
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           {[
-            { icon: Search, title: "Discover", desc: "Browse top-rated beauty and wellness professionals in your area." },
-            { icon: Calendar, title: "Book", desc: "Choose your service, pick a time, and confirm in seconds." },
-            { icon: CheckCircle, title: "Enjoy", desc: "Show up, relax, and enjoy your appointment. It's that easy." },
+            { icon: Search, title: "Find your stylist", desc: "Browse braiders, loc techs, and natural-hair pros across the DMV. Filter by style, location, and availability." },
+            { icon: Calendar, title: "Book your seat", desc: "Pick your service, choose a time that works, and lock it in. No DMs, no back-and-forth." },
+            { icon: CheckCircle, title: "Get crowned", desc: "Show up, sit back, and leave feeling like royalty. Pay online or in the chair." },
           ].map((step) => (
             <div key={step.title} className="text-center">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
@@ -228,19 +203,22 @@ export default async function HomePage() {
       </section>
 
       {/* CTA band */}
-      <section className="bg-gradient-hero px-4 py-16 text-center text-primary-foreground">
-        <div className="mx-auto max-w-2xl">
+      <section className="relative overflow-hidden px-4 py-16 text-center text-white">
+        <img src="/brand/bg-hero.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative z-10 mx-auto max-w-2xl">
           <h2 className="text-2xl font-bold sm:text-3xl">
-            Are you a beauty professional?
+            You braid, loc, or style textured hair?
           </h2>
-          <p className="mt-4 text-lg opacity-90">
-            Join Krown and reach thousands of new clients. Manage bookings, staff, and payments all in one place.
+          <p className="mt-4 text-lg text-white/90">
+            Stop losing bookings to DMs. Get a real booking system, manage your schedule, and get paid — all in one place.
           </p>
           <Link
             href="/for-professionals"
             className="mt-8 inline-block rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
           >
-            List Your Business
+            List your studio
           </Link>
         </div>
       </section>
@@ -248,13 +226,13 @@ export default async function HomePage() {
       {/* Testimonials */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-          What Our Users Say
+          What People Are Saying
         </h2>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {[
-            { name: "Amani K.", text: "Found my new favorite hair stylist through Krown. The booking was so easy!", rating: 5 },
-            { name: "Wanjiku M.", text: "As a salon owner, Krown has helped me fill empty slots and grow my client base.", rating: 5 },
-            { name: "David O.", text: "Finally a platform that understands our market. Clean, fast, and reliable.", rating: 5 },
+            { name: "Jasmine T.", text: "Finally a booking app that actually gets textured hair. Found my braider in like two minutes. Knotless came out perfect.", rating: 5 },
+            { name: "Marcus W.", text: "I run a barbershop in Bowie. Krowned filled my empty slots without me having to post on IG every day. Game changer.", rating: 5 },
+            { name: "Aisha R.", text: "No more screenshots and CashApp deposits. My clients book and pay online now. I can actually plan my week.", rating: 5 },
           ].map((t) => (
             <div key={t.name} style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }} className="rounded-xl border border-border bg-card p-6">
               <div className="flex gap-0.5 mb-3">

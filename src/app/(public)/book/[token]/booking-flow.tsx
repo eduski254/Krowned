@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition, useMemo } from "react";
+import Link from "next/link";
 import { Clock, Calendar, ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, User, CalendarPlus, MapPin, ArrowRight, Copy, Check } from "lucide-react";
 import { Spinner } from "@/components/spinner";
 import { QRCodeSVG } from "qrcode.react";
@@ -464,7 +465,17 @@ export function BookingFlow({
           {bookingResult?.error && (
             <div className="mt-4 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3">
               <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-destructive" />
-              <p className="text-sm text-destructive">{bookingResult.error}</p>
+              <div className="text-sm text-destructive">
+                <p>{bookingResult.error}</p>
+                {bookingResult.error.includes("logged in") && (
+                  <Link
+                    href={`/login?redirect=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname : "")}`}
+                    className="mt-1 inline-block font-medium text-primary underline underline-offset-2 hover:text-primary/80"
+                  >
+                    Log in to continue
+                  </Link>
+                )}
+              </div>
             </div>
           )}
 
@@ -923,7 +934,7 @@ function generateICS({
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Krown//Booking//EN",
+    "PRODID:-//Krowned//Booking//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     // Minimal VTIMEZONE — the TZID is an IANA name, which all modern

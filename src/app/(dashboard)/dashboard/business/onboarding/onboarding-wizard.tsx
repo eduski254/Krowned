@@ -160,7 +160,7 @@ export function OnboardingWizard({
             You&apos;re all set!
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Your business is live on Krown. Clients can now find and book you.
+            Your business is live on Krowned. Clients can now find and book you.
           </p>
         </div>
 
@@ -330,7 +330,7 @@ function StepBasics({
           Tell us about your business
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          This is how clients will find you on Krown.
+          This is how clients will find you on Krowned.
         </p>
       </div>
 
@@ -438,7 +438,7 @@ function StepLocation({
           type="text"
           value={location.city}
           onChange={(e) => setLocation({ ...location, city: e.target.value })}
-          placeholder="e.g. Nairobi"
+          placeholder="e.g. Silver Spring"
           maxLength={100}
           className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />

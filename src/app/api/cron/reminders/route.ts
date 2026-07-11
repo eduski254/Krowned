@@ -86,7 +86,7 @@ export async function GET(request: Request) {
       }
 
       const businessData = booking.businesses as any;
-      const timezone = businessData?.timezone ?? "Africa/Nairobi";
+      const timezone = businessData?.timezone ?? "America/New_York";
       const address = [businessData?.address, businessData?.city]
         .filter(Boolean)
         .join(", ");

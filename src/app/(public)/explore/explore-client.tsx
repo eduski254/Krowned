@@ -164,6 +164,7 @@ export function ExploreClient({
   const [pinnedId, setPinnedId] = useState<string | null>(null);
   const highlightedId = hoveredId ?? pinnedId;
   const [mobileMapOpen, setMobileMapOpen] = useState(false);
+  const [mapVisible, setMapVisible] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const [previewBiz, setPreviewBiz] = useState<ExploreBusiness | null>(null);
 
@@ -307,7 +308,7 @@ export function ExploreClient({
                 }}
                 onFocus={() => qInput.length > 0 && setShowSearchDropdown(true)}
                 onKeyDown={handleSearchKeyDown}
-                placeholder="Search services or businesses..."
+                placeholder="Search braiders, loc techs, stylists..."
                 className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
               />
               {qInput && (
@@ -454,12 +455,12 @@ export function ExploreClient({
         {/* List panel */}
         <div
           ref={listPanelRef}
-          style={{ boxShadow: "4px 0 16px rgba(0, 0, 0, 0.1)" }}
-          className={`relative z-10 flex-1 overflow-y-auto p-4 sm:p-6 lg:w-1/2 lg:flex-none ${
-            mobileMapOpen ? "hidden lg:block" : ""
-          }`}
+          style={mapVisible ? { boxShadow: "4px 0 16px rgba(0, 0, 0, 0.1)" } : undefined}
+          className={`relative z-10 flex-1 overflow-y-auto ${
+            mapVisible ? "lg:w-1/2 lg:flex-none" : "w-full"
+          } ${mobileMapOpen ? "hidden lg:block" : ""}`}
         >
-          <div className="mb-4 flex items-center justify-between">
+          <div className="sticky top-0 z-10 flex items-center justify-between bg-background/95 backdrop-blur-sm px-4 py-3 sm:px-6 border-b border-border">
             <div>
               <h2 className="text-sm font-semibold text-foreground">
                 {(() => {
@@ -510,6 +511,20 @@ export function ExploreClient({
               {hasMapKey && (
                 <button
                   type="button"
+                  onClick={() => setMapVisible(!mapVisible)}
+                  className={`hidden items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all hover:shadow-sm active:scale-95 lg:flex ${
+                    mapVisible
+                      ? "border-border text-foreground hover:bg-muted"
+                      : "border-primary/30 bg-primary/5 text-primary"
+                  }`}
+                >
+                  <MapIcon className="h-4 w-4" />
+                  {mapVisible ? "Hide Map" : "Show Map"}
+                </button>
+              )}
+              {hasMapKey && (
+                <button
+                  type="button"
                   onClick={() => setMobileMapOpen(true)}
                   className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-all hover:bg-muted hover:shadow-sm active:scale-95 lg:hidden"
                 >
@@ -520,11 +535,12 @@ export function ExploreClient({
             </div>
           </div>
 
+          <div className="p-4 sm:p-6">
           {filtered.length > 0 ? (
             <div
               className={
                 viewMode === "grid"
-                  ? "grid grid-cols-1 gap-4 sm:grid-cols-2"
+                  ? `grid grid-cols-1 gap-4 sm:grid-cols-2 ${!mapVisible ? "lg:grid-cols-3 xl:grid-cols-4" : ""}`
                   : "space-y-4"
               }
             >
@@ -564,10 +580,11 @@ export function ExploreClient({
               )}
             </div>
           )}
+          </div>
         </div>
 
         {/* Map panel */}
-        {hasMapKey && (
+        {hasMapKey && mapVisible && (
           <div
             className={`${
               mobileMapOpen
@@ -596,7 +613,7 @@ export function ExploreClient({
           </div>
         )}
 
-        {!hasMapKey && (
+        {!hasMapKey && mapVisible && (
           <div className="hidden items-center justify-center border-l border-border bg-muted lg:flex lg:w-1/2">
             <p className="text-sm text-muted-foreground">
               Map unavailable — API key not configured.

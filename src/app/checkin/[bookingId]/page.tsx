@@ -78,7 +78,7 @@ export default async function CheckInPage({
         durationMinutes={svc?.duration_minutes ?? 0}
         staffName={staffRow?.display_name ?? "Unassigned"}
         startsAt={booking.starts_at}
-        timezone={biz?.timezone ?? "Africa/Nairobi"}
+        timezone={biz?.timezone ?? "America/New_York"}
         serviceAmount={booking.service_amount}
         currency={booking.currency}
         checkedInAt={booking.checked_in_at}

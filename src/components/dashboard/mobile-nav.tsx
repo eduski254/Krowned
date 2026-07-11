@@ -79,12 +79,12 @@ export function MobileNav({
               >
                 <img
                   src="/brand/logo-white.png"
-                  alt="Krown"
+                  alt="Krowned"
                   className="h-7 w-auto dark:block hidden"
                 />
                 <img
                   src="/brand/logo-black.png"
-                  alt="Krown"
+                  alt="Krowned"
                   className="h-7 w-auto dark:hidden block"
                 />
               </Link>

@@ -5,42 +5,47 @@ export default function ForProfessionalsPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-hero px-4 py-20 text-center text-primary-foreground">
-        <h1 className="text-3xl font-bold font-heading sm:text-4xl lg:text-5xl">
-          Grow your business with Krown
-        </h1>
-        <p className="mt-4 text-lg opacity-90 max-w-xl mx-auto">
-          Reach new clients, manage bookings, staff, and payments all in one platform. Start free, upgrade when you&apos;re ready.
-        </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Link
-            href="/signup?type=professional"
-            className="rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
-          >
-            Start 14-day free trial
-          </Link>
-          <Link
-            href="#pricing"
-            className="rounded-lg border border-primary-foreground/30 px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-white/10"
-          >
-            View pricing
-          </Link>
+      <section className="relative overflow-hidden px-4 py-20 text-center text-white">
+        <img src="/brand/bg-hero.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold font-heading sm:text-4xl lg:text-5xl">
+            Stop losing bookings to the DMs
+          </h1>
+          <p className="mt-4 text-lg text-white/90 max-w-xl mx-auto">
+            Krowned gives braiders, loc techs, and textured-hair stylists a real booking system. Manage your schedule, get paid, and grow your clientele — all in one spot.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <Link
+              href="/signup?type=professional"
+              className="rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
+            >
+              Start 14-day free trial
+            </Link>
+            <Link
+              href="#pricing"
+              className="rounded-lg border border-white/30 px-8 py-3 text-sm font-semibold text-white hover:bg-white/10"
+            >
+              View pricing
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Features */}
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
         <h2 className="text-center text-2xl font-bold text-foreground font-heading">
-          Everything you need to run your business
+          Everything you need to run your chair
         </h2>
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { icon: Calendar, title: "Smart Booking", desc: "Clients book online 24/7. Auto-assign available staff. Reduce no-shows." },
-            { icon: Users, title: "Staff Management", desc: "Invite your team, set their schedules, assign services, track performance." },
-            { icon: DollarSign, title: "Payments & Tips", desc: "Accept online payments with tips. Track earnings. Get paid to your bank." },
-            { icon: BarChart3, title: "Analytics", desc: "See bookings, revenue, and client trends. Make data-driven decisions." },
-            { icon: Link2, title: "Your Booking Link", desc: "Share a direct booking link with your existing clients. They stay yours." },
-            { icon: Star, title: "Reviews & Reputation", desc: "Collect verified reviews. Build trust. Stand out in search results." },
+            { icon: Calendar, title: "Online Booking", desc: "Clients book 24/7. No more DM tag, no more screenshots. Auto-assign available stylists." },
+            { icon: Users, title: "Team Management", desc: "Invite your braiders, set their schedules, assign styles. Everyone stays organized." },
+            { icon: DollarSign, title: "Payments & Tips", desc: "Accept deposits and full payments online with tips. No more CashApp confusion." },
+            { icon: BarChart3, title: "Track Your Bag", desc: "See bookings, revenue, and client trends. Know what's working." },
+            { icon: Link2, title: "Your Booking Link", desc: "Share a direct link with your existing clients. They book, you confirm. Done." },
+            { icon: Star, title: "Verified Reviews", desc: "Only clients who sat in your chair can review. Build real trust." },
           ].map((f) => (
             <div key={f.title} className="rounded-xl border border-border bg-card p-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
@@ -179,15 +184,20 @@ export default function ForProfessionalsPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="bg-gradient-hero px-4 py-16 text-center text-primary-foreground">
-        <h2 className="text-2xl font-bold font-heading">Join thousands of professionals</h2>
-        <p className="mt-2 opacity-90">No credit card required to start your trial.</p>
-        <Link
-          href="/signup?type=professional"
-          className="mt-6 inline-block rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
-        >
-          Get started free
-        </Link>
+      <section className="relative overflow-hidden px-4 py-16 text-center text-white">
+        <img src="/brand/bg-hero.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative z-10">
+          <h2 className="text-2xl font-bold font-heading">Join the DMV&apos;s textured-hair community</h2>
+          <p className="mt-2 text-white/90">No credit card required. Try it free for 14 days.</p>
+          <Link
+            href="/signup?type=professional"
+            className="mt-6 inline-block rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
+          >
+            Get started free
+          </Link>
+        </div>
       </section>
     </div>
   );

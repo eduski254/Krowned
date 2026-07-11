@@ -5,11 +5,16 @@ export default function HowItWorksPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-hero px-4 py-16 text-center text-primary-foreground">
-        <h1 className="text-3xl font-bold sm:text-4xl">How Krown Works</h1>
-        <p className="mt-4 text-lg opacity-90">
-          Book beauty and wellness services in three simple steps.
-        </p>
+      <section className="relative overflow-hidden px-4 py-16 text-center text-white">
+        <img src="/brand/bg-hero.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold sm:text-4xl">How Krowned Works</h1>
+          <p className="mt-4 text-lg text-white/90">
+            Book braids, locs, and textured-hair services in three simple steps.
+          </p>
+        </div>
       </section>
 
       {/* Steps */}
@@ -19,20 +24,20 @@ export default function HowItWorksPage() {
             {
               step: "1",
               icon: Search,
-              title: "Discover professionals near you",
-              desc: "Browse by category, location, or name. Filter by price, rating, and availability. Every professional is verified before they appear on Krown.",
+              title: "Find your stylist",
+              desc: "Browse braiders, loc techs, natural-hair stylists, and barbers across the DMV. Filter by style, location, rating, and availability. Every pro is verified before they go live on Krowned.",
             },
             {
               step: "2",
               icon: Calendar,
-              title: "Book instantly",
-              desc: "Pick your service, choose your preferred professional (or let us match you with the best available), select a date and time, and confirm. It takes seconds.",
+              title: "Book your seat",
+              desc: "Pick your service — knotless braids, retwist, silk press, sew-in, fade, whatever you need. Choose a time that works and lock it in. No DMs, no back-and-forth.",
             },
             {
               step: "3",
               icon: CheckCircle,
-              title: "Show up and enjoy",
-              desc: "Arrive at your appointment and enjoy the service. Pay online beforehand or at the store. After your visit, leave a review to help the community.",
+              title: "Get crowned",
+              desc: "Show up, sit back, and leave feeling like royalty. Pay online beforehand or in the chair. After your appointment, leave a review to help the community find fire stylists.",
             },
           ].map((s) => (
             <div key={s.step} className="flex gap-6">
@@ -52,13 +57,13 @@ export default function HowItWorksPage() {
       <section className="bg-muted px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-center text-2xl font-bold text-foreground">
-            Why Krown?
+            Why Krowned?
           </h2>
           <div className="mt-10 grid gap-6 sm:grid-cols-3">
             {[
-              { icon: Shield, title: "Verified pros", desc: "Every business is reviewed before listing." },
-              { icon: Star, title: "Real reviews", desc: "Only clients who completed a booking can review." },
-              { icon: CreditCard, title: "Secure payments", desc: "Pay online or at the store. Your choice, always." },
+              { icon: Shield, title: "Verified stylists", desc: "Every business is reviewed before listing. No random accounts." },
+              { icon: Star, title: "Real reviews", desc: "Only clients who actually sat in the chair can leave a review." },
+              { icon: CreditCard, title: "Flexible payments", desc: "Pay online or at the chair. Your choice, always." },
             ].map((f) => (
               <div key={f.title} className="rounded-xl border border-border bg-card p-6 text-center">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
@@ -74,15 +79,15 @@ export default function HowItWorksPage() {
 
       {/* CTA */}
       <section className="px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-foreground">Ready to book?</h2>
+        <h2 className="text-2xl font-bold text-foreground">Ready to get booked?</h2>
         <p className="mt-2 text-muted-foreground">
-          Find your next beauty or wellness appointment.
+          Find your next braider, loc tech, or stylist in the DMV.
         </p>
         <Link
           href="/explore"
           className="mt-6 inline-block rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
         >
-          Explore services
+          Find stylists
         </Link>
       </section>
     </div>

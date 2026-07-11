@@ -136,7 +136,7 @@ export function HeroSearch({
               }}
               onFocus={() => qInput.length > 0 && setShowSearch(true)}
               onKeyDown={handleSearchKeyDown}
-              placeholder="Hair, nails, massage..."
+              placeholder="Knotless braids, retwist, silk press..."
               className="w-full min-w-0 bg-transparent text-sm text-white placeholder:text-white/50 outline-none"
             />
             {qInput && (

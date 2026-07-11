@@ -16,7 +16,7 @@ import type { ExploreBusiness } from "@/lib/explore/actions";
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
 const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? "DEMO_MAP_ID";
 
-const DEFAULT_CENTER = { lat: -1.2921, lng: 36.8219 };
+const DEFAULT_CENTER = { lat: 38.9072, lng: -77.0369 };
 const DEFAULT_ZOOM = 12;
 
 // Singleton flag to prevent multiple APIProvider script injections

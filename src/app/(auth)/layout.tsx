@@ -12,7 +12,7 @@ export default function AuthLayout({
   return (
     <div className="flex min-h-full flex-1">
       {/* Left: image + gradient overlay brand panel (hidden on mobile) */}
-      <div className="relative hidden overflow-hidden lg:flex lg:w-1/2 items-center justify-center p-12">
+      <div className="relative hidden overflow-hidden lg:flex lg:w-1/2">
         {/* Background image */}
         <img
           src={AUTH_HERO_IMAGE}
@@ -26,17 +26,17 @@ export default function AuthLayout({
         {/* Extra scrim for text legibility */}
         <div className="absolute inset-0 bg-black/15" />
 
-        {/* Text content */}
-        <div className="relative z-10 max-w-md text-center text-white">
-          <Link href="/" className="hover:opacity-90 transition-opacity">
+        {/* Text content — bottom-left aligned */}
+        <div className="absolute bottom-12 left-12 z-10 max-w-sm text-left text-white">
+          <Link href="/" className="hover:opacity-90 transition-opacity inline-block">
             <img
               src="/brand/logo-white.png"
-              alt="Krown"
-              className="h-12 w-auto drop-shadow-md"
+              alt="Krowned"
+              className="h-10 w-auto drop-shadow-md"
             />
           </Link>
-          <p className="mt-4 text-lg text-white/90 drop-shadow-sm">
-            Discover and book top beauty &amp; wellness professionals near you.
+          <p className="mt-3 text-xs text-white/60 drop-shadow-sm leading-relaxed">
+            Find braiders, loc techs, and textured-hair stylists in the DMV.
           </p>
         </div>
       </div>

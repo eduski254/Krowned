@@ -69,14 +69,14 @@ export default function ContactPage() {
             <Mail className="mt-1 h-5 w-5 text-primary" />
             <div>
               <h3 className="font-semibold text-foreground">Email</h3>
-              <p className="text-sm text-muted-foreground">hello@zawadi.com</p>
+              <p className="text-sm text-muted-foreground">hello@krowned.co</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <MapPin className="mt-1 h-5 w-5 text-primary" />
             <div>
               <h3 className="font-semibold text-foreground">Location</h3>
-              <p className="text-sm text-muted-foreground">Nairobi, Kenya</p>
+              <p className="text-sm text-muted-foreground">Washington, DC metro area</p>
             </div>
           </div>
         </div>

@@ -8,16 +8,16 @@ export function Footer() {
           <div>
             <img
               src="/brand/logo-white.png"
-              alt="Krown"
+              alt="Krowned"
               className="h-7 w-auto hidden dark:block"
             />
             <img
               src="/brand/logo-black.png"
-              alt="Krown"
+              alt="Krowned"
               className="h-7 w-auto block dark:hidden"
             />
             <p className="mt-3 text-sm text-muted-foreground">
-              Beauty &amp; wellness, booked effortlessly.
+              Textured hair, booked right.
             </p>
           </div>
           <div>
@@ -43,7 +43,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          Krown &mdash; Beauty &amp; Wellness Marketplace
+          Krowned &mdash; Textured Hair Booking &middot; DMV
         </div>
       </div>
     </footer>

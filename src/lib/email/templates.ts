@@ -27,7 +27,7 @@ function formatTime(date: Date, tz: string): string {
 }
 
 function bookingRef(bookingId: string): string {
-  return "ZW-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
+  return "KD-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
 }
 
 function bookingDetailsTable(details: {
@@ -67,13 +67,13 @@ function build(subject: string, html: string): EmailOutput {
 export function welcomeEmail(name: string): EmailOutput {
   const html = emailLayout(
     `<h2 style="margin:0 0 16px;font-size:22px;">Welcome, ${name}!</h2>
-    <p>We're glad you're here. Krown connects you with the best beauty and wellness professionals near you.</p>
+    <p>We're glad you're here. Krowned connects you with the best beauty and wellness professionals near you.</p>
     <p>Browse services, book your first appointment, and discover something new.</p>
     ${emailButton("Explore Services", `${SITE_URL}/explore`)}
     <p style="color:#6b7280;font-size:13px;">Questions? Just reply to this email.</p>`,
-    `Welcome to Krown, ${name}!`,
+    `Welcome to Krowned, ${name}!`,
   );
-  return build("Welcome to Krown!", html);
+  return build("Welcome to Krowned!", html);
 }
 
 // ── 2. Booking Confirmation (to client) ─────────────────────────────
@@ -304,14 +304,14 @@ export function staffInvitationEmail(data: {
 }): EmailOutput {
   const acceptUrl = `${SITE_URL}/invite/${data.inviteToken}`;
 
-  const subject = `You're invited to join ${data.businessName} on Krown`;
+  const subject = `You're invited to join ${data.businessName} on Krowned`;
   const html = emailLayout(
     `<h2 style="margin:0 0 16px;font-size:22px;">You're invited!</h2>
-    <p>Hi ${data.staffName}, ${data.invitedBy} has invited you to join <strong>${data.businessName}</strong> on Krown as a team member.</p>
+    <p>Hi ${data.staffName}, ${data.invitedBy} has invited you to join <strong>${data.businessName}</strong> on Krowned as a team member.</p>
     <p>Click below to accept the invitation and set up your account. This link expires in 7 days.</p>
     ${emailButton("Accept Invitation", acceptUrl)}
     <p style="font-size:13px;color:#6b7280;">If you didn't expect this invite, you can safely ignore this email.</p>`,
-    `Join ${data.businessName} on Krown`,
+    `Join ${data.businessName} on Krowned`,
   );
   return build(subject, html);
 }

@@ -62,7 +62,7 @@ export default async function BusinessCalendarPage() {
     <div>
       <CalendarHeader
         businessId={business.id}
-        timezone={business.timezone ?? "Africa/Nairobi"}
+        timezone={business.timezone ?? "America/New_York"}
         services={services ?? []}
         staffMembers={staffMembers ?? []}
       />

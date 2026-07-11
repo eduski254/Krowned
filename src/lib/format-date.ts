@@ -2,7 +2,7 @@
  * Timezone-aware date/time formatting for bookings.
  *
  * All booking times are stored in UTC. They must be displayed in the
- * business's timezone (e.g., "Africa/Nairobi") — never in the viewer's
+ * business's timezone (e.g., "America/New_York") — never in the viewer's
  * local browser timezone.
  */
 
@@ -59,7 +59,7 @@ export function formatBookingDateTime(utcDate: string, timezone: string): string
  * Used when the user enters a time in the business timezone and we need to store it as UTC.
  *
  * @param localDateTime - e.g., "2026-07-20T14:00:00" (no Z, no offset)
- * @param timezone - e.g., "Africa/Nairobi"
+ * @param timezone - e.g., "America/New_York"
  * @returns UTC ISO string, e.g., "2026-07-20T11:00:00.000Z"
  */
 export function localToUtcIso(localDateTime: string, timezone: string): string {
@@ -88,4 +88,4 @@ export function localToUtcIso(localDateTime: string, timezone: string): string {
 }
 
 /** Default timezone fallback if business.timezone is missing */
-export const DEFAULT_TIMEZONE = "Africa/Nairobi";
+export const DEFAULT_TIMEZONE = "America/New_York";

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Jost, Montserrat } from "next/font/google";
+import localFont from "next/font/local";
+import { Montserrat } from "next/font/google";
 import { ThemeProvider, ThemeScript } from "@/components/theme-provider";
 import "./globals.css";
 
-const jost = Jost({
-  variable: "--font-jost",
-  subsets: ["latin"],
+const tanMeringue = localFont({
+  src: "../fonts/TanMeringue.otf",
+  variable: "--font-tan-meringue",
   display: "swap",
 });
 
@@ -16,9 +17,9 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Krown — Book Beauty & Wellness",
+  title: "Krowned — Book Braids, Locs & Textured Hair in the DMV",
   description:
-    "Discover and book top beauty & wellness professionals near you.",
+    "Find and book braiders, loc techs, and textured-hair stylists in DC, Maryland, and Northern Virginia.",
 };
 
 export default function RootLayout({
@@ -30,7 +31,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${jost.variable} ${montserrat.variable} h-full antialiased`}
+      className={`${tanMeringue.variable} ${montserrat.variable} h-full antialiased`}
     >
       <head>
         <ThemeScript />

@@ -70,7 +70,7 @@ export async function getAvailableSlots(
       .single(),
   ]);
 
-  if (bizResult.error || !bizResult.data) return { slots: [], timezone: "Africa/Nairobi", date };
+  if (bizResult.error || !bizResult.data) return { slots: [], timezone: "America/New_York", date };
   if (svcResult.error || !svcResult.data) return { slots: [], timezone: bizResult.data.timezone, date };
 
   const biz = bizResult.data;
@@ -406,7 +406,7 @@ export async function getAvailableDateRange(
     .eq("id", businessId)
     .single();
 
-  if (!biz) return { dates: [], timezone: "Africa/Nairobi" };
+  if (!biz) return { dates: [], timezone: "America/New_York" };
 
   const plan = biz.plans as unknown as { tier: string } | null;
   if (!isBookable(plan?.tier, biz.subscription_status)) {

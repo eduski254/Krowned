@@ -19,10 +19,10 @@ export async function generateMetadata({
     .eq("status", "published")
     .single();
 
-  if (!post) return { title: "Post Not Found | Krown" };
+  if (!post) return { title: "Post Not Found | Krowned" };
 
   return {
-    title: `${post.meta_title || post.title} | Krown Blog`,
+    title: `${post.meta_title || post.title} | Krowned Blog`,
     description: post.meta_description || post.excerpt || undefined,
     openGraph: {
       title: post.meta_title || post.title,
@@ -72,7 +72,7 @@ export default async function BlogPostPage({
     .limit(3);
 
   const authorProfile = post.author as unknown as { full_name: string; avatar_url: string | null } | null;
-  const authorName = post.author_name || authorProfile?.full_name || "Krown Team";
+  const authorName = post.author_name || authorProfile?.full_name || "Krowned Team";
   const authorAvatar = post.author_avatar_url || authorProfile?.avatar_url || null;
   const authorBio = post.author_bio || null;
 

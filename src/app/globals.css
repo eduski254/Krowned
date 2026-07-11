@@ -20,7 +20,7 @@
    SEMANTIC TOKENS — LIGHT (default) — clean & warm
    --------------------------------------------------------------------------- */
 :root {
-  --radius: 0.625rem; /* 10px base; pills use rounded-full */
+  --radius: 0.015rem;
 
   /* Official Krown palette:
      Near-black  #0C0B0A
@@ -43,7 +43,7 @@
   --ring: #D9B36C;                /* Gold focus ring */
 
   /* Brand — Gold primary */
-  --primary: #B8942F;             /* Darker gold for light bg contrast */
+  --primary: #c6c6c6;
   --primary-foreground: #0C0B0A;  /* Near-black text on gold */
 
   /* Brand — Cream secondary surface */
@@ -81,7 +81,7 @@
   );
 
   /* Fonts */
-  --font-heading: var(--font-jost), "Futura", "Century Gothic", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-tan-meringue), "Futura", "Century Gothic", ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -199,7 +199,7 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 700;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.07em;
   }
 }
 

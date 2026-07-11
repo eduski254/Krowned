@@ -71,7 +71,7 @@ export default async function ClientSettingsPage() {
             Email Notifications
           </h2>
           <p className="mt-1 mb-4 text-sm text-muted-foreground">
-            Choose which emails you receive from Krown.
+            Choose which emails you receive from Krowned.
           </p>
           <EmailPreferences preferences={preferences} />
         </div>
