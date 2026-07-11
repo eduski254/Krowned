@@ -70,16 +70,16 @@ export async function GET() {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const [bookingsRes, reviewsRes] = await Promise.all([
-      supabase
+      admin
         .from("bookings")
         .select(
-          "id, status, created_at, services(name), clients:client_id(full_name)",
+          "id, status, created_at, services(name), clients:client_id(full_name), contact:contact_id(name)",
         )
         .eq("business_id", businessRes.data.id)
         .gte("created_at", sevenDaysAgo.toISOString())
         .order("created_at", { ascending: false })
         .limit(15),
-      supabase
+      admin
         .from("reviews")
         .select("id, rating, created_at, clients:client_id(full_name)")
         .eq("business_id", businessRes.data.id)
@@ -91,6 +91,7 @@ export async function GET() {
     for (const b of bookingsRes.data ?? []) {
       const clientName =
         (b.clients as unknown as { full_name: string } | null)?.full_name ??
+        (b.contact as unknown as { name: string } | null)?.name ??
         "A client";
       const serviceName =
         (b.services as unknown as { name: string } | null)?.name ?? "a service";

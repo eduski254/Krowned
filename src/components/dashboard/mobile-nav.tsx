@@ -58,8 +58,8 @@ export function MobileNav({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="lg:hidden rounded-lg p-2 text-muted-foreground hover:bg-muted"
-        aria-label="Open menu"
+        className="lg:hidden flex items-center justify-center rounded-lg p-2 text-foreground hover:bg-muted border border-border"
+        aria-label="Open navigation menu"
       >
         <Menu className="h-5 w-5" />
       </button>
