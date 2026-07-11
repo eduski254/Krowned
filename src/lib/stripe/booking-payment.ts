@@ -95,7 +95,7 @@ export async function createBookingCheckout(bookingId: string): Promise<{
     customer_email: user.email ?? undefined,
     success_url: `${SITE_URL}/booking/success?booking_id=${bookingId}`,
     cancel_url: `${SITE_URL}/booking/cancelled?booking_id=${bookingId}`,
-    expires_at: Math.floor(Date.now() / 1000) + 9 * 60, // 9 min (within hold window)
+    expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 min (Stripe minimum)
     metadata: {
       booking_id: bookingId,
       type: "booking_payment",

@@ -173,7 +173,7 @@ export async function holdBookingSlot(
       p_platform_fee: platformFee,
       p_currency: service.currency,
       p_client_note: data.clientNote || null,
-      p_hold_minutes: 10,
+      p_hold_minutes: 35,
     },
   );
 
