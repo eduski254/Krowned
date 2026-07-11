@@ -203,6 +203,26 @@ async function seedMagnateCuts() {
     console.log(`  Business hours set (Mon-Sat 8am-6pm)`);
   }
 
+  // Staff schedule for owner
+  const { data: existingSched } = await supabase
+    .from("staff_schedules")
+    .select("id")
+    .eq("staff_id", ownerStaffId)
+    .limit(1)
+    .maybeSingle();
+
+  if (!existingSched) {
+    for (const dow of [1, 2, 3, 4, 5, 6]) {
+      await supabase.from("staff_schedules").insert({
+        staff_id: ownerStaffId,
+        day_of_week: dow,
+        start_time: "08:00",
+        end_time: "18:00",
+      });
+    }
+    console.log(`  Staff schedule set for owner (Mon-Sat 8am-6pm)`);
+  }
+
   return { businessId, ownerStaffId };
 }
 
@@ -248,6 +268,26 @@ async function seedDesignsMagnateStaff(businessId: string) {
     }).then(() => {});
   }
   console.log(`  Linked to ${services?.length ?? 0} services`);
+
+  // Staff schedule
+  const { data: existingSched } = await supabase
+    .from("staff_schedules")
+    .select("id")
+    .eq("staff_id", staff.id)
+    .limit(1)
+    .maybeSingle();
+
+  if (!existingSched) {
+    for (const dow of [1, 2, 3, 4, 5, 6]) {
+      await supabase.from("staff_schedules").insert({
+        staff_id: staff.id,
+        day_of_week: dow,
+        start_time: "08:00",
+        end_time: "18:00",
+      });
+    }
+    console.log(`  Staff schedule set (Mon-Sat 8am-6pm)`);
+  }
 }
 
 async function seedOutlastClient() {
@@ -377,6 +417,26 @@ async function seedEdwinOmandi() {
       });
     }
     console.log(`  Business hours set (Mon-Sun 9am-7pm)`);
+  }
+
+  // Staff schedule for Edwin
+  const { data: existingSched } = await supabase
+    .from("staff_schedules")
+    .select("id")
+    .eq("staff_id", staffId)
+    .limit(1)
+    .maybeSingle();
+
+  if (!existingSched) {
+    for (let dow = 0; dow <= 6; dow++) {
+      await supabase.from("staff_schedules").insert({
+        staff_id: staffId,
+        day_of_week: dow,
+        start_time: "09:00",
+        end_time: "19:00",
+      });
+    }
+    console.log(`  Staff schedule set (Mon-Sun 9am-7pm)`);
   }
 }
 

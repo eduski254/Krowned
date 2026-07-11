@@ -22,24 +22,38 @@ async function fetchBookingDetails(bookingId: string) {
   const { data } = await admin
     .from("bookings")
     .select(
-      `id, client_id, staff_id, starts_at, ends_at, status, service_amount, currency,
+      `id, client_id, contact_id, staff_id, starts_at, ends_at, status, service_amount, currency,
        services(name, duration_minutes),
        staff(display_name, user_id, invited_email),
        businesses(name, timezone, owner_id, address, city),
-       profiles!client_id(full_name)`,
+       profiles!client_id(full_name),
+       business_contacts!contact_id(name, email)`,
     )
     .eq("id", bookingId)
     .single();
 
   if (!data) return null;
 
-  const clientId = data.client_id;
-  if (!clientId) return null;
+  // Resolve client email + name from either auth user or business contact
+  let clientEmail: string | undefined;
+  let clientName = "there";
 
-  const {
-    data: { user: clientUser },
-  } = await admin.auth.admin.getUserById(clientId);
-  if (!clientUser) return null;
+  const clientId = data.client_id;
+  const contactId = data.contact_id;
+
+  if (clientId) {
+    const {
+      data: { user: clientUser },
+    } = await admin.auth.admin.getUserById(clientId);
+    clientEmail = clientUser?.email;
+    clientName = (data.profiles as any)?.full_name ?? "there";
+  } else if (contactId) {
+    const contact = data.business_contacts as any;
+    clientEmail = contact?.email ?? undefined;
+    clientName = contact?.name ?? "there";
+  }
+
+  if (!clientEmail) return null;
 
   // Fetch owner profile + email
   const ownerId = (data.businesses as any)?.owner_id;
@@ -76,8 +90,8 @@ async function fetchBookingDetails(bookingId: string) {
 
   return {
     booking: data,
-    clientEmail: clientUser.email!,
-    clientName: (data.profiles as any)?.full_name ?? "there",
+    clientEmail,
+    clientName,
     clientId,
     serviceName: (data.services as any)?.name ?? "Service",
     durationMinutes: (data.services as any)?.duration_minutes ?? 60,

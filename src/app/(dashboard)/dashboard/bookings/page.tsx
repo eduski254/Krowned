@@ -92,7 +92,7 @@ export default async function ClientBookingsPage() {
                         {b.currency?.toUpperCase()}
                       </span>
                     )}
-                    {canCancel && <RescheduleButton bookingId={b.id} />}
+                    {canCancel && <RescheduleButton bookingId={b.id} timezone={(b.businesses as any)?.timezone ?? DEFAULT_TIMEZONE} />}
                     {canCancel && <CancelButton bookingId={b.id} />}
                   </div>
                 </div>

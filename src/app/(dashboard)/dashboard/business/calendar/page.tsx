@@ -117,7 +117,7 @@ export default async function BusinessCalendarPage() {
                     )}
                     {canManage && (
                       <>
-                        <RescheduleButton bookingId={b.id} />
+                        <RescheduleButton bookingId={b.id} timezone={business.timezone ?? DEFAULT_TIMEZONE} />
                         <OwnerCancelButton bookingId={b.id} />
                       </>
                     )}

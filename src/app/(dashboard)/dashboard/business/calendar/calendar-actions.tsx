@@ -5,6 +5,7 @@ import { X, CalendarClock } from "lucide-react";
 import { Spinner } from "@/components/spinner";
 import { cancelBooking } from "@/lib/booking/cancel-action";
 import { rescheduleBooking } from "@/lib/booking/reschedule-action";
+import { localToUtcIso } from "@/lib/format-date";
 
 export function OwnerCancelButton({ bookingId }: { bookingId: string }) {
   const [isPending, startTransition] = useTransition();
@@ -48,7 +49,7 @@ export function OwnerCancelButton({ bookingId }: { bookingId: string }) {
   );
 }
 
-export function RescheduleButton({ bookingId }: { bookingId: string }) {
+export function RescheduleButton({ bookingId, timezone }: { bookingId: string; timezone: string }) {
   const [open, setOpen] = useState(false);
   const [dateTime, setDateTime] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -93,7 +94,7 @@ export function RescheduleButton({ bookingId }: { bookingId: string }) {
           startTransition(async () => {
             const result = await rescheduleBooking({
               bookingId,
-              newStartsAt: new Date(dateTime).toISOString(),
+              newStartsAt: localToUtcIso(dateTime, timezone),
             });
             if (result.success) {
               setDone(true);
