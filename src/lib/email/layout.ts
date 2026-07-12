@@ -6,7 +6,7 @@
 const BRAND_PRIMARY = "#D9B36C";
 const BRAND_DARK = "#0C0B0A";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadibooking.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
 
 interface LayoutOptions {
   /** Show "Manage email preferences" link in footer (for optional emails) */

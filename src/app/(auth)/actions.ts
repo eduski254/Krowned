@@ -46,7 +46,7 @@ export async function signup(
         full_name,
         account_type, // stored in raw_user_meta_data for post-signup routing
       },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://zawadibooking.vercel.app"}/auth/callback?next=${
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app"}/auth/callback?next=${
         account_type === "professional" ? "/dashboard/business/onboarding" : "/dashboard"
       }`,
     },
