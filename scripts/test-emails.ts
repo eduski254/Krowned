@@ -88,6 +88,7 @@ async function main() {
       timezone: TZ,
       amount: 25000,
       currency: "usd",
+      address: "8455 Colesville Rd, Silver Spring, MD 20910",
     });
     return sendEmail({
       to: TEST_EMAIL,
@@ -110,6 +111,7 @@ async function main() {
       newStartsAt: FAKE_START,
       durationMinutes: 360,
       timezone: TZ,
+      address: "8455 Colesville Rd, Silver Spring, MD 20910",
     });
     return sendEmail({
       to: TEST_EMAIL,
@@ -129,6 +131,7 @@ async function main() {
       startsAt: FAKE_START,
       timezone: TZ,
       cancelledBy: "business",
+      address: "8455 Colesville Rd, Silver Spring, MD 20910",
     });
     return sendEmail({ to: TEST_EMAIL, ...mail });
   });
@@ -148,6 +151,7 @@ async function main() {
       timezone: TZ,
       amount: 25000,
       currency: "usd",
+      address: "8455 Colesville Rd, Silver Spring, MD 20910",
     });
     return sendEmail({ to: TEST_EMAIL, ...mail });
   });

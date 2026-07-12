@@ -30,6 +30,10 @@ function bookingRef(bookingId: string): string {
   return "KR-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
 }
 
+function mapsLink(address: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}
+
 function bookingDetailsTable(details: {
   ref: string;
   service: string;
@@ -39,6 +43,7 @@ function bookingDetailsTable(details: {
   staff: string;
   business: string;
   amount?: string;
+  address?: string;
 }): string {
   let rows = "";
   rows += emailDetailRow("Reference", `<strong>${details.ref}</strong>`);
@@ -48,6 +53,7 @@ function bookingDetailsTable(details: {
   rows += emailDetailRow("Time", details.time);
   rows += emailDetailRow("Duration", `${details.duration} min`);
   rows += emailDetailRow("Professional", details.staff);
+  if (details.address) rows += emailDetailRow("Location", `<a href="${mapsLink(details.address)}" style="color:#D9B36C;text-decoration:underline;">${details.address}</a>`);
   if (details.amount) rows += emailDetailRow("Total", details.amount);
   return `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;border:1px solid #e8e8ed;border-radius:8px;overflow:hidden;">
     <tr><td style="padding:16px;">
@@ -89,6 +95,7 @@ export function bookingConfirmationEmail(data: {
   timezone: string;
   amount?: number;
   currency?: string;
+  address?: string;
 }): EmailOutput {
   const ref = bookingRef(data.bookingId);
   const amountStr =
@@ -109,6 +116,7 @@ export function bookingConfirmationEmail(data: {
       duration: data.durationMinutes,
       staff: data.staffName,
       amount: amountStr,
+      address: data.address,
     })}
     <p style="font-size:13px;color:#6b7280;">A calendar invite (.ics) is attached. Add it to your calendar so you don't miss it!</p>
     ${emailButton("View My Bookings", `${SITE_URL}/dashboard/bookings`)}`,
@@ -129,6 +137,7 @@ export function bookingRescheduleEmail(data: {
   newStartsAt: Date;
   durationMinutes: number;
   timezone: string;
+  address?: string;
 }): EmailOutput {
   const ref = bookingRef(data.bookingId);
 
@@ -148,6 +157,7 @@ export function bookingRescheduleEmail(data: {
       time: formatTime(data.newStartsAt, data.timezone),
       duration: data.durationMinutes,
       staff: data.staffName,
+      address: data.address,
     })}
     <p style="font-size:13px;color:#6b7280;">An updated calendar invite is attached.</p>
     ${emailButton("View My Bookings", `${SITE_URL}/dashboard/bookings`)}`,
@@ -166,6 +176,7 @@ export function bookingCancellationEmail(data: {
   startsAt: Date;
   timezone: string;
   cancelledBy: "client" | "business";
+  address?: string;
 }): EmailOutput {
   const ref = bookingRef(data.bookingId);
   const who =
@@ -183,6 +194,7 @@ export function bookingCancellationEmail(data: {
           ${emailDetailRow("Reference", `<strong>${ref}</strong>`)}
           ${emailDetailRow("Service", data.serviceName)}
           ${emailDetailRow("Was scheduled", `${formatDate(data.startsAt)} at ${formatTime(data.startsAt, data.timezone)}`)}
+          ${data.address ? emailDetailRow("Location", `<a href="${mapsLink(data.address)}" style="color:#D9B36C;text-decoration:underline;">${data.address}</a>`) : ""}
         </table>
       </td></tr>
     </table>
@@ -207,6 +219,7 @@ export function newBookingOwnerEmail(data: {
   timezone: string;
   amount?: number;
   currency?: string;
+  address?: string;
 }): EmailOutput {
   const ref = bookingRef(data.bookingId);
   const amountStr =
@@ -227,6 +240,7 @@ export function newBookingOwnerEmail(data: {
       duration: data.durationMinutes,
       staff: data.staffName,
       amount: amountStr,
+      address: data.address,
     })}
     ${emailButton("View Calendar", `${SITE_URL}/dashboard/business/calendar`)}`,
     `${data.clientName} booked ${data.serviceName}`,
@@ -438,7 +452,7 @@ export function bookingReminderEmail(data: {
       duration: data.durationMinutes,
       staff: data.staffName,
     })}
-    ${data.address ? `<p style="font-size:14px;"><strong>Location:</strong> ${data.address}</p>` : ""}
+    ${data.address ? `<p style="font-size:14px;"><strong>Location:</strong> <a href="${mapsLink(data.address)}" style="color:#D9B36C;text-decoration:underline;">${data.address}</a></p>` : ""}
     <p style="font-size:14px;">Need to reschedule or cancel? You can manage your booking from your dashboard.</p>
     ${emailButton("View My Bookings", `${SITE_URL}/dashboard/bookings`)}
     <p style="color:#6b7280;font-size:13px;">We look forward to seeing you!</p>`,

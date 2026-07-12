@@ -147,6 +147,7 @@ export async function sendBookingConfirmationEmails({
     timezone: details.timezone,
     amount: details.serviceAmount ?? undefined,
     currency: details.currency ?? undefined,
+    address: details.address || undefined,
   });
 
   await sendEmail({
@@ -169,6 +170,7 @@ export async function sendBookingConfirmationEmails({
     timezone: details.timezone,
     amount: details.serviceAmount ?? undefined,
     currency: details.currency ?? undefined,
+    address: details.address || undefined,
   };
 
   // 2. Email to business owner (essential)
@@ -219,6 +221,7 @@ export async function sendBookingCancellationEmails({
     startsAt: details.startsAt,
     timezone: details.timezone,
     cancelledBy,
+    address: details.address || undefined,
   });
 
   await sendEmail({
@@ -332,6 +335,7 @@ export async function sendManualBookingConfirmationEmail({
     timezone,
     amount: data.service_amount ?? undefined,
     currency: data.currency ?? undefined,
+    address: address || undefined,
   });
 
   await sendEmail({
@@ -365,6 +369,7 @@ export async function sendManualBookingConfirmationEmail({
         timezone,
         amount: data.service_amount ?? undefined,
         currency: data.currency ?? undefined,
+        address: address || undefined,
       });
 
       await sendEmail({
@@ -406,6 +411,7 @@ export async function sendBookingRescheduleEmail({
     newStartsAt: details.startsAt,
     durationMinutes: details.durationMinutes,
     timezone: details.timezone,
+    address: details.address || undefined,
   });
 
   await sendEmail({
