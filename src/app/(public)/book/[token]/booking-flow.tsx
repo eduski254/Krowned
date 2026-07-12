@@ -680,7 +680,7 @@ function BookingConfirmation({
           <p className="text-sm font-medium text-foreground mb-1">Add to calendar</p>
           <a
             href={URL.createObjectURL(icsBlob)}
-            download={`zawadi-booking-${bookingRef}.ics`}
+            download={`krowned-booking-${bookingRef}.ics`}
             className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
           >
             <CalendarPlus className="h-4 w-4 text-primary" />
@@ -927,7 +927,7 @@ function generateICS({
   location?: string;
   description?: string;
 }): Blob {
-  const uid = `${start.getTime()}-${Math.random().toString(36).slice(2)}@zawadi.com`;
+  const uid = `${start.getTime()}-${Math.random().toString(36).slice(2)}@krowned.app`;
   const localStart = toICSDateLocal(start, timezone);
   const localEnd = toICSDateLocal(end, timezone);
 

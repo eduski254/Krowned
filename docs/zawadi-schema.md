@@ -1,4 +1,4 @@
-# Zawadi — Database Schema (Foundation)
+# Krowned — Database Schema (Foundation)
 
 **Stack:** Next.js (App Router) · Supabase (Postgres + Auth + Realtime + RLS) · Stripe Connect (Express) + Stripe Billing · Vercel
 **Status:** Foundation draft for review — the PRD and all build work assemble on top of this.

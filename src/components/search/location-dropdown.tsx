@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Navigation, Clock, Trash2, Loader2 } from "lucide-react";
 
-const HISTORY_KEY = "zawadi_location_history";
+const HISTORY_KEY = "krowned_location_history";
 const MAX_HISTORY = 5;
 
 function getHistory(): string[] {

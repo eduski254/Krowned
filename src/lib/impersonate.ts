@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
-const COOKIE_NAME = "zawadi_impersonate";
+const COOKIE_NAME = "krowned_impersonate";
 
 /** Start impersonating a user. Only super admins can do this. */
 export async function startImpersonation(targetUserId: string) {

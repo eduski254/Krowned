@@ -47,7 +47,7 @@ export interface ICSEventInput {
  */
 export function generateICSString(input: ICSEventInput): string {
   const { title, start, end, timezone, location, description } = input;
-  const uid = `${start.getTime()}-${Math.random().toString(36).slice(2)}@zawadi.com`;
+  const uid = `${start.getTime()}-${Math.random().toString(36).slice(2)}@krowned.app`;
   const localStart = toICSDateLocal(start, timezone);
   const localEnd = toICSDateLocal(end, timezone);
 

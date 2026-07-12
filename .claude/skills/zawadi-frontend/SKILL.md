@@ -1,5 +1,5 @@
 ---
-name: zawadi-frontend
+name: krowned-frontend
 description: Brand design system and frontend conventions for the Krown booking marketplace. Read this BEFORE building, editing, or styling ANY UI — pages, components, layouts, forms, dashboards, emails. Defines the brand identity, the token system (single source of truth in src/app/globals.css), light/dark theming, typography, component patterns, and the hard rule against hardcoding brand values.
 ---
 

@@ -1,8 +1,8 @@
 @AGENTS.md
 
-# Zawadi — Project Context for Claude Code
+# Krowned — Project Context for Claude Code
 
-You are building **Zawadi**, a beauty & wellness booking marketplace (a from-scratch rebuild of an existing WordPress/Listeo+Booknetic site onto a modern stack). Read this file fully before writing code. The authoritative data model lives in `docs/zawadi-schema.md` — always defer to it.
+You are building **Krowned**, a beauty & wellness booking marketplace (a from-scratch rebuild of an existing WordPress/Listeo+Booknetic site onto a modern stack). Read this file fully before writing code. The authoritative data model lives in `docs/zawadi-schema.md` — always defer to it.
 
 ## Project Status (keep this updated)
 **DONE**

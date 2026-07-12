@@ -1,10 +1,10 @@
-# Inspiration — Zawadi visual references
+# Inspiration — Krowned visual references
 
-Claude Code reads this folder for **visual reference** whenever it builds Zawadi UI. The `zawadi-frontend` skill points here. Drop brand assets and mockups in this folder so the agent matches the real look and feel, not a guess.
+Claude Code reads this folder for **visual reference** whenever it builds Krowned UI. The `zawadi-frontend` skill points here. Drop brand assets and mockups in this folder so the agent matches the real look and feel, not a guess.
 
 ## What to add here
 
-- **Brand style guide** — the official Zawadi style guide (colors, type, logo usage, illustration style). The source of truth for the `VERIFY` token values in `globals.css`.
+- **Brand style guide** — the official Krowned style guide (colors, type, logo usage, illustration style). The source of truth for the `VERIFY` token values in `globals.css`.
 - **Landing page mockup** — the approved home page design (hero, categories grid, top pros, gradient CTA bands, testimonials, footer).
 - **Dashboard mockups** — client dashboard, business owner dashboard, staff portal, super admin (as they exist).
 - **Booking flow mockups** — service selection, staff pick, date/time, checkout.
