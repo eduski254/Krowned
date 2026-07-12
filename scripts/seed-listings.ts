@@ -323,7 +323,6 @@ async function main() {
         business_id: bizId,
         user_id: ownerIds[i],
         display_name: (await supabase.from("profiles").select("full_name").eq("id", ownerIds[i]).single()).data?.full_name ?? "Stylist",
-        role: "owner",
         status: "active",
       })
       .select("id")
@@ -345,6 +344,7 @@ async function main() {
           duration_minutes: svc.duration,
           is_active: true,
           payment_option: randomPick(["prepay", "pay_at_store", "both"]),
+          category_id: catId,
         })
         .select("id")
         .single();
