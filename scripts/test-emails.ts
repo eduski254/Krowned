@@ -4,7 +4,7 @@
  *
  * Prerequisites:
  *   - RESEND_API_KEY in .env.local
- *   - EMAIL_FROM in .env.local (or defaults to noreply@kenyangossip.com)
+ *   - EMAIL_FROM in .env.local (or defaults to noreply@krowned.app)
  *   - SUPABASE_SERVICE_ROLE_KEY in .env.local
  *   - Seeded database with bookings, businesses, staff, reviews
  *
@@ -46,7 +46,7 @@ import { generateICSString } from "../src/lib/email/ics";
 const FAKE_BOOKING_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
 const FAKE_START = new Date(Date.now() + 3 * 24 * 60 * 60_000); // 3 days from now
 const FAKE_END = new Date(FAKE_START.getTime() + 60 * 60_000); // +1 hour
-const TZ = "Africa/Nairobi";
+const TZ = "America/New_York";
 
 async function test(name: string, fn: () => Promise<boolean>) {
   process.stdout.write(`  ${name}... `);
@@ -68,26 +68,26 @@ async function main() {
 
   // 2. Booking confirmation (with .ics)
   const ics = generateICSString({
-    title: "Haircut at Glamour Salon",
+    title: "Knotless Braids (Medium) at Crown & Glory Braids",
     start: FAKE_START,
     end: FAKE_END,
     timezone: TZ,
-    location: "123 Kenyatta Ave, Nairobi",
-    description: `Booking ref: ZW-${FAKE_BOOKING_ID.replace(/-/g, "").slice(0, 8).toUpperCase()}`,
+    location: "8455 Colesville Rd, Silver Spring, MD 20910",
+    description: `Booking ref: KR-${FAKE_BOOKING_ID.replace(/-/g, "").slice(0, 8).toUpperCase()}`,
   });
 
   const r2 = await test("2. Booking confirmation (with .ics)", async () => {
     const mail = bookingConfirmationEmail({
       clientName: "Test User",
       bookingId: FAKE_BOOKING_ID,
-      serviceName: "Haircut",
-      businessName: "Glamour Salon",
-      staffName: "Jane Doe",
+      serviceName: "Knotless Braids (Medium)",
+      businessName: "Crown & Glory Braids",
+      staffName: "Keisha M.",
       startsAt: FAKE_START,
-      durationMinutes: 60,
+      durationMinutes: 360,
       timezone: TZ,
-      amount: 3500,
-      currency: "kes",
+      amount: 25000,
+      currency: "usd",
     });
     return sendEmail({
       to: TEST_EMAIL,
@@ -103,12 +103,12 @@ async function main() {
     const mail = bookingRescheduleEmail({
       clientName: "Test User",
       bookingId: FAKE_BOOKING_ID,
-      serviceName: "Haircut",
-      businessName: "Glamour Salon",
-      staffName: "Jane Doe",
+      serviceName: "Knotless Braids (Medium)",
+      businessName: "Crown & Glory Braids",
+      staffName: "Keisha M.",
       oldStartsAt: oldStart,
       newStartsAt: FAKE_START,
-      durationMinutes: 60,
+      durationMinutes: 360,
       timezone: TZ,
     });
     return sendEmail({
@@ -124,8 +124,8 @@ async function main() {
     const mail = bookingCancellationEmail({
       clientName: "Test User",
       bookingId: FAKE_BOOKING_ID,
-      serviceName: "Haircut",
-      businessName: "Glamour Salon",
+      serviceName: "Knotless Braids (Medium)",
+      businessName: "Crown & Glory Braids",
       startsAt: FAKE_START,
       timezone: TZ,
       cancelledBy: "business",
@@ -140,14 +140,14 @@ async function main() {
       ownerName: "Business Owner",
       clientName: "Test User",
       bookingId: FAKE_BOOKING_ID,
-      serviceName: "Haircut",
-      businessName: "Glamour Salon",
-      staffName: "Jane Doe",
+      serviceName: "Knotless Braids (Medium)",
+      businessName: "Crown & Glory Braids",
+      staffName: "Keisha M.",
       startsAt: FAKE_START,
-      durationMinutes: 60,
+      durationMinutes: 360,
       timezone: TZ,
-      amount: 3500,
-      currency: "kes",
+      amount: 25000,
+      currency: "usd",
     });
     return sendEmail({ to: TEST_EMAIL, ...mail });
   });
@@ -159,7 +159,7 @@ async function main() {
       ownerName: "Business Owner",
       clientName: "Test User",
       bookingId: FAKE_BOOKING_ID,
-      serviceName: "Haircut",
+      serviceName: "Knotless Braids (Medium)",
       startsAt: FAKE_START,
       timezone: TZ,
     });
@@ -173,9 +173,9 @@ async function main() {
       ownerName: "Business Owner",
       clientName: "Test User",
       rating: 5,
-      comment: "Amazing experience! The stylist was incredible and really took time to understand what I wanted.",
-      serviceName: "Haircut",
-      businessName: "Glamour Salon",
+      comment: "Knotless came out perfect. Keisha is patient and her partings are so clean. Took about 6 hours but worth every minute.",
+      serviceName: "Knotless Braids (Medium)",
+      businessName: "Crown & Glory Braids",
     });
     return sendEmail({ to: TEST_EMAIL, ...mail });
   });
@@ -185,7 +185,7 @@ async function main() {
   const r8 = await test("8. Staff invitation", async () => {
     const mail = staffInvitationEmail({
       staffName: "New Stylist",
-      businessName: "Glamour Salon",
+      businessName: "Crown & Glory Braids",
       inviteToken: "test-invite-token-12345",
       invitedBy: "Business Owner",
     });

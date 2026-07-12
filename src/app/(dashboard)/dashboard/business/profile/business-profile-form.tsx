@@ -260,9 +260,13 @@ function SlugField({ defaultSlug }: { defaultSlug: string }) {
   const [slug, setSlug] = useState(defaultSlug);
   const [copied, setCopied] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [origin, setOrigin] = useState("");
   const shareRef = useRef<HTMLDivElement>(null);
 
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+
   const fullUrl = `${origin}/b/${slug}`;
 
   const handleCopy = useCallback(() => {

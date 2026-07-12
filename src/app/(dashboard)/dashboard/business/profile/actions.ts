@@ -1,6 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const businessSchema = z.object({
@@ -106,7 +108,13 @@ export async function upsertBusiness(
       booking_link_token: crypto.randomUUID(),
     });
     if (error) return { error: error.message };
+
+    // Revalidate and redirect to dashboard after successful creation
+    revalidatePath("/dashboard/business", "layout");
+    redirect("/dashboard/business");
   }
 
+  // Existing business update — revalidate the page
+  revalidatePath("/dashboard/business", "layout");
   return { success: true };
 }
