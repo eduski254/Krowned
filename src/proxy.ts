@@ -9,6 +9,7 @@ const publicPaths = [
   "/forgot-password",
   "/reset-password",
   "/auth/callback",
+  "/confirm",
   "/explore",
   "/b",
   "/book",
