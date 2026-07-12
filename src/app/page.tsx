@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/public/header";
 import { Footer } from "@/components/public/footer";
 import { HeroSearch } from "@/components/public/hero-search";
-import { Star, Search, Calendar, CheckCircle, ArrowRight } from "lucide-react";
+import { Search, Calendar, CheckCircle, ArrowRight } from "lucide-react";
+import { TestimonialsCarousel } from "@/components/public/testimonials-carousel";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { resolveCardImage } from "@/lib/explore/utils";
 import { FeaturedCarousel } from "@/components/public/featured-carousel";
@@ -224,22 +225,26 @@ export default async function HomePage() {
         <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
           What People Are Saying
         </h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {[
-            { name: "Jasmine T.", text: "Finally found a braider through Krowned in like two minutes. Knotless came out perfect. No more scrolling IG for hours.", rating: 5 },
-            { name: "Marcus W.", text: "I run a barbershop in Bowie. Krowned fills my empty slots without me posting on IG every day. Real talk.", rating: 5 },
-            { name: "Aisha R.", text: "No more screenshots and CashApp deposits. My clients book and pay online. I can actually plan my week.", rating: 5 },
-          ].map((t) => (
-            <div key={t.name} style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }} className="rounded-xl border border-border bg-card p-6">
-              <div className="flex gap-0.5 mb-3">
-                {Array.from({ length: t.rating }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-warning text-warning" />
-                ))}
-              </div>
-              <p className="text-sm text-foreground">&ldquo;{t.text}&rdquo;</p>
-              <p className="mt-3 text-sm font-semibold text-muted-foreground">{t.name}</p>
-            </div>
-          ))}
+        <div className="mt-10">
+          <TestimonialsCarousel
+            testimonials={[
+              { name: "Jasmine T.", text: "Finally found a braider through Krowned in like two minutes. Knotless came out perfect. No more scrolling IG for hours.", rating: 5 },
+              { name: "Marcus W.", text: "I run a barbershop in Bowie. Krowned fills my empty slots without me posting on IG every day. Real talk.", rating: 5 },
+              { name: "Aisha R.", text: "No more screenshots and CashApp deposits. My clients book and pay online. I can actually plan my week.", rating: 5 },
+              { name: "Tiana M.", text: "My loc retwist used to take three weeks of back-and-forth DMs to schedule. Booked it in 30 seconds on Krowned.", rating: 5 },
+              { name: "DeAndre J.", text: "Got a fresh taper and lineup for my interview. Found the barber, booked same-day. Clean.", rating: 5 },
+              { name: "Nia K.", text: "I drive from Arlington to Silver Spring for my braider. Having her schedule online saves me so much time.", rating: 5 },
+              { name: "Crystal P.", text: "Silk press came out gorgeous. Left a review right after so other naturals can find her too.", rating: 5 },
+              { name: "Dominique R.", text: "The deposit system is clutch. No more people ghosting on my 6-hour braiding appointments.", rating: 5 },
+              { name: "Kev B.", text: "My barbershop in Hyattsville is fully booked most weeks now. Krowned brought in clients I never would have reached.", rating: 5 },
+              { name: "Simone L.", text: "Booked a sew-in with closure for my birthday. Stylist was verified, portfolio was fire, everything was smooth.", rating: 5 },
+              { name: "Tasha W.", text: "I've been natural for 5 years and finding someone who actually knows 4C hair was always hard. Not anymore.", rating: 5 },
+              { name: "Jordan C.", text: "Feed-in braids for my daughter's graduation. The stylist was patient, professional, and the braids lasted 8 weeks.", rating: 4 },
+              { name: "Malik H.", text: "Faux locs for my vacation — found a stylist near Largo, booked two days out. Came out exactly like the reference.", rating: 5 },
+              { name: "Brianna S.", text: "As a stylist, I love that reviews are only from real clients. My reputation is built on actual work, not spam.", rating: 5 },
+              { name: "Omar D.", text: "Moved to DC last year. Found my barber through Krowned the first week. Been going back every two weeks since.", rating: 5 },
+            ]}
+          />
         </div>
       </section>
 
