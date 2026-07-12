@@ -2,7 +2,7 @@ import Link from "next/link";
 
 // REVIEW: Replace with a real licensed image before launch.
 // Swap this single constant to change the auth panel background.
-const AUTH_HERO_IMAGE = "/brand/hero-tools.webp";
+const AUTH_HERO_IMAGE = "/brand/styles-man.webp";
 
 export default function AuthLayout({
   children,
