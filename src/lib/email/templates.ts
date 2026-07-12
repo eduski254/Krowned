@@ -27,7 +27,7 @@ function formatTime(date: Date, tz: string): string {
 }
 
 function bookingRef(bookingId: string): string {
-  return "KD-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
+  return "KR-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
 }
 
 function bookingDetailsTable(details: {
@@ -67,9 +67,9 @@ function build(subject: string, html: string): EmailOutput {
 export function welcomeEmail(name: string): EmailOutput {
   const html = emailLayout(
     `<h2 style="margin:0 0 16px;font-size:22px;">Welcome, ${name}!</h2>
-    <p>We're glad you're here. Krowned connects you with the best beauty and wellness professionals near you.</p>
-    <p>Browse services, book your first appointment, and discover something new.</p>
-    ${emailButton("Explore Services", `${SITE_URL}/explore`)}
+    <p>Your crown starts here. Krowned connects you with the DMV's best braiders, loc techs, and textured-hair stylists.</p>
+    <p>Browse styles, book your first appointment, and find your next go-to.</p>
+    ${emailButton("Find Your Stylist", `${SITE_URL}/explore`)}
     <p style="color:#6b7280;font-size:13px;">Questions? Just reply to this email.</p>`,
     `Welcome to Krowned, ${name}!`,
   );
