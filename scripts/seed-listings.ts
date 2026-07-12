@@ -257,13 +257,13 @@ async function main() {
   console.log(`Created ${ownerIds.length} owner accounts.\n`);
 
   const catKeys = Object.keys(CATEGORIES) as (keyof typeof CATEGORIES)[];
-  const planTiers = ["starter", "pro", "enterprise"] as const;
+  const planTiers: string[] = ["starter", "pro", "enterprise"];
   const usedSlugs = new Set<string>();
 
   for (let i = 0; i < 50; i++) {
     const catKey = catKeys[i % catKeys.length];
     const catId = CATEGORIES[catKey];
-    const planTier = randomPick(planTiers);
+    const planTier = randomPick(planTiers) as keyof typeof PLANS;
     const planId = PLANS[planTier];
     const city = cities[i % cities.length];
     const [lat, lng] = coords[city];
