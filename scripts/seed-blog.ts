@@ -42,7 +42,7 @@ const posts = [
 <h2>The Bottom Line</h2>
 <p>The best protective style is one that's installed without excessive tension, maintained with moisture, and removed gently. Book a consultation with a Krowned professional to find the perfect style for your hair goals.</p>`,
     tags: ["protective styles", "hair growth", "braids", "natural hair"],
-    cover_image_url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200&h=630&fit=crop",
+    cover_image_url: "https://images.unsplash.com/photo-1595959183082-7b570b7e1e2b?w=1200&h=630&fit=crop",
     meta_title: "5 Protective Styles That Promote Hair Growth | Krowned",
     meta_description: "Discover the top protective hairstyles that help your natural hair grow while keeping you looking amazing. Expert tips from Krowned professionals.",
   },
@@ -82,7 +82,7 @@ const posts = [
 <h2>Your First Appointment</h2>
 <p>Book a consultation or a simple style first — not a big chop or color. This lets you evaluate the stylist's technique, communication, and how your hair feels afterward. Trust is built over time.</p>`,
     tags: ["finding a stylist", "textured hair", "curl pattern", "tips"],
-    cover_image_url: "https://images.unsplash.com/photo-1595959183082-7b570b7e1e2b?w=1200&h=630&fit=crop",
+    cover_image_url: "https://images.unsplash.com/photo-1560869713-7d0a29430803?w=1200&h=630&fit=crop",
     meta_title: "How to Find the Right Stylist for Textured Hair | Krowned",
     meta_description: "A guide to finding a hairstylist who truly understands your curl pattern, density, and texture. Tips for evaluating portfolios, consultations, and red flags.",
   },
@@ -119,7 +119,7 @@ const posts = [
 
 <p>Need a professional deep treatment or trim? Book a wash-and-style session with a Krowned stylist who specializes in 4C care.</p>`,
     tags: ["4C hair", "wash day", "natural hair", "routine", "moisture"],
-    cover_image_url: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=1200&h=630&fit=crop",
+    cover_image_url: "https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=1200&h=630&fit=crop",
     meta_title: "The Ultimate Wash Day Routine for 4C Hair | Krowned",
     meta_description: "A streamlined 4C wash day routine under 2 hours. Pre-poo, shampoo, deep condition, detangle, and style — with pro tips for moisture retention.",
   },
@@ -154,7 +154,7 @@ const posts = [
 <h2>Join the Movement</h2>
 <p>Krowned isn't just a booking app. It's a community of textured-hair professionals who are tired of being an afterthought on generic platforms. Your craft deserves a dedicated home.</p>`,
     tags: ["for professionals", "braiders", "business", "booking"],
-    cover_image_url: "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?w=1200&h=630&fit=crop",
+    cover_image_url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200&h=630&fit=crop",
     meta_title: "Why Every Braider Should Be on Krowned | For Professionals",
     meta_description: "Stop chasing clients in DMs. Krowned gives braiders and loc techs professional booking, payments, and client management — built for textured hair.",
   },
@@ -195,7 +195,7 @@ const posts = [
 
 <p>Need a post-summer refresh? Book a hydrating treatment or protective style with a Krowned professional to get your hair back on track.</p>`,
     tags: ["summer", "hair care", "tips", "natural hair", "protective styles"],
-    cover_image_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1200&h=630&fit=crop",
+    cover_image_url: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&h=630&fit=crop",
     meta_title: "Summer Hair Care for Textured Hair | Krowned",
     meta_description: "Protect your textured hair from sun, chlorine, and salt water this summer. Pre-swim prep, post-swim care, and hydration tips from Krowned experts.",
   },
