@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/explore", label: "Find a stylist" },
   { href: "/styles", label: "Styles" },
   { href: "/for-stylists", label: "For stylists" },
+  { href: "/blog", label: "Blog" },
   { href: "/our-story", label: "Our story" },
 ];
 
