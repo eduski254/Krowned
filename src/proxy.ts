@@ -22,6 +22,11 @@ const publicPaths = [
   "/contact",
   "/privacy",
   "/terms",
+  "/cookie-policy",
+  "/cancellation-policy",
+  "/stylist-terms",
+  "/community-guidelines",
+  "/accessibility",
   "/blog",
 ];
 

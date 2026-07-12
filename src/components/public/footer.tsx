@@ -33,14 +33,19 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-foreground">For Stylists</h3>
             <ul className="mt-3 space-y-2 text-sm">
               <li><Link href="/for-stylists" className="text-muted-foreground hover:text-foreground">List your studio</Link></li>
+              <li><Link href="/stylist-terms" className="text-muted-foreground hover:text-foreground">Stylist terms</Link></li>
+              <li><Link href="/community-guidelines" className="text-muted-foreground hover:text-foreground">Community guidelines</Link></li>
               <li><Link href="/contact" className="text-muted-foreground hover:text-foreground">Contact</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="text-sm font-semibold text-foreground">Legal</h3>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><Link href="/privacy" className="text-muted-foreground hover:text-foreground">Privacy Policy</Link></li>
               <li><Link href="/terms" className="text-muted-foreground hover:text-foreground">Terms of Service</Link></li>
+              <li><Link href="/privacy" className="text-muted-foreground hover:text-foreground">Privacy Policy</Link></li>
+              <li><Link href="/cookie-policy" className="text-muted-foreground hover:text-foreground">Cookie Policy</Link></li>
+              <li><Link href="/cancellation-policy" className="text-muted-foreground hover:text-foreground">Cancellation &amp; Refunds</Link></li>
+              <li><Link href="/accessibility" className="text-muted-foreground hover:text-foreground">Accessibility</Link></li>
             </ul>
           </div>
         </div>
