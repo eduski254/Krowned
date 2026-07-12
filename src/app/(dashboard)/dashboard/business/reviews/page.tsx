@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -6,11 +6,11 @@ import { EmptyState } from "@/components/dashboard/empty-state";
 import { Star, MessageSquare } from "lucide-react";
 
 export default async function BusinessReviewsPage() {
-  const supabase = await createClient();
   const effectiveUserId = await getEffectiveUserId();
   if (!effectiveUserId) redirect("/login");
 
-  const { data: business } = await supabase
+  const admin = createAdminClient();
+  const { data: business } = await admin
     .from("businesses")
     .select("id")
     .eq("owner_id", effectiveUserId)
@@ -18,7 +18,7 @@ export default async function BusinessReviewsPage() {
 
   if (!business) redirect("/dashboard/business");
 
-  const { data: reviews } = await supabase
+  const { data: reviews } = await admin
     .from("reviews")
     .select(
       "id, rating, comment, status, created_at, clients:client_id(full_name, avatar_url), staff(display_name)",
@@ -30,7 +30,7 @@ export default async function BusinessReviewsPage() {
   // Get response status for each review
   const reviewIds = (reviews ?? []).map((r) => r.id);
   const { data: responses } = reviewIds.length > 0
-    ? await supabase
+    ? await admin
         .from("review_responses")
         .select("review_id")
         .in("review_id", reviewIds)

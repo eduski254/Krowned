@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -11,11 +11,11 @@ import {
 } from "@/components/dashboard/finance-charts";
 
 export default async function BusinessEarningsPage() {
-  const supabase = await createClient();
   const effectiveUserId = await getEffectiveUserId();
   if (!effectiveUserId) redirect("/login");
 
-  const { data: business } = await supabase
+  const admin = createAdminClient();
+  const { data: business } = await admin
     .from("businesses")
     .select("id")
     .eq("owner_id", effectiveUserId)
@@ -24,7 +24,7 @@ export default async function BusinessEarningsPage() {
   if (!business) redirect("/dashboard/business");
 
   // Fetch succeeded payments for this business
-  const { data: payments } = await supabase
+  const { data: payments } = await admin
     .from("payments")
     .select("amount, tip_amount, application_fee_amount, currency, created_at, bookings!inner(business_id)")
     .eq("bookings.business_id", business.id)

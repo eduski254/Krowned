@@ -1,15 +1,15 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import { CreditCard } from "lucide-react";
 import { EmptyState } from "@/components/dashboard/empty-state";
 
 export default async function BusinessPaymentsPage() {
-  const supabase = await createClient();
   const effectiveUserId = await getEffectiveUserId();
   if (!effectiveUserId) redirect("/login");
 
-  const { data: business } = await supabase
+  const admin = createAdminClient();
+  const { data: business } = await admin
     .from("businesses")
     .select(
       "id, stripe_connect_account_id, charges_enabled, payouts_enabled, stripe_billing_customer_id, subscription_status",

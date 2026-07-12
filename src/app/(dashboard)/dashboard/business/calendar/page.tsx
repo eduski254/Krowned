@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
@@ -9,11 +8,11 @@ import { CalendarHeader } from "./calendar-header";
 import { formatBookingDate, formatBookingTime, DEFAULT_TIMEZONE } from "@/lib/format-date";
 
 export default async function BusinessCalendarPage() {
-  const supabase = await createClient();
   const effectiveUserId = await getEffectiveUserId();
   if (!effectiveUserId) redirect("/login");
 
-  const { data: business } = await supabase
+  const admin = createAdminClient();
+  const { data: business } = await admin
     .from("businesses")
     .select("id, timezone")
     .eq("owner_id", effectiveUserId)
@@ -26,7 +25,6 @@ export default async function BusinessCalendarPage() {
   const thirtyDays = new Date(now);
   thirtyDays.setDate(thirtyDays.getDate() + 30);
 
-  const admin = createAdminClient();
   const { data: bookings } = await admin
     .from("bookings")
     .select(
@@ -44,13 +42,13 @@ export default async function BusinessCalendarPage() {
 
   // Fetch services and staff for the "New Booking" modal
   const [{ data: services }, { data: staffMembers }] = await Promise.all([
-    supabase
+    admin
       .from("services")
       .select("id, name, duration_minutes, price_amount, currency")
       .eq("business_id", business.id)
       .eq("is_active", true)
       .order("name"),
-    supabase
+    admin
       .from("staff")
       .select("id, display_name")
       .eq("business_id", business.id)

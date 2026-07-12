@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -12,13 +12,16 @@ import {
 } from "lucide-react";
 import { formatBookingTime, DEFAULT_TIMEZONE } from "@/lib/format-date";
 
+export const dynamic = "force-dynamic";
+
 export default async function BusinessDashboardPage() {
-  const supabase = await createClient();
   const effectiveUserId = await getEffectiveUserId();
   if (!effectiveUserId) redirect("/login");
 
-  // Get the user's business
-  const { data: business } = await supabase
+  // Use admin client for the business lookup to avoid RLS session issues.
+  // Auth is already verified above via getEffectiveUserId().
+  const admin = createAdminClient();
+  const { data: business } = await admin
     .from("businesses")
     .select("id, name, plan_id, subscription_status, onboarding_completed_at, timezone")
     .eq("owner_id", effectiveUserId)
@@ -60,27 +63,27 @@ export default async function BusinessDashboardPage() {
 
   const [bookingsRes, todayBookingsRes, staffRes, reviewsRes, earningsRes] =
     await Promise.all([
-      supabase
+      admin
         .from("bookings")
         .select("id", { count: "exact", head: true })
         .eq("business_id", business.id),
-      supabase
+      admin
         .from("bookings")
         .select("id, starts_at, status, services(name), staff(display_name), clients:client_id(full_name)")
         .eq("business_id", business.id)
         .gte("starts_at", today.toISOString())
         .lt("starts_at", tomorrow.toISOString())
         .order("starts_at", { ascending: true }),
-      supabase
+      admin
         .from("staff")
         .select("id", { count: "exact", head: true })
         .eq("business_id", business.id)
         .eq("status", "active"),
-      supabase
+      admin
         .from("reviews")
         .select("id, rating", { count: "exact" })
         .eq("business_id", business.id),
-      supabase
+      admin
         .from("payments")
         .select("amount, booking_id, bookings!inner(business_id)")
         .eq("bookings.business_id", business.id)

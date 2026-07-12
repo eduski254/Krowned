@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import { EmptyState } from "@/components/dashboard/empty-state";
@@ -6,11 +6,11 @@ import { Scissors, Plus } from "lucide-react";
 import Link from "next/link";
 
 export default async function BusinessServicesPage() {
-  const supabase = await createClient();
   const effectiveUserId = await getEffectiveUserId();
   if (!effectiveUserId) redirect("/login");
 
-  const { data: business } = await supabase
+  const admin = createAdminClient();
+  const { data: business } = await admin
     .from("businesses")
     .select("id")
     .eq("owner_id", effectiveUserId)
@@ -18,7 +18,7 @@ export default async function BusinessServicesPage() {
 
   if (!business) redirect("/dashboard/business");
 
-  const { data: services } = await supabase
+  const { data: services } = await admin
     .from("services")
     .select(
       "id, name, description, price_amount, currency, duration_minutes, payment_option, is_active, service_categories(name)",
