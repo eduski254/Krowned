@@ -9,9 +9,9 @@ import type { NavItem } from "./nav-config";
 import { iconMap } from "./icon-map";
 
 const PUBLIC_LINKS = [
-  { href: "/explore", label: "Explore", Icon: Compass },
-  { href: "/how-it-works", label: "How it Works", Icon: Info },
-  { href: "/for-professionals", label: "For Professionals", Icon: Briefcase },
+  { href: "/explore", label: "Find a stylist", Icon: Compass },
+  { href: "/styles", label: "Styles", Icon: Info },
+  { href: "/for-stylists", label: "For stylists", Icon: Briefcase },
 ];
 
 const BADGE_ITEMS = ["/dashboard/support", "/dashboard/admin/support"];

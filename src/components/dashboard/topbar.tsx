@@ -6,10 +6,10 @@ import { logoutAction } from "@/app/(auth)/actions";
 import type { NavItem } from "./nav-config";
 
 const PUBLIC_LINKS = [
-  { href: "/explore", label: "Explore" },
-  { href: "/how-it-works", label: "How it Works" },
-  { href: "/for-professionals", label: "For Professionals" },
-  { href: "/blog", label: "Blog" },
+  { href: "/explore", label: "Find a stylist" },
+  { href: "/styles", label: "Styles" },
+  { href: "/for-stylists", label: "For stylists" },
+  { href: "/our-story", label: "Our story" },
 ];
 
 export function Topbar({

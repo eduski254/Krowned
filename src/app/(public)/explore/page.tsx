@@ -1,7 +1,14 @@
+import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { ExploreClient } from "./explore-client";
 import type { ExploreBusiness } from "@/lib/explore/actions";
 import { resolveCardImage } from "@/lib/explore/utils";
+
+export const metadata: Metadata = {
+  title: "Find a Stylist — Braiders, Loc Techs & Barbers in the DMV | Krowned",
+  description:
+    "Browse and book braiders, loc techs, natural-hair stylists, and barbers in DC, Maryland, and Northern Virginia. Filter by style, location, and availability.",
+};
 
 export default async function ExplorePage({
   searchParams,

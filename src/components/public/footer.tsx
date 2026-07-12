@@ -17,21 +17,23 @@ export function Footer() {
               className="h-7 w-auto block dark:hidden"
             />
             <p className="mt-3 text-sm text-muted-foreground">
-              Textured hair, booked right.
+              Your crown, booked.
             </p>
           </div>
           <div>
             <h3 className="text-sm font-semibold text-foreground">Discover</h3>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><Link href="/explore" className="text-muted-foreground hover:text-foreground">Explore Services</Link></li>
-              <li><Link href="/how-it-works" className="text-muted-foreground hover:text-foreground">How it Works</Link></li>
+              <li><Link href="/explore" className="text-muted-foreground hover:text-foreground">Find a stylist</Link></li>
+              <li><Link href="/styles" className="text-muted-foreground hover:text-foreground">Styles</Link></li>
+              <li><Link href="/our-story" className="text-muted-foreground hover:text-foreground">Our story</Link></li>
+              <li><Link href="/faq" className="text-muted-foreground hover:text-foreground">FAQ</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-foreground">For Professionals</h3>
+            <h3 className="text-sm font-semibold text-foreground">For Stylists</h3>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><Link href="/for-professionals" className="text-muted-foreground hover:text-foreground">List Your Business</Link></li>
-              <li><Link href="/contact" className="text-muted-foreground hover:text-foreground">Contact Us</Link></li>
+              <li><Link href="/for-stylists" className="text-muted-foreground hover:text-foreground">List your studio</Link></li>
+              <li><Link href="/contact" className="text-muted-foreground hover:text-foreground">Contact</Link></li>
             </ul>
           </div>
           <div>
@@ -43,7 +45,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          Krowned &mdash; Textured Hair Booking &middot; DMV
+          Krowned &mdash; Your crown, booked.
         </div>
       </div>
     </footer>

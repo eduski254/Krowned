@@ -177,7 +177,7 @@ export function HeroSearch({
               onChange={(e) => setCityInput(e.target.value)}
               onFocus={() => setShowLocation(true)}
               onKeyDown={handleCityKeyDown}
-              placeholder="City or area"
+              placeholder="DMV, city or area"
               className="w-full min-w-0 bg-transparent text-sm text-white placeholder:text-white/50 outline-none"
             />
             {cityInput && (
@@ -270,7 +270,7 @@ export function HeroSearch({
       {/* Popular searches — below with clear spacing */}
       <div className="relative z-0 mt-8 flex flex-wrap items-center justify-center gap-2 px-2">
         <span className="text-xs text-white/60">Popular:</span>
-        {["Braids", "Nails", "Massage", "Barber", "Facial"].map((term) => (
+        {["Knotless braids", "Locs", "Silk press", "Sew-in", "Fade", "Retwist"].map((term) => (
           <button
             key={term}
             type="button"

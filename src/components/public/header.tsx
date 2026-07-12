@@ -5,10 +5,10 @@ import { PublicMobileNav } from "./mobile-nav";
 import { logoutAction } from "@/app/(auth)/actions";
 
 const NAV_LINKS = [
-  { href: "/explore", label: "Explore" },
-  { href: "/how-it-works", label: "How it Works" },
-  { href: "/for-professionals", label: "For Professionals" },
-  { href: "/blog", label: "Blog" },
+  { href: "/explore", label: "Find a stylist" },
+  { href: "/styles", label: "Styles" },
+  { href: "/for-stylists", label: "For stylists" },
+  { href: "/our-story", label: "Our story" },
 ];
 
 export async function PublicHeader() {
@@ -104,7 +104,7 @@ export async function PublicHeader() {
                 href="/signup"
                 className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
               >
-                Sign up
+                Join
               </Link>
             </>
           )}

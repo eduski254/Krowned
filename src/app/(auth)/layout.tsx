@@ -36,7 +36,7 @@ export default function AuthLayout({
             />
           </Link>
           <p className="mt-3 text-xs text-white/60 drop-shadow-sm leading-relaxed">
-            Find braiders, loc techs, and textured-hair stylists in the DMV.
+            Your crown, booked.
           </p>
         </div>
       </div>

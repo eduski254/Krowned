@@ -308,7 +308,7 @@ export function ExploreClient({
                 }}
                 onFocus={() => qInput.length > 0 && setShowSearchDropdown(true)}
                 onKeyDown={handleSearchKeyDown}
-                placeholder="Search braiders, loc techs, stylists..."
+                placeholder="Knotless braids, retwist, silk press..."
                 className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
               />
               {qInput && (
@@ -347,7 +347,7 @@ export function ExploreClient({
                 }}
                 onFocus={() => setShowLocationDropdown(true)}
                 onKeyDown={handleCityKeyDown}
-                placeholder="City"
+                placeholder="DMV, city or area"
                 className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
               />
               {cityInput && (
@@ -470,7 +470,7 @@ export function ExploreClient({
                   if (catName && !q) parts.push(catName);
                   if (city) parts.push(city);
                   if (parts.length === 0) parts.push("All");
-                  parts.push("Beauty & Wellness");
+                  parts.push("Textured Hair");
                   return parts.join(" · ");
                 })()}
               </h2>
@@ -565,10 +565,10 @@ export function ExploreClient({
             <div className="rounded-xl border border-dashed border-border bg-card px-6 py-16 text-center animate-fade-in">
               <Search className="mx-auto h-10 w-10 text-muted-foreground/40" />
               <p className="mt-4 text-lg font-semibold text-foreground">
-                No businesses found
+                No stylists match that yet
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Try adjusting your search or filters.
+                Try a different search or adjust your filters.
               </p>
               {activeFilterCount > 0 && (
                 <button

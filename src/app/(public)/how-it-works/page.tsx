@@ -1,5 +1,12 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { Search, Calendar, CheckCircle, Star, Shield, CreditCard } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "How Krowned Works — Book Braids, Locs & Textured Hair",
+  description:
+    "Book braiders, loc techs, and textured-hair stylists in the DMV in three steps. Find your stylist, book your seat, get crowned.",
+};
 
 export default function HowItWorksPage() {
   return (
@@ -12,7 +19,7 @@ export default function HowItWorksPage() {
         <div className="relative z-10">
           <h1 className="text-3xl font-bold sm:text-4xl">How Krowned Works</h1>
           <p className="mt-4 text-lg text-white/90">
-            Book braids, locs, and textured-hair services in three simple steps.
+            Three steps. No DMs. No back-and-forth.
           </p>
         </div>
       </section>
@@ -25,19 +32,19 @@ export default function HowItWorksPage() {
               step: "1",
               icon: Search,
               title: "Find your stylist",
-              desc: "Browse braiders, loc techs, natural-hair stylists, and barbers across the DMV. Filter by style, location, rating, and availability. Every pro is verified before they go live on Krowned.",
+              desc: "Browse braiders, loc techs, natural-hair pros, and barbers across the DMV. Filter by style, location, rating, and availability. Every pro is verified before they go live.",
             },
             {
               step: "2",
               icon: Calendar,
               title: "Book your seat",
-              desc: "Pick your service — knotless braids, retwist, silk press, sew-in, fade, whatever you need. Choose a time that works and lock it in. No DMs, no back-and-forth.",
+              desc: "Pick your service — knotless, retwist, silk press, sew-in, fade, whatever you need. Choose a time that works. Lock it in. Done.",
             },
             {
               step: "3",
               icon: CheckCircle,
               title: "Get crowned",
-              desc: "Show up, sit back, and leave feeling like royalty. Pay online beforehand or in the chair. After your appointment, leave a review to help the community find fire stylists.",
+              desc: "Show up, sit back, leave feeling like royalty. Pay online beforehand or in the chair. After, leave a review so the community knows who does fire work.",
             },
           ].map((s) => (
             <div key={s.step} className="flex gap-6">
@@ -53,17 +60,17 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* Features */}
+      {/* Why Krowned */}
       <section className="bg-muted px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-center text-2xl font-bold text-foreground">
-            Why Krowned?
+            Why Krowned
           </h2>
           <div className="mt-10 grid gap-6 sm:grid-cols-3">
             {[
               { icon: Shield, title: "Verified stylists", desc: "Every business is reviewed before listing. No random accounts." },
               { icon: Star, title: "Real reviews", desc: "Only clients who actually sat in the chair can leave a review." },
-              { icon: CreditCard, title: "Flexible payments", desc: "Pay online or at the chair. Your choice, always." },
+              { icon: CreditCard, title: "Flexible payments", desc: "Pay online or at the chair. Your choice." },
             ].map((f) => (
               <div key={f.title} className="rounded-xl border border-border bg-card p-6 text-center">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
@@ -87,7 +94,7 @@ export default function HowItWorksPage() {
           href="/explore"
           className="mt-6 inline-block rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
         >
-          Find stylists
+          Find a stylist
         </Link>
       </section>
     </div>

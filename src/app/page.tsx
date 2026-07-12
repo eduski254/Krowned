@@ -8,14 +8,17 @@ import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { resolveCardImage } from "@/lib/explore/utils";
 import { FeaturedCarousel } from "@/components/public/featured-carousel";
 
-// REVIEW: Replace with a real licensed image before launch.
-// Swap this single constant to change the homepage hero background.
 const HERO_BG_IMAGE = "/brand/hero-salon.png";
+
+export const metadata = {
+  title: "Krowned — Book Braids, Locs & Textured Hair in the DMV",
+  description:
+    "Find and book braiders, loc techs, and textured-hair stylists in DC, Maryland, and Northern Virginia. Knotless braids, retwists, silk press, sew-ins, fades — your crown, booked.",
+};
 
 export default async function HomePage() {
   const supabase = await createClient();
 
-  // Fetch categories, businesses, services in parallel
   const [catRes, bizRes, svcRes] = await Promise.all([
     supabase
       .from("service_categories")
@@ -41,7 +44,6 @@ export default async function HomePage() {
   const businesses = bizRes.data ?? [];
   const services = svcRes.data ?? [];
 
-  // Build search businesses for the hero dropdown
   const searchBusinesses = businesses.map((biz) => {
     const cat = biz.service_categories as unknown as { name: string; slug: string } | null;
     return {
@@ -56,7 +58,6 @@ export default async function HomePage() {
     };
   });
 
-  // Build service names with counts
   const publishedBizIds = new Set(businesses.map((b) => b.id));
   const svcMap = new Map<string, Set<string>>();
   for (const s of services) {
@@ -75,9 +76,8 @@ export default async function HomePage() {
     <div className="flex min-h-full flex-col">
       <PublicHeader />
 
-      {/* Hero — full viewport with background image + gradient overlay */}
+      {/* Hero */}
       <section className="relative flex min-h-[85dvh] items-center justify-center overflow-hidden text-center sm:min-h-[100dvh]">
-        {/* Background image */}
         <img
           src={HERO_BG_IMAGE}
           alt=""
@@ -85,21 +85,17 @@ export default async function HomePage() {
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover object-top"
         />
-        {/* Brand gradient overlay (~40% opacity — photo shows through) */}
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
-        {/* Extra scrim for text legibility */}
         <div className="absolute inset-0 bg-black/20" />
 
-        {/* Content */}
         <div className="relative z-10 mx-auto w-full max-w-3xl px-4 py-8 sm:py-12 lg:py-14">
           <h1 className="font-heading text-3xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
             Your crown, booked.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base text-white/90 drop-shadow-sm sm:mt-6 sm:text-lg">
-            Find braiders, loc techs, and textured-hair stylists in the DMV. Book your next appointment in seconds.
+            Find braiders, loc techs, and textured-hair stylists in the DMV.
           </p>
 
-          {/* Hero search bar — Booksy-style with dropdowns */}
           <div className="mt-8 sm:mt-10">
             <HeroSearch
               businesses={searchBusinesses}
@@ -109,14 +105,14 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Categories grid */}
+      {/* Browse by Style */}
       {categories && categories.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
             Browse by Style
           </h2>
           <p className="mt-2 text-center text-muted-foreground">
-            Whatever your texture needs, we got you
+            Whatever your texture needs, we got you.
           </p>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {categories.filter((cat) => cat.slug !== "new-category").map((cat) => (
@@ -142,15 +138,15 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Top professionals — featured carousel */}
+      {/* Featured Stylists */}
       {featuredBusinesses.length > 0 && (
         <section className="bg-muted px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-              Top Stylists
+              Featured Stylists
             </h2>
             <p className="mt-2 text-center text-muted-foreground">
-              The DMV&apos;s finest braiders, loc techs, and stylists
+              The DMV&apos;s finest braiders, loc techs, and barbers.
             </p>
             <div className="mt-10">
               <FeaturedCarousel
@@ -173,7 +169,7 @@ export default async function HomePage() {
                 href="/explore"
                 className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
               >
-                View all professionals <ArrowRight className="h-4 w-4" />
+                View all stylists <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -188,8 +184,8 @@ export default async function HomePage() {
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           {[
             { icon: Search, title: "Find your stylist", desc: "Browse braiders, loc techs, and natural-hair pros across the DMV. Filter by style, location, and availability." },
-            { icon: Calendar, title: "Book your seat", desc: "Pick your service, choose a time that works, and lock it in. No DMs, no back-and-forth." },
-            { icon: CheckCircle, title: "Get crowned", desc: "Show up, sit back, and leave feeling like royalty. Pay online or in the chair." },
+            { icon: Calendar, title: "Book your seat", desc: "Pick your service, choose a time, lock it in. No DMs. No back-and-forth." },
+            { icon: CheckCircle, title: "Get crowned", desc: "Show up, sit back, leave feeling like royalty. Pay online or in the chair." },
           ].map((step) => (
             <div key={step.title} className="text-center">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
@@ -212,10 +208,10 @@ export default async function HomePage() {
             You braid, loc, or style textured hair?
           </h2>
           <p className="mt-4 text-lg text-white/90">
-            Stop losing bookings to DMs. Get a real booking system, manage your schedule, and get paid — all in one place.
+            Stop losing bookings to DMs. Get a real system for your craft.
           </p>
           <Link
-            href="/for-professionals"
+            href="/for-stylists"
             className="mt-8 inline-block rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
           >
             List your studio
@@ -230,9 +226,9 @@ export default async function HomePage() {
         </h2>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {[
-            { name: "Jasmine T.", text: "Finally a booking app that actually gets textured hair. Found my braider in like two minutes. Knotless came out perfect.", rating: 5 },
-            { name: "Marcus W.", text: "I run a barbershop in Bowie. Krowned filled my empty slots without me having to post on IG every day. Game changer.", rating: 5 },
-            { name: "Aisha R.", text: "No more screenshots and CashApp deposits. My clients book and pay online now. I can actually plan my week.", rating: 5 },
+            { name: "Jasmine T.", text: "Finally found a braider through Krowned in like two minutes. Knotless came out perfect. No more scrolling IG for hours.", rating: 5 },
+            { name: "Marcus W.", text: "I run a barbershop in Bowie. Krowned fills my empty slots without me posting on IG every day. Real talk.", rating: 5 },
+            { name: "Aisha R.", text: "No more screenshots and CashApp deposits. My clients book and pay online. I can actually plan my week.", rating: 5 },
           ].map((t) => (
             <div key={t.name} style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }} className="rounded-xl border border-border bg-card p-6">
               <div className="flex gap-0.5 mb-3">
