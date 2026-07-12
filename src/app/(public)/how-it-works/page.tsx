@@ -13,7 +13,7 @@ export default function HowItWorksPage() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-16 text-center text-white">
-        <img src="/brand/bg-hero.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <img src="/brand/bg-hero.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10">

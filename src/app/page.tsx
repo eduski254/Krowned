@@ -9,7 +9,7 @@ import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { resolveCardImage } from "@/lib/explore/utils";
 import { FeaturedCarousel } from "@/components/public/featured-carousel";
 
-const HERO_BG_IMAGE = "/brand/hero-salon.png";
+const HERO_BG_IMAGE = "/brand/hero-salon.webp";
 
 export const metadata = {
   title: "Krowned — Book Braids, Locs & Textured Hair in the DMV",
@@ -201,7 +201,7 @@ export default async function HomePage() {
 
       {/* CTA band */}
       <section className="relative overflow-hidden px-4 py-16 text-center text-white">
-        <img src="/brand/bg-hero.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <img src="/brand/bg-hero.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10 mx-auto max-w-2xl">

@@ -13,7 +13,7 @@ export default function OurStoryPage() {
       {/* Hero — full bleed */}
       <section className="relative flex min-h-[60vh] items-end overflow-hidden sm:min-h-[70vh]">
         <img
-          src="/brand/bg-hero.png"
+          src="/brand/bg-hero.webp"
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />
