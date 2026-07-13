@@ -31,7 +31,7 @@ for (const [k, v] of Object.entries(CATEGORIES)) CAT_ID_TO_KEY[v] = k;
 // Using direct Unsplash image URLs with size parameters
 const categoryImages: Record<string, string[]> = {
   braids: [
-    "https://images.unsplash.com/photo-1595959183082-7b570b7e1e6b?w=800&q=80",
+    "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=80",
     "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
     "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?w=800&q=80",
     "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=800&q=80",
@@ -45,7 +45,7 @@ const categoryImages: Record<string, string[]> = {
     "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=800&q=80",
   ],
   locs: [
-    "https://images.unsplash.com/photo-1611095564985-f8c5cd2eb600?w=800&q=80",
+    "https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=800&q=80",
     "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=800&q=80",
     "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80",
     "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80",
@@ -60,7 +60,7 @@ const categoryImages: Record<string, string[]> = {
     "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=800&q=80",
     "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
     "https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=800&q=80",
-    "https://images.unsplash.com/photo-1595959183082-7b570b7e1e6b?w=800&q=80",
+    "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=80",
     "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=800&q=80",
     "https://images.unsplash.com/photo-1562004760-aceed7bb0fe3?w=800&q=80",
     "https://images.unsplash.com/photo-1549236177-f9b0031756eb?w=800&q=80",
@@ -82,12 +82,12 @@ const categoryImages: Record<string, string[]> = {
   ],
   barber: [
     "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80",
-    "https://images.unsplash.com/photo-1585747860036-4cb4e1ef181b?w=800&q=80",
+    "https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?w=800&q=80",
     "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&q=80",
     "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=80",
     "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800&q=80",
     "https://images.unsplash.com/photo-1493256338651-d82f7acb2b38?w=800&q=80",
-    "https://images.unsplash.com/photo-1587776903813-623049b3527e?w=800&q=80",
+    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&q=80",
     "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800&q=80",
     "https://images.unsplash.com/photo-1521490683712-35a1cb235d1c?w=800&q=80",
     "https://images.unsplash.com/photo-1596728325488-58c87691e9af?w=800&q=80",
@@ -96,7 +96,7 @@ const categoryImages: Record<string, string[]> = {
     "https://images.unsplash.com/photo-1560869713-7d0a29430803?w=800&q=80",
     "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
     "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=800&q=80",
-    "https://images.unsplash.com/photo-1595959183082-7b570b7e1e6b?w=800&q=80",
+    "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=80",
     "https://images.unsplash.com/photo-1562004760-aceed7bb0fe3?w=800&q=80",
     "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?w=800&q=80",
     "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=800&q=80",
@@ -109,7 +109,7 @@ const categoryImages: Record<string, string[]> = {
 // Generic salon/beauty images for businesses without a category
 const genericImages = [
   "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80",
-  "https://images.unsplash.com/photo-1521590832167-7228fcb882c4?w=800&q=80",
+  "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?w=800&q=80",
   "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=800&q=80",
   "https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?w=800&q=80",
   "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
