@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { AcceptInviteButton } from "./accept-button";
+import { SwitchAccountButton } from "./switch-account-button";
 
 export default async function InviteAcceptPage({
   params,
@@ -101,14 +102,11 @@ export default async function InviteAcceptPage({
             <strong>{user.email}</strong>.
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Please log in with the correct email to accept this invitation.
+            Log out and sign in with the correct email to accept.
           </p>
-          <Link
-            href={`/login?redirect=/invite/${token}`}
-            className="mt-6 inline-block rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-          >
-            Switch account
-          </Link>
+          <div className="mt-6">
+            <SwitchAccountButton redirectTo={`/invite/${token}`} />
+          </div>
         </div>
       );
     }
