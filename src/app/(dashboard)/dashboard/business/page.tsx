@@ -10,7 +10,8 @@ import {
   Star,
   TrendingUp,
 } from "lucide-react";
-import { formatBookingTime, DEFAULT_TIMEZONE } from "@/lib/format-date";
+import { DEFAULT_TIMEZONE } from "@/lib/format-date";
+import { TodaysSchedule } from "./todays-schedule";
 
 export const dynamic = "force-dynamic";
 
@@ -142,51 +143,19 @@ export default async function BusinessDashboardPage() {
         />
       </div>
 
-      {/* Today's schedule */}
-      <h2 className="mb-4 text-lg font-semibold text-foreground">
-        Today&apos;s Schedule
-      </h2>
-      {todayBookingsRes.data && todayBookingsRes.data.length > 0 ? (
-        <div className="space-y-3">
-          {todayBookingsRes.data.map((b) => (
-            <div
-              key={b.id}
-              className="flex items-center justify-between rounded-xl border border-border bg-card p-4"
-            >
-              <div>
-                <p className="font-medium text-foreground">
-                  {(b.services as unknown as { name: string } | null)?.name}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {(b.staff as unknown as { display_name: string } | null)?.display_name ?? "Unassigned"}
-                  {" — "}
-                  {(b.clients as unknown as { full_name: string } | null)?.full_name ?? "Client"}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-foreground">
-                  {formatBookingTime(b.starts_at, business.timezone ?? DEFAULT_TIMEZONE)}
-                </p>
-                <span
-                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                    b.status === "confirmed"
-                      ? "bg-success/10 text-success"
-                      : "bg-primary/10 text-primary"
-                  }`}
-                >
-                  {b.status}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <EmptyState
-          icon={Calendar}
-          title="No bookings today"
-          description="Your schedule for today is clear."
-        />
-      )}
+      {/* Today's schedule — realtime */}
+      <TodaysSchedule
+        businessId={business.id}
+        timezone={business.timezone ?? DEFAULT_TIMEZONE}
+        initialItems={(todayBookingsRes.data ?? []).map((b) => ({
+          id: b.id,
+          starts_at: b.starts_at,
+          status: b.status,
+          serviceName: (b.services as unknown as { name: string } | null)?.name ?? "Service",
+          staffName: (b.staff as unknown as { display_name: string } | null)?.display_name ?? "Unassigned",
+          clientName: (b.clients as unknown as { full_name: string } | null)?.full_name ?? "Client",
+        }))}
+      />
     </div>
   );
 }
