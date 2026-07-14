@@ -182,10 +182,10 @@ export function NotificationBell({ userId }: { userId?: string }) {
     <div className="relative" ref={panelRef}>
       <button
         onClick={handleOpen}
-        className="relative rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        className="relative flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
       >
-        <Bell className="h-4 w-4" />
+        <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
           <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground animate-in fade-in">
             {unreadCount > 9 ? "9+" : unreadCount}
@@ -194,7 +194,7 @@ export function NotificationBell({ userId }: { userId?: string }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-border bg-card shadow-lg sm:w-96">
+        <div className="fixed inset-x-0 top-[env(safe-area-inset-top)] z-50 mx-2 mt-14 rounded-xl border border-border bg-card shadow-lg sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:mx-0 sm:mt-2 sm:w-96">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <h3 className="text-sm font-semibold text-foreground">
               Notifications
@@ -226,7 +226,7 @@ export function NotificationBell({ userId }: { userId?: string }) {
                       key={item.id}
                       href={item.href}
                       onClick={() => setOpen(false)}
-                      className="flex items-start gap-3 px-4 py-3 hover:bg-muted transition-colors"
+                      className="flex items-start gap-3 px-4 py-3.5 hover:bg-muted transition-colors min-h-[52px]"
                     >
                       <div className="mt-0.5 rounded-lg bg-primary/10 p-1.5">
                         <Icon className="h-3.5 w-3.5 text-primary" />

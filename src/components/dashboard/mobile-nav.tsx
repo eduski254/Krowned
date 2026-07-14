@@ -58,7 +58,7 @@ export function MobileNav({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="lg:hidden flex items-center justify-center rounded-lg p-2 text-foreground hover:bg-muted border border-border"
+        className="lg:hidden flex h-10 w-10 items-center justify-center rounded-lg text-foreground hover:bg-muted border border-border"
         aria-label="Open navigation menu"
       >
         <Menu className="h-5 w-5" />
@@ -104,13 +104,13 @@ export function MobileNav({
                       href={link.href}
                       onClick={() => setOpen(false)}
                       className={clsx(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors min-h-[44px]",
                         pathname === link.href
                           ? "bg-primary/10 text-primary"
                           : "text-muted-foreground hover:bg-muted hover:text-foreground",
                       )}
                     >
-                      <link.Icon className="h-4 w-4 flex-shrink-0" />
+                      <link.Icon className="h-5 w-5 flex-shrink-0" />
                       <span className="flex-1">{link.label}</span>
                     </Link>
                   </li>
@@ -137,13 +137,13 @@ export function MobileNav({
                         href={item.href}
                         onClick={() => setOpen(false)}
                         className={clsx(
-                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                          "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors min-h-[44px]",
                           isActive
                             ? "bg-primary/10 text-primary"
                             : "text-muted-foreground hover:bg-muted hover:text-foreground",
                         )}
                       >
-                        {Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
+                        {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
                         <span className="flex-1">{item.label}</span>
                         {badgeCount > 0 && (
                           <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold text-destructive-foreground">

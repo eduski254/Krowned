@@ -11,6 +11,7 @@ import {
 } from "@/components/dashboard/nav-config";
 import { IdleTimeout } from "@/components/idle-timeout";
 import { ImpersonationBanner } from "@/components/admin/ImpersonationBanner";
+import { BottomTabBar } from "@/components/dashboard/bottom-tab-bar";
 import { getImpersonatedUserId } from "@/lib/impersonate";
 import type { AppRole } from "@/lib/roles";
 
@@ -88,11 +89,12 @@ export default async function DashboardLayout({
             avatarUrl={profileRes.data?.avatar_url}
             navItems={navItems}
           />
-          <main className="flex-1 overflow-y-auto bg-background p-4 sm:p-6 lg:p-8">
+          <main className="flex-1 overflow-y-auto bg-background p-4 pb-20 sm:p-6 sm:pb-20 lg:p-8 lg:pb-8">
             {children}
           </main>
         </div>
       </div>
+      <BottomTabBar role={roleLabels[role]} />
     </div>
   );
 }

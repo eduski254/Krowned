@@ -36,7 +36,7 @@ export function OwnerCancelButton({ bookingId }: { bookingId: string }) {
           });
         }}
         disabled={isPending}
-        className="flex items-center gap-1 rounded-lg border border-destructive/30 px-2.5 py-1 text-xs font-medium text-destructive hover:bg-destructive/5 disabled:opacity-50 transition-colors"
+        className="flex items-center gap-1 rounded-lg border border-destructive/30 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/5 disabled:opacity-50 transition-colors min-h-[36px]"
       >
         {isPending ? (
           <Spinner className="h-3 w-3" />

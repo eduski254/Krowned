@@ -34,7 +34,7 @@ export async function PublicHeader() {
   const initial = (fullName || "?").charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm pt-[env(safe-area-inset-top)]">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center">
           <img

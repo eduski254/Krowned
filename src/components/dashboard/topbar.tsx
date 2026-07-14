@@ -27,7 +27,7 @@ export function Topbar({
   const initial = (userName || "?").charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card/95 backdrop-blur-sm px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-card/95 backdrop-blur-sm px-4 pt-[env(safe-area-inset-top)] sm:h-16 sm:px-6">
       <div className="flex items-center gap-1">
         <MobileNav items={navItems} userId={userId} />
         <nav className="hidden items-center gap-1 lg:flex">
@@ -64,7 +64,7 @@ export function Topbar({
             {userName}
           </span>
         </Link>
-        <form action={logoutAction}>
+        <form action={logoutAction} className="hidden sm:block">
           <button
             type="submit"
             className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted"
