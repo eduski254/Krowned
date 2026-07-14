@@ -5,6 +5,74 @@ import { EmptyState } from "@/components/dashboard/empty-state";
 import { Users, Plus, Mail } from "lucide-react";
 import Link from "next/link";
 
+function StaffCard({
+  s,
+  isOwner,
+}: {
+  s: {
+    id: string;
+    display_name: string | null;
+    title: string | null;
+    status: string;
+    invited_email: string | null;
+    avatar_url: string | null;
+    user_id: string | null;
+  };
+  isOwner: boolean;
+}) {
+  return (
+    <Link
+      href={`/dashboard/business/staff/${s.id}`}
+      className={`rounded-xl border bg-card p-4 transition-shadow hover:shadow-md ${
+        s.status === "inactive" ? "border-border/50 opacity-60" : "border-border"
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        {s.avatar_url ? (
+          <img
+            src={s.avatar_url}
+            alt=""
+            className="h-10 w-10 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+            {(s.display_name ?? "?").charAt(0)}
+          </div>
+        )}
+        <div className="min-w-0">
+          <p className="truncate font-medium text-foreground">
+            {s.display_name ?? s.invited_email}
+            {isOwner && (
+              <span className="ml-1 text-xs font-normal text-muted-foreground">
+                (You)
+              </span>
+            )}
+          </p>
+          {s.title && (
+            <p className="text-sm text-muted-foreground">{s.title}</p>
+          )}
+        </div>
+      </div>
+      <div className="mt-3 flex items-center gap-2">
+        <span
+          className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+            s.status === "active"
+              ? "bg-success/10 text-success"
+              : s.status === "invited"
+                ? "bg-warning/10 text-warning"
+                : "bg-muted text-muted-foreground"
+          }`}
+        >
+          {s.status}
+        </span>
+        {s.status === "invited" && (
+          <Mail className="h-3 w-3 text-muted-foreground" />
+        )}
+      </div>
+    </Link>
+  );
+}
+
 export default async function BusinessStaffPage() {
   const effectiveUserId = await getEffectiveUserId();
   if (!effectiveUserId) redirect("/login");
@@ -12,17 +80,20 @@ export default async function BusinessStaffPage() {
   const admin = createAdminClient();
   const { data: business } = await admin
     .from("businesses")
-    .select("id")
+    .select("id, owner_id")
     .eq("owner_id", effectiveUserId)
     .maybeSingle();
 
   if (!business) redirect("/dashboard/business");
 
-  const { data: staffMembers } = await admin
+  const { data: allStaff } = await admin
     .from("staff")
     .select("id, display_name, title, status, invited_email, avatar_url, user_id")
     .eq("business_id", business.id)
     .order("display_name");
+
+  const activeStaff = allStaff?.filter((s) => s.status !== "inactive") ?? [];
+  const inactiveStaff = allStaff?.filter((s) => s.status === "inactive") ?? [];
 
   return (
     <div>
@@ -37,52 +108,14 @@ export default async function BusinessStaffPage() {
         </Link>
       </div>
 
-      {staffMembers && staffMembers.length > 0 ? (
+      {activeStaff.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {staffMembers.map((s) => (
-            <Link
+          {activeStaff.map((s) => (
+            <StaffCard
               key={s.id}
-              href={`/dashboard/business/staff/${s.id}`}
-              className="rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-md"
-            >
-              <div className="flex items-center gap-3">
-                {s.avatar_url ? (
-                  <img
-                    src={s.avatar_url}
-                    alt=""
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
-                    {(s.display_name ?? "?").charAt(0)}
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <p className="truncate font-medium text-foreground">
-                    {s.display_name ?? s.invited_email}
-                  </p>
-                  {s.title && (
-                    <p className="text-sm text-muted-foreground">{s.title}</p>
-                  )}
-                </div>
-              </div>
-              <div className="mt-3 flex items-center gap-2">
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                    s.status === "active"
-                      ? "bg-success/10 text-success"
-                      : s.status === "invited"
-                        ? "bg-warning/10 text-warning"
-                        : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {s.status}
-                </span>
-                {s.status === "invited" && (
-                  <Mail className="h-3 w-3 text-muted-foreground" />
-                )}
-              </div>
-            </Link>
+              s={s}
+              isOwner={s.user_id === business.owner_id}
+            />
           ))}
         </div>
       ) : (
@@ -99,6 +132,24 @@ export default async function BusinessStaffPage() {
             </Link>
           }
         />
+      )}
+
+      {/* Inactive staff */}
+      {inactiveStaff.length > 0 && (
+        <div className="mt-8">
+          <h2 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            Inactive
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {inactiveStaff.map((s) => (
+              <StaffCard
+                key={s.id}
+                s={s}
+                isOwner={s.user_id === business.owner_id}
+              />
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

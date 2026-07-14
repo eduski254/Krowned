@@ -1,9 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect, notFound } from "next/navigation";
-import { removeStaff } from "../actions";
+import { deactivateStaff, reactivateStaff } from "../actions";
 import { removeWeeklySlotForStaff } from "../../../staff/schedule/actions";
 import { StaffScheduleForm } from "./schedule-form";
+import { DeleteStaffButton } from "./delete-staff-button";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -13,18 +14,18 @@ export default async function StaffDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = await createClient();
   const effectiveUserId = await getEffectiveUserId();
   if (!effectiveUserId) redirect("/login");
 
-  const { data: business } = await supabase
+  const admin = createAdminClient();
+  const { data: business } = await admin
     .from("businesses")
-    .select("id")
+    .select("id, owner_id")
     .eq("owner_id", effectiveUserId)
     .maybeSingle();
   if (!business) redirect("/dashboard/business");
 
-  const { data: staffMember } = await supabase
+  const { data: staffMember } = await admin
     .from("staff")
     .select("*")
     .eq("id", id)
@@ -33,20 +34,27 @@ export default async function StaffDetailPage({
 
   if (!staffMember) notFound();
 
-  const [staffServicesRes, schedulesRes] = await Promise.all([
-    supabase
+  const isOwnerStaff = staffMember.user_id === business.owner_id;
+
+  const [staffServicesRes, schedulesRes, bookingCountRes] = await Promise.all([
+    admin
       .from("staff_services")
       .select("service_id, services(name)")
       .eq("staff_id", id),
-    supabase
+    admin
       .from("staff_schedules")
       .select("id, day_of_week, start_time, end_time")
       .eq("staff_id", id)
       .order("day_of_week"),
+    admin
+      .from("bookings")
+      .select("id", { count: "exact", head: true })
+      .eq("staff_id", id),
   ]);
 
   const staffServices = staffServicesRes.data;
   const schedules = schedulesRes.data;
+  const hasBookings = (bookingCountRes.count ?? 0) > 0;
 
   return (
     <div>
@@ -70,6 +78,11 @@ export default async function StaffDetailPage({
             <div>
               <p className="text-lg font-semibold text-foreground">
                 {staffMember.display_name}
+                {isOwnerStaff && (
+                  <span className="ml-2 text-xs font-normal text-muted-foreground">
+                    (You)
+                  </span>
+                )}
               </p>
               {staffMember.title && (
                 <p className="text-muted-foreground">{staffMember.title}</p>
@@ -153,17 +166,38 @@ export default async function StaffDetailPage({
           <StaffScheduleForm staffId={id} />
         </div>
 
-        {/* Remove */}
-        {staffMember.status !== "inactive" && (
-          <form action={removeStaff}>
-            <input type="hidden" name="staff_id" value={id} />
-            <button
-              type="submit"
-              className="rounded-lg border border-destructive px-4 py-2 text-sm font-semibold text-destructive hover:bg-destructive/10"
-            >
-              Deactivate staff member
-            </button>
-          </form>
+        {/* Actions — owner staff record is protected */}
+        {!isOwnerStaff && (
+          <div className="space-y-3">
+            {/* Reactivate (only for inactive) */}
+            {staffMember.status === "inactive" && (
+              <form action={reactivateStaff}>
+                <input type="hidden" name="staff_id" value={id} />
+                <button
+                  type="submit"
+                  className="rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10"
+                >
+                  Reactivate staff member
+                </button>
+              </form>
+            )}
+
+            {/* Deactivate (for active or invited) */}
+            {staffMember.status !== "inactive" && (
+              <form action={deactivateStaff}>
+                <input type="hidden" name="staff_id" value={id} />
+                <button
+                  type="submit"
+                  className="rounded-lg border border-destructive px-4 py-2 text-sm font-semibold text-destructive hover:bg-destructive/10"
+                >
+                  Deactivate staff member
+                </button>
+              </form>
+            )}
+
+            {/* Delete — client component for confirmation + error display */}
+            <DeleteStaffButton staffId={id} hasBookings={hasBookings} />
+          </div>
         )}
       </div>
     </div>
