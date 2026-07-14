@@ -72,7 +72,7 @@ export default async function BusinessSettingsPage() {
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold text-foreground font-heading">
-        Business Settings
+        Billing & Payments
       </h1>
 
       <div className="max-w-2xl space-y-6">

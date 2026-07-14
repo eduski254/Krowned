@@ -9,13 +9,14 @@ import {
   staffNav,
   adminNav,
 } from "@/components/dashboard/nav-config";
+import type { NavGroup } from "@/components/dashboard/nav-config";
 import { IdleTimeout } from "@/components/idle-timeout";
 import { ImpersonationBanner } from "@/components/admin/ImpersonationBanner";
 import { BottomTabBar } from "@/components/dashboard/bottom-tab-bar";
 import { getImpersonatedUserId } from "@/lib/impersonate";
 import type { AppRole } from "@/lib/roles";
 
-const navMap: Record<AppRole, typeof clientNav> = {
+const navMap: Record<AppRole, NavGroup[]> = {
   client: clientNav,
   business_owner: businessNav,
   staff: staffNav,
@@ -69,7 +70,7 @@ export default async function DashboardLayout({
       .single(),
   ]);
 
-  const navItems = navMap[role];
+  const navGroups = navMap[role];
   const fullName =
     profileRes.data?.full_name ??
     (isImpersonating ? "Unknown User" : (user.user_metadata?.full_name ?? user.email ?? "User"));
@@ -81,13 +82,13 @@ export default async function DashboardLayout({
       )}
       <div className="flex flex-1">
         <IdleTimeout />
-        <Sidebar items={navItems} role={roleLabels[role]} userId={effectiveUserId} />
+        <Sidebar groups={navGroups} role={roleLabels[role]} userId={effectiveUserId} />
         <div className="flex flex-1 flex-col">
           <Topbar
             userId={effectiveUserId}
             userName={fullName}
             avatarUrl={profileRes.data?.avatar_url}
-            navItems={navItems}
+            navGroups={navGroups}
           />
           <main className="flex-1 overflow-y-auto bg-background p-4 pb-20 sm:p-6 sm:pb-20 lg:p-8 lg:pb-8">
             {children}

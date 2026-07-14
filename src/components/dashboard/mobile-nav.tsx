@@ -4,24 +4,25 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
-import { Menu, X, Compass, Info, Briefcase } from "lucide-react";
-import type { NavItem } from "./nav-config";
+import { Menu, X } from "lucide-react";
+import type { NavGroup } from "./nav-config";
 import { iconMap } from "./icon-map";
-
-const PUBLIC_LINKS = [
-  { href: "/explore", label: "Find a stylist", Icon: Compass },
-  { href: "/styles", label: "Styles", Icon: Info },
-  { href: "/for-stylists", label: "For stylists", Icon: Briefcase },
-];
 
 const BADGE_ITEMS = ["/dashboard/support", "/dashboard/admin/support"];
 const BOOKING_BADGE_ITEMS = ["/dashboard/business/calendar"];
 
+const ROOT_HREFS = [
+  "/dashboard",
+  "/dashboard/business",
+  "/dashboard/staff",
+  "/dashboard/admin",
+];
+
 export function MobileNav({
-  items,
+  groups,
   userId,
 }: {
-  items: NavItem[];
+  groups: NavGroup[];
   userId?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -54,6 +55,11 @@ export function MobileNav({
     fetchCounts();
   }, [fetchCounts]);
 
+  // Close on route change
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   return (
     <>
       <button
@@ -66,8 +72,9 @@ export function MobileNav({
 
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Solid backdrop — fixes the transparent bug at ~768px */}
           <div
-            className="fixed inset-0 bg-foreground/20"
+            className="fixed inset-0 bg-black/60"
             onClick={() => setOpen(false)}
           />
           <div className="fixed inset-y-0 left-0 w-72 bg-card shadow-xl">
@@ -96,65 +103,48 @@ export function MobileNav({
               </button>
             </div>
             <nav className="overflow-y-auto px-3 py-4">
-              {/* Public navigation */}
-              <ul className="space-y-1">
-                {PUBLIC_LINKS.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      onClick={() => setOpen(false)}
-                      className={clsx(
-                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors min-h-[44px]",
-                        pathname === link.href
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                      )}
-                    >
-                      <link.Icon className="h-5 w-5 flex-shrink-0" />
-                      <span className="flex-1">{link.label}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="my-3 border-t border-border" />
-
-              {/* Dashboard navigation */}
-              <ul className="space-y-1">
-                {items.map((item) => {
-                  const isActive =
-                    pathname === item.href ||
-                    (item.href !== "/dashboard" &&
-                      item.href !== "/dashboard/business" &&
-                      item.href !== "/dashboard/staff" &&
-                      item.href !== "/dashboard/admin" &&
-                      pathname.startsWith(item.href));
-                  const Icon = iconMap[item.icon];
-                  const badgeCount = badges[item.href] ?? 0;
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        onClick={() => setOpen(false)}
-                        className={clsx(
-                          "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors min-h-[44px]",
-                          isActive
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                        )}
-                      >
-                        {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
-                        <span className="flex-1">{item.label}</span>
-                        {badgeCount > 0 && (
-                          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold text-destructive-foreground">
-                            {badgeCount > 9 ? "9+" : badgeCount}
-                          </span>
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
+              {groups.map((group, gi) => (
+                <div key={gi}>
+                  {gi > 0 && <div className="my-3 border-t border-border" />}
+                  {group.label && (
+                    <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      {group.label}
+                    </p>
+                  )}
+                  <ul className="space-y-0.5">
+                    {group.items.map((item) => {
+                      const isActive =
+                        pathname === item.href ||
+                        (!ROOT_HREFS.includes(item.href) &&
+                          pathname.startsWith(item.href));
+                      const Icon = iconMap[item.icon];
+                      const badgeCount = badges[item.href] ?? 0;
+                      return (
+                        <li key={item.href}>
+                          <Link
+                            href={item.href}
+                            onClick={() => setOpen(false)}
+                            className={clsx(
+                              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors min-h-[44px]",
+                              isActive
+                                ? "bg-primary/10 text-primary"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                            )}
+                          >
+                            {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
+                            <span className="flex-1">{item.label}</span>
+                            {badgeCount > 0 && (
+                              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold text-destructive-foreground">
+                                {badgeCount > 9 ? "9+" : badgeCount}
+                              </span>
+                            )}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
             </nav>
           </div>
         </div>
