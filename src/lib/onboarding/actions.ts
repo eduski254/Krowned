@@ -183,15 +183,25 @@ export async function completeOnboarding() {
 
   const admin = createAdminClient();
 
-  // Mark onboarding complete + publish the business
+  // Check if booking_link_token is already set
+  const { data: biz } = await admin
+    .from("businesses")
+    .select("id, booking_link_token")
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!biz) return { error: "Business not found." };
+
+  // Mark onboarding complete + publish the business + backfill token if missing
   const { error } = await admin
     .from("businesses")
     .update({
       onboarding_completed_at: new Date().toISOString(),
       is_published: true,
       verification_status: "verified",
+      ...(biz.booking_link_token ? {} : { booking_link_token: crypto.randomUUID() }),
     })
-    .eq("owner_id", user.id);
+    .eq("id", biz.id);
 
   if (error) return { error: error.message };
   return { success: true };

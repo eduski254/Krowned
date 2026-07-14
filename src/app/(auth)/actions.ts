@@ -85,6 +85,7 @@ export async function signup(
         plan_id: freePlan.id,
         is_published: false,
         verification_status: "pending",
+        booking_link_token: crypto.randomUUID(),
       });
     }
   }
