@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signup, loginWithGoogle, type AuthState } from "../actions";
+import { signup, loginWithGoogle, resendConfirmation, type AuthState } from "../actions";
 import { Spinner } from "@/components/spinner";
 import { PasswordInput } from "@/components/password-input";
+import { Mail, RefreshCw, CheckCircle2 } from "lucide-react";
 
 export default function SignupPage() {
   const searchParams = useSearchParams();
@@ -57,10 +58,7 @@ export default function SignupPage() {
       </div>
 
       {state?.success && (
-        <div className="mb-4 rounded-lg bg-success/10 p-4 text-center">
-          <p className="text-sm font-semibold text-success">Account created!</p>
-          <p className="mt-1 text-sm text-foreground">{state.message}</p>
-        </div>
+        <ConfirmationScreen email={state.email ?? ""} />
       )}
 
       {state?.error && (
@@ -182,5 +180,140 @@ export default function SignupPage() {
         </>
       )}
     </>
+  );
+}
+
+// ── Confirmation screen with countdown + resend ──
+
+const COUNTDOWN_SECONDS = 600; // 10 minutes
+const RESEND_COOLDOWN = 60; // 1 minute between resends
+
+function ConfirmationScreen({ email }: { email: string }) {
+  const [secondsLeft, setSecondsLeft] = useState(COUNTDOWN_SECONDS);
+  const [resending, setResending] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendStatus, setResendStatus] = useState<"idle" | "sent" | "error">("idle");
+
+  // Countdown timer
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+    const timer = setInterval(() => {
+      setSecondsLeft((s) => Math.max(0, s - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [secondsLeft]);
+
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((s) => Math.max(0, s - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
+  const handleResend = useCallback(async () => {
+    if (resending || resendCooldown > 0 || !email) return;
+    setResending(true);
+    setResendStatus("idle");
+    try {
+      const result = await resendConfirmation(email);
+      if (result.success) {
+        setResendStatus("sent");
+        setResendCooldown(RESEND_COOLDOWN);
+        setSecondsLeft(COUNTDOWN_SECONDS); // reset countdown
+      } else {
+        setResendStatus("error");
+      }
+    } catch {
+      setResendStatus("error");
+    } finally {
+      setResending(false);
+    }
+  }, [email, resending, resendCooldown]);
+
+  const minutes = Math.floor(secondsLeft / 60);
+  const seconds = secondsLeft % 60;
+
+  return (
+    <div className="space-y-6 text-center">
+      {/* Icon */}
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+        <Mail className="h-8 w-8 text-primary" />
+      </div>
+
+      {/* Heading */}
+      <div>
+        <h2 className="text-xl font-bold text-foreground">Check your email</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          We sent a confirmation link to{" "}
+          <span className="font-medium text-foreground">{email}</span>
+        </p>
+      </div>
+
+      {/* Countdown */}
+      <div className="rounded-xl border border-border bg-card p-4">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Link expires in
+        </p>
+        <p className="mt-1 text-3xl font-bold tabular-nums text-foreground">
+          {minutes}:{seconds.toString().padStart(2, "0")}
+        </p>
+        {secondsLeft === 0 && (
+          <p className="mt-1 text-xs text-destructive">
+            Link may have expired — resend below
+          </p>
+        )}
+      </div>
+
+      {/* Spam notice */}
+      <p className="text-sm text-muted-foreground">
+        Don&apos;t see it? Check your <span className="font-medium text-foreground">spam or junk folder</span>.
+        {" "}The email comes from <span className="font-medium text-foreground">noreply@kenyangossip.com</span>.
+      </p>
+
+      {/* Resend button */}
+      <button
+        onClick={handleResend}
+        disabled={resending || resendCooldown > 0}
+        className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+      >
+        {resending ? (
+          <>
+            <Spinner className="h-4 w-4" />
+            Sending...
+          </>
+        ) : resendCooldown > 0 ? (
+          <>
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            Resend in {resendCooldown}s
+          </>
+        ) : (
+          <>
+            <RefreshCw className="h-4 w-4" />
+            Resend confirmation email
+          </>
+        )}
+      </button>
+
+      {resendStatus === "sent" && resendCooldown > 0 && (
+        <p className="text-sm text-success">
+          Confirmation email resent!
+        </p>
+      )}
+      {resendStatus === "error" && (
+        <p className="text-sm text-destructive">
+          Failed to resend. Please try again.
+        </p>
+      )}
+
+      {/* Back to login */}
+      <p className="text-sm text-muted-foreground">
+        Already confirmed?{" "}
+        <Link href="/login" className="text-primary hover:underline">
+          Log in
+        </Link>
+      </p>
+    </div>
   );
 }

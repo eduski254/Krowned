@@ -17,6 +17,7 @@ export type AuthState = {
   fieldErrors?: Record<string, string[]>;
   success?: boolean;
   message?: string;
+  email?: string;
 } | null;
 
 export async function signup(
@@ -94,6 +95,7 @@ export async function signup(
   return {
     success: true,
     message: "Check your email for a confirmation link to activate your account.",
+    email,
   };
 }
 
@@ -207,4 +209,22 @@ export async function logout(message?: string) {
 /** Form-action-compatible logout (no params). Use in <form action={logoutAction}>. */
 export async function logoutAction() {
   await logout();
+}
+
+/** Resend the signup confirmation email */
+export async function resendConfirmation(
+  email: string,
+): Promise<{ success: boolean; error?: string }> {
+  if (!email) return { success: false, error: "Email is required." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+  return { success: true };
 }
