@@ -183,14 +183,24 @@ export async function completeOnboarding() {
 
   const admin = createAdminClient();
 
-  // Check if booking_link_token is already set
-  const { data: biz } = await admin
-    .from("businesses")
-    .select("id, booking_link_token")
-    .eq("owner_id", user.id)
-    .single();
+  // Fetch business + owner profile
+  const [bizResult, profileResult] = await Promise.all([
+    admin
+      .from("businesses")
+      .select("id, booking_link_token")
+      .eq("owner_id", user.id)
+      .single(),
+    admin
+      .from("profiles")
+      .select("full_name, email")
+      .eq("id", user.id)
+      .single(),
+  ]);
 
+  const biz = bizResult.data;
   if (!biz) return { error: "Business not found." };
+
+  const ownerName = profileResult.data?.full_name || user.email || "Owner";
 
   // Mark onboarding complete + publish the business + backfill token if missing
   const { error } = await admin
@@ -204,6 +214,52 @@ export async function completeOnboarding() {
     .eq("id", biz.id);
 
   if (error) return { error: error.message };
+
+  // Auto-create staff record for the owner (solo pro = business with one staff row)
+  const { data: existingStaff } = await admin
+    .from("staff")
+    .select("id")
+    .eq("business_id", biz.id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (!existingStaff) {
+    const { data: newStaff } = await admin
+      .from("staff")
+      .insert({
+        business_id: biz.id,
+        user_id: user.id,
+        display_name: ownerName,
+        status: "active",
+      })
+      .select("id")
+      .single();
+
+    if (newStaff) {
+      // Link staff to all existing services + create a default schedule
+      const { data: services } = await admin
+        .from("services")
+        .select("id")
+        .eq("business_id", biz.id)
+        .eq("is_active", true);
+
+      if (services?.length) {
+        await admin.from("staff_services").insert(
+          services.map((s) => ({ staff_id: newStaff.id, service_id: s.id })),
+        );
+      }
+
+      // Create a default Mon-Sat 9am-5pm schedule
+      const defaultSchedule = [1, 2, 3, 4, 5, 6].map((day) => ({
+        staff_id: newStaff.id,
+        day_of_week: day,
+        start_time: "09:00",
+        end_time: "17:00",
+      }));
+      await admin.from("staff_schedules").insert(defaultSchedule);
+    }
+  }
+
   return { success: true };
 }
 
