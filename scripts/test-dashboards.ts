@@ -120,6 +120,7 @@ async function main() {
     "/dashboard/admin/users",
     "/dashboard/admin/bookings",
     "/dashboard/admin/categories",
+    "/dashboard/admin/finance",
     "/dashboard/admin/blog",
   ]);
 }
