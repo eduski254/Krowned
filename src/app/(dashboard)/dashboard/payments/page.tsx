@@ -1,21 +1,20 @@
-import { EmptyState } from "@/components/dashboard/empty-state";
-import { CreditCard } from "lucide-react";
+import { PaymentMethodsClient } from "./payment-methods-client";
 
 export default function ClientPaymentsPage() {
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-foreground">
-        Payment Methods
-      </h1>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold font-heading text-foreground">
+          Payment Methods
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Manage your saved cards for faster checkout.
+        </p>
+      </div>
 
-      {/* // REVIEW: Stripe Customer portal integration needed here.
-          // Will list saved cards via Stripe API and allow adding/removing.
-          // Requires profiles.stripe_customer_id to be set. */}
-      <EmptyState
-        icon={CreditCard}
-        title="No payment methods"
-        description="Your saved payment methods will appear here once you make your first online booking."
-      />
+      <div className="max-w-2xl">
+        <PaymentMethodsClient />
+      </div>
     </div>
   );
 }

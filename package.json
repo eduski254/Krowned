@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.6.2",
+    "@stripe/react-stripe-js": "^6.7.0",
+    "@stripe/stripe-js": "^9.10.0",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.2",
     "@tiptap/extension-code-block-lowlight": "^3.27.3",
