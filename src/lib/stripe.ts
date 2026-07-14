@@ -12,5 +12,13 @@ export function getStripe(): Stripe {
 }
 
 export function isStripeConfigured(): boolean {
-  return !!process.env.STRIPE_SECRET_KEY;
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    console.error(
+      "[stripe] STRIPE_SECRET_KEY is missing or empty. " +
+        "Stripe features are disabled. Add it to your environment variables.",
+    );
+    return false;
+  }
+  return true;
 }

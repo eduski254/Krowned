@@ -154,7 +154,13 @@ export function SubscriptionCard({
           </div>
           {isTrial && trialEndsAt && (
             <p className="mt-1 text-xs text-muted-foreground">
-              Trial ends {new Date(trialEndsAt).toLocaleDateString()}
+              Trial ends{" "}
+              {new Date(trialEndsAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "UTC",
+              })}
             </p>
           )}
           {isActive && currentTier !== "free" && (
