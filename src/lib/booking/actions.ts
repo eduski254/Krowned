@@ -107,7 +107,9 @@ export async function holdBookingSlot(
   }
 
   // Service payment option gate
-  if (service.payment_option === "prepay" && data.paymentMethod !== "prepay") {
+  // "prepay" services REQUIRE online payment only when the business can accept it.
+  // If charges_enabled is false, allow pay_at_store as a fallback so bookings aren't stuck.
+  if (service.payment_option === "prepay" && data.paymentMethod !== "prepay" && biz.charges_enabled) {
     return { success: false, error: "This service requires online prepayment." };
   }
   if (service.payment_option === "pay_at_store" && data.paymentMethod !== "pay_at_store") {

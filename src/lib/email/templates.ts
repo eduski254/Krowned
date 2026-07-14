@@ -70,13 +70,20 @@ function build(subject: string, html: string): EmailOutput {
 
 // ── 1. Welcome ──────────────────────────────────────────────────────
 
-export function welcomeEmail(name: string): EmailOutput {
+export function welcomeEmail(name: string, accountType?: string): EmailOutput {
+  const isPro = accountType === "professional";
   const html = emailLayout(
-    `<h2 style="margin:0 0 16px;font-size:22px;">Welcome, ${name}!</h2>
-    <p>Your crown starts here. Krowned connects you with the DMV's best braiders, loc techs, and textured-hair stylists.</p>
-    <p>Browse styles, book your first appointment, and find your next go-to.</p>
-    ${emailButton("Find Your Stylist", `${SITE_URL}/explore`)}
-    <p style="color:#6b7280;font-size:13px;">Questions? Just reply to this email.</p>`,
+    isPro
+      ? `<h2 style="margin:0 0 16px;font-size:22px;">Welcome, ${name}!</h2>
+        <p>You're one step away from growing your business on Krowned — the marketplace that connects clients with the DMV's best braiders, loc techs, and textured-hair stylists.</p>
+        <p>Complete your business profile, add your services, and start accepting bookings.</p>
+        ${emailButton("Set Up Your Business", `${SITE_URL}/dashboard/business/onboarding`)}
+        <p style="color:#6b7280;font-size:13px;">Questions? Just reply to this email.</p>`
+      : `<h2 style="margin:0 0 16px;font-size:22px;">Welcome, ${name}!</h2>
+        <p>Your crown starts here. Krowned connects you with the DMV's best braiders, loc techs, and textured-hair stylists.</p>
+        <p>Browse styles, book your first appointment, and find your next go-to.</p>
+        ${emailButton("Find Your Stylist", `${SITE_URL}/explore`)}
+        <p style="color:#6b7280;font-size:13px;">Questions? Just reply to this email.</p>`,
     `Welcome to Krowned, ${name}!`,
   );
   return build("Welcome to Krowned!", html);

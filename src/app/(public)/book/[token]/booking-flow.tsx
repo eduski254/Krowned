@@ -138,8 +138,8 @@ export function BookingFlow({
     if (selectedService.payment_option === "pay_at_store" || selectedService.payment_option === "both") {
       opts.push("pay_at_store");
     }
-    // If charges not enabled, only pay_at_store
-    if (!chargesEnabled && opts.length === 0) {
+    // Fallback: if no options yet (e.g. prepay service but charges not enabled), allow pay_at_store
+    if (opts.length === 0) {
       opts.push("pay_at_store");
     }
     return opts;

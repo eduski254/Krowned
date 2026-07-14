@@ -34,7 +34,10 @@ export default function LoginPage() {
         <h2 className="text-2xl font-bold text-foreground">Welcome back</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-primary hover:underline">
+          <Link
+            href={redirectParam ? `/signup?redirect=${encodeURIComponent(redirectParam)}` : "/signup"}
+            className="text-primary hover:underline"
+          >
             Sign up
           </Link>
         </p>

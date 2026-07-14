@@ -57,8 +57,8 @@ export async function signup(
     return { error: error.message };
   }
 
-  // Fire-and-forget welcome email
-  const welcome = welcomeEmail(full_name);
+  // Fire-and-forget welcome email (role-specific copy)
+  const welcome = welcomeEmail(full_name, account_type);
   sendEmail({ to: email, ...welcome }).catch(() => {});
 
   // For professionals: create a business row so onboarding can populate it
