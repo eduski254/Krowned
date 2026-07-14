@@ -14,7 +14,8 @@ export function SwitchAccountButton({ redirectTo }: { redirectTo: string }) {
     setPending(true);
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push(`/login?redirect=${encodeURIComponent(redirectTo)}`);
+    // Go back to the invite page — it shows "Create account" / "Log in" when logged out
+    router.push(redirectTo);
   }
 
   return (
@@ -28,7 +29,7 @@ export function SwitchAccountButton({ redirectTo }: { redirectTo: string }) {
       ) : (
         <LogOut className="h-4 w-4" />
       )}
-      Log out & switch account
+      Use a different account
     </button>
   );
 }
