@@ -42,9 +42,9 @@
   --input: #E8E0D6;               /* Input border */
   --ring: #D9B36C;                /* Gold focus ring */
 
-  /* Brand — Gold primary */
-  --primary: #c6c6c6;
-  --primary-foreground: #0C0B0A;  /* Near-black text on gold */
+  /* Brand — Black primary (light mode buttons) */
+  --primary: #0C0B0A;
+  --primary-foreground: #ffffff;  /* White text on black */
 
   /* Brand — Cream secondary surface */
   --secondary: #F5F1EB;           /* Warm off-white */
