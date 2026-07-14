@@ -199,3 +199,104 @@ export async function createCustomerPortal(): Promise<{
 
   return { url: session.url };
 }
+
+/**
+ * Change an existing subscription to a different plan (upgrade/downgrade).
+ * Uses stripe.subscriptions.update() with proration so the user is
+ * charged/credited the difference immediately.
+ * Also updates the DB right away so the UI reflects the change instantly.
+ */
+export async function changePlan(newTier: string): Promise<{
+  success?: boolean;
+  error?: string;
+}> {
+  if (!isStripeConfigured()) {
+    return { error: "Payments are not configured yet." };
+  }
+
+  const serverClient = await createClient();
+  const {
+    data: { user },
+  } = await serverClient.auth.getUser();
+  if (!user) return { error: "Not authenticated." };
+
+  const admin = createAdminClient();
+
+  const { data: business } = await admin
+    .from("businesses")
+    .select("id, plan_id, plans(tier)")
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!business) return { error: "No business found." };
+
+  const currentTier = (business.plans as any)?.tier;
+  if (currentTier === newTier) return { error: "You are already on this plan." };
+
+  // Get the active subscription
+  const { data: sub } = await admin
+    .from("subscriptions")
+    .select("stripe_subscription_id")
+    .eq("business_id", business.id)
+    .in("status", ["active", "trialing", "past_due"])
+    .single();
+
+  if (!sub?.stripe_subscription_id) {
+    return { error: "No active subscription. Please subscribe first." };
+  }
+
+  // Fetch target plan
+  const { data: newPlan } = await admin
+    .from("plans")
+    .select("id, tier, stripe_price_id, name")
+    .eq("tier", newTier)
+    .eq("is_active", true)
+    .single();
+
+  if (!newPlan || !newPlan.stripe_price_id) {
+    return { error: "Plan not available." };
+  }
+
+  const stripe = getStripe();
+
+  try {
+    // Retrieve the current subscription to get the item ID
+    const stripeSub = await stripe.subscriptions.retrieve(
+      sub.stripe_subscription_id,
+    );
+    const itemId = stripeSub.items.data[0]?.id;
+    if (!itemId) return { error: "Subscription has no items." };
+
+    // Update the subscription — swap the price, prorate immediately
+    await stripe.subscriptions.update(sub.stripe_subscription_id, {
+      items: [
+        {
+          id: itemId,
+          price: newPlan.stripe_price_id,
+        },
+      ],
+      proration_behavior: "create_prorations",
+      metadata: {
+        ...stripeSub.metadata,
+        plan_id: newPlan.id,
+        plan_tier: newPlan.tier,
+      },
+    });
+
+    // Immediately update DB so UI reflects the change (webhook is backup)
+    await admin
+      .from("businesses")
+      .update({ plan_id: newPlan.id })
+      .eq("id", business.id);
+
+    await admin
+      .from("subscriptions")
+      .update({ plan_id: newPlan.id })
+      .eq("business_id", business.id);
+
+    return { success: true };
+  } catch (err: any) {
+    console.error("[changePlan] Stripe error:", err.message);
+    return { error: err.message ?? "Failed to change plan." };
+  }
+}

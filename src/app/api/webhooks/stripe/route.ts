@@ -167,16 +167,35 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     subscription_status: status,
   };
 
-  // If we know the plan, update the business's plan_id
-  if (planId) {
-    updateFields.plan_id = planId;
-  } else if (planTier) {
+  // Resolve the plan — try metadata first, then fall back to stripe_price_id
+  let resolvedPlanId = planId;
+  if (!resolvedPlanId && planTier) {
     const { data: plan } = await admin
       .from("plans")
       .select("id")
       .eq("tier", planTier)
       .single();
-    if (plan) updateFields.plan_id = plan.id;
+    if (plan) resolvedPlanId = plan.id;
+  }
+  if (!resolvedPlanId) {
+    // Resolve from the current subscription item's price (handles plan changes)
+    const priceId = subscription.items.data[0]?.price?.id;
+    if (priceId) {
+      const { data: plan } = await admin
+        .from("plans")
+        .select("id")
+        .eq("stripe_price_id", priceId)
+        .single();
+      if (plan) resolvedPlanId = plan.id;
+    }
+  }
+  if (resolvedPlanId) {
+    updateFields.plan_id = resolvedPlanId;
+    // Also update subscription record's plan_id
+    await admin
+      .from("subscriptions")
+      .update({ plan_id: resolvedPlanId })
+      .eq("business_id", businessId);
   }
 
   await admin.from("businesses").update(updateFields).eq("id", businessId);
