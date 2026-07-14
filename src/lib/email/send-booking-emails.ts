@@ -7,6 +7,7 @@ import {
   bookingRescheduleEmail,
   newBookingOwnerEmail,
   bookingCancelledByClientOwnerEmail,
+  accountDeletionEmail,
 } from "./templates";
 
 interface BookingEmailData {
@@ -380,6 +381,22 @@ export async function sendManualBookingConfirmationEmail({
       });
     }
   }
+}
+
+/**
+ * Send account deletion confirmation email.
+ */
+export async function sendAccountDeletionEmail(
+  email: string,
+  userName: string,
+) {
+  const mail = accountDeletionEmail({ userName });
+  await sendEmail({
+    to: email,
+    subject: mail.subject,
+    html: mail.html,
+    text: mail.text,
+  });
 }
 
 /**

@@ -165,6 +165,7 @@ export type Database = {
           id: string
           payment_method: Database["public"]["Enums"]["payment_method"]
           platform_fee_amount: number
+          reminder_24h_sent: boolean
           service_amount: number
           service_id: string
           source: Database["public"]["Enums"]["booking_source"]
@@ -190,6 +191,7 @@ export type Database = {
           id?: string
           payment_method: Database["public"]["Enums"]["payment_method"]
           platform_fee_amount?: number
+          reminder_24h_sent?: boolean
           service_amount: number
           service_id: string
           source: Database["public"]["Enums"]["booking_source"]
@@ -215,6 +217,7 @@ export type Database = {
           id?: string
           payment_method?: Database["public"]["Enums"]["payment_method"]
           platform_fee_amount?: number
+          reminder_24h_sent?: boolean
           service_amount?: number
           service_id?: string
           source?: Database["public"]["Enums"]["booking_source"]
@@ -958,6 +961,7 @@ export type Database = {
           bio: string | null
           country: string | null
           created_at: string
+          deleted_at: string | null
           full_name: string | null
           id: string
           phone: string | null
@@ -970,6 +974,7 @@ export type Database = {
           bio?: string | null
           country?: string | null
           created_at?: string
+          deleted_at?: string | null
           full_name?: string | null
           id: string
           phone?: string | null
@@ -982,6 +987,7 @@ export type Database = {
           bio?: string | null
           country?: string | null
           created_at?: string
+          deleted_at?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null

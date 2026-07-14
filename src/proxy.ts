@@ -29,6 +29,7 @@ const publicPaths = [
   "/community-guidelines",
   "/accessibility",
   "/blog",
+  "/account-deleted",
 ];
 
 function isPublicPath(pathname: string) {
@@ -80,6 +81,23 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
+  }
+
+  // Block soft-deleted accounts from accessing protected routes
+  if (user && !isPublicPath(pathname)) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("deleted_at")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.deleted_at) {
+      // Sign them out and redirect
+      await supabase.auth.signOut();
+      const url = request.nextUrl.clone();
+      url.pathname = "/account-deleted";
+      return NextResponse.redirect(url);
+    }
   }
 
   // Redirect authenticated users away from auth pages (except reset-password)

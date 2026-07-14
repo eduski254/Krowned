@@ -425,7 +425,32 @@ export function supportTicketStatusEmail(data: {
   return build(subject, html);
 }
 
-// ── 12. Booking Reminder (24h before, to client) ────────────────────
+// ── 12. Account Deletion Confirmation ────────────────────────────────
+
+export function accountDeletionEmail(data: {
+  userName: string;
+}): EmailOutput {
+  const subject = "Your Krowned account has been deleted";
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">Account deleted</h2>
+    <p>Hi ${data.userName}, your Krowned account has been scheduled for deletion.</p>
+    <div style="margin:16px 0;padding:16px;background:#fef3c7;border-radius:8px;border:1px solid #fde68a;">
+      <p style="margin:0;font-size:14px;color:#92400e;"><strong>14-day grace period:</strong> Your data will be permanently removed after 14 days. If you change your mind, contact us before then to restore your account.</p>
+    </div>
+    <p style="font-size:14px;">Here's what has been done:</p>
+    <ul style="font-size:14px;color:#374151;padding-left:20px;">
+      <li>All businesses have been unpublished</li>
+      <li>Active subscriptions have been cancelled</li>
+      <li>Your profile data has been anonymized</li>
+      <li>Staff records have been deactivated</li>
+    </ul>
+    <p style="font-size:14px;">To restore your account, contact us at <a href="mailto:support@krowned.app" style="color:#D9B36C;text-decoration:underline;">support@krowned.app</a>.</p>`,
+    `Your Krowned account has been deleted`,
+  );
+  return build(subject, html);
+}
+
+// ── 13. Booking Reminder (24h before, to client) ────────────────────
 
 export function bookingReminderEmail(data: {
   clientName: string;

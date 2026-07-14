@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { ProfileForm } from "./profile-form";
+import { DeleteAccountSection } from "./delete-account-section";
 
 export default async function ClientProfilePage() {
   const supabase = await createClient();
@@ -31,6 +32,8 @@ export default async function ClientProfilePage() {
           }}
         />
       </div>
+
+      <DeleteAccountSection />
     </div>
   );
 }
