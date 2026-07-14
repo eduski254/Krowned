@@ -141,7 +141,7 @@ export default async function InviteAcceptPage({
       </p>
       <div className="mt-6 flex flex-col gap-3">
         <Link
-          href={`/signup?redirect=/invite/${token}`}
+          href={`/signup?redirect=/invite/${token}&email=${encodeURIComponent(staff.invited_email ?? "")}&name=${encodeURIComponent(staff.display_name ?? "")}`}
           className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
         >
           Create account
@@ -150,7 +150,7 @@ export default async function InviteAcceptPage({
           href={`/login?redirect=/invite/${token}`}
           className="rounded-lg border border-border px-6 py-2.5 text-sm font-semibold text-foreground hover:bg-muted"
         >
-          Log in
+          Already have an account? Log in
         </Link>
       </div>
     </div>

@@ -11,6 +11,9 @@ import { Mail, RefreshCw, CheckCircle2 } from "lucide-react";
 export default function SignupPage() {
   const searchParams = useSearchParams();
   const typeParam = searchParams.get("type");
+  const prefillEmail = searchParams.get("email") ?? "";
+  const prefillName = searchParams.get("name") ?? "";
+  const isInvite = !!prefillEmail; // email prefilled = coming from staff invite
   const [state, action, pending] = useActionState<AuthState, FormData>(
     signup,
     null,
@@ -22,43 +25,56 @@ export default function SignupPage() {
   return (
     <>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-foreground">Create your account</h2>
+        <h2 className="text-2xl font-bold text-foreground">
+          {isInvite ? "Set up your account" : "Create your account"}
+        </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <Link href="/login" className="text-primary hover:underline">
-            Log in
-          </Link>
+          {isInvite ? (
+            <>Set a password to accept your invitation.</>
+          ) : (
+            <>
+              Already have an account?{" "}
+              <Link href="/login" className="text-primary hover:underline">
+                Log in
+              </Link>
+            </>
+          )}
         </p>
       </div>
 
-      {/* Client / Professional toggle */}
-      <div className="mb-6 flex rounded-lg border border-border bg-muted p-1">
-        <button
-          type="button"
-          onClick={() => setAccountType("client")}
-          className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
-            accountType === "client"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          I want to book
-        </button>
-        <button
-          type="button"
-          onClick={() => setAccountType("professional")}
-          className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
-            accountType === "professional"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          I&apos;m a professional
-        </button>
-      </div>
+      {/* Client / Professional toggle — hidden for invite signups */}
+      {!isInvite && (
+        <div className="mb-6 flex rounded-lg border border-border bg-muted p-1">
+          <button
+            type="button"
+            onClick={() => setAccountType("client")}
+            className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
+              accountType === "client"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            I want to book
+          </button>
+          <button
+            type="button"
+            onClick={() => setAccountType("professional")}
+            className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
+              accountType === "professional"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            I&apos;m a professional
+          </button>
+        </div>
+      )}
 
       {state?.success && (
-        <ConfirmationScreen email={state.email ?? ""} />
+        <ConfirmationScreen
+          email={state.email ?? ""}
+          inviteRedirect={isInvite ? searchParams.get("redirect") : null}
+        />
       )}
 
       {state?.error && (
@@ -71,6 +87,9 @@ export default function SignupPage() {
         <>
           <form action={action} className="space-y-4">
             <input type="hidden" name="account_type" value={accountType} />
+            {searchParams.get("redirect") && (
+              <input type="hidden" name="redirect" value={searchParams.get("redirect")!} />
+            )}
 
             <div>
               <label htmlFor="full_name" className="block text-sm font-medium text-foreground">
@@ -81,6 +100,7 @@ export default function SignupPage() {
                 name="full_name"
                 type="text"
                 required
+                defaultValue={prefillName}
                 className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="Your name"
               />
@@ -100,7 +120,11 @@ export default function SignupPage() {
                 name="email"
                 type="email"
                 required
-                className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                defaultValue={prefillEmail}
+                readOnly={isInvite}
+                className={`mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring ${
+                  isInvite ? "bg-muted cursor-not-allowed" : ""
+                }`}
                 placeholder="you@example.com"
               />
               {state?.fieldErrors?.email && (
@@ -134,9 +158,11 @@ export default function SignupPage() {
             >
               {pending
                 ? <><Spinner className="h-4 w-4" /> Creating account...</>
-                : accountType === "professional"
-                  ? "Create professional account"
-                  : "Create account"}
+                : isInvite
+                  ? "Create account & accept invite"
+                  : accountType === "professional"
+                    ? "Create professional account"
+                    : "Create account"}
             </button>
           </form>
 
@@ -188,7 +214,7 @@ export default function SignupPage() {
 const COUNTDOWN_SECONDS = 600; // 10 minutes
 const RESEND_COOLDOWN = 60; // 1 minute between resends
 
-function ConfirmationScreen({ email }: { email: string }) {
+function ConfirmationScreen({ email, inviteRedirect }: { email: string; inviteRedirect?: string | null }) {
   const [secondsLeft, setSecondsLeft] = useState(COUNTDOWN_SECONDS);
   const [resending, setResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
@@ -307,13 +333,23 @@ function ConfirmationScreen({ email }: { email: string }) {
         </p>
       )}
 
-      {/* Back to login */}
-      <p className="text-sm text-muted-foreground">
-        Already confirmed?{" "}
-        <Link href="/login" className="text-primary hover:underline">
-          Log in
-        </Link>
-      </p>
+      {/* Next step */}
+      {inviteRedirect ? (
+        <p className="text-sm text-muted-foreground">
+          After confirming, go back to your{" "}
+          <Link href={inviteRedirect} className="text-primary hover:underline">
+            invitation link
+          </Link>{" "}
+          to accept.
+        </p>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Already confirmed?{" "}
+          <Link href="/login" className="text-primary hover:underline">
+            Log in
+          </Link>
+        </p>
+      )}
     </div>
   );
 }
