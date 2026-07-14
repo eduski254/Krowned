@@ -269,7 +269,7 @@ function ConfirmationScreen({ email }: { email: string }) {
       {/* Spam notice */}
       <p className="text-sm text-muted-foreground">
         Don&apos;t see it? Check your <span className="font-medium text-foreground">spam or junk folder</span>.
-        {" "}The email comes from <span className="font-medium text-foreground">noreply@kenyangossip.com</span>.
+        {" "}The email comes from <span className="font-medium text-foreground">hello@krowned.app</span>.
       </p>
 
       {/* Resend button */}
