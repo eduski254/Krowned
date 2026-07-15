@@ -102,6 +102,7 @@ export const adminNav: NavGroup[] = [
   {
     label: "Platform",
     items: [
+      { label: "Leads", href: "/dashboard/admin/leads", icon: "UserPlus" },
       { label: "Support Tickets", href: "/dashboard/admin/support", icon: "LifeBuoy" },
       { label: "Settings", href: "/dashboard/admin/settings", icon: "Settings" },
     ],
