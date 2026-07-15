@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { PublicHeader } from "@/components/public/header";
 import { Footer } from "@/components/public/footer";
 import { HeroSearch } from "@/components/public/hero-search";
@@ -17,6 +16,7 @@ import {
   Users,
   MapPin,
   BadgeCheck,
+  Fingerprint,
 } from "lucide-react";
 import { TestimonialsCarousel } from "@/components/public/testimonials-carousel";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
@@ -33,40 +33,34 @@ export const metadata = {
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const admin = createAdminClient();
 
-  const [catRes, bizRes, svcRes, bookingCount, reviewRes, blogRes] =
-    await Promise.all([
-      supabase
-        .from("service_categories")
-        .select("id, name, slug, icon")
-        .order("sort_order")
-        .limit(8),
-      supabase
-        .from("businesses")
-        .select(
-          "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, primary_category_id, service_categories(name, slug)",
-        )
-        .eq("is_published", true)
-        .eq("verification_status", "verified")
-        .order("is_featured", { ascending: false })
-        .limit(200),
-      supabase.from("services").select("name, business_id").eq("is_active", true),
-      admin.from("bookings").select("id", { count: "exact", head: true }),
-      admin.from("reviews").select("id", { count: "exact", head: true }),
-      supabase
-        .from("blog_posts")
-        .select("id, title, slug, excerpt, cover_url, published_at")
-        .eq("status", "published")
-        .order("published_at", { ascending: false })
-        .limit(3),
-    ]);
+  const [catRes, bizRes, svcRes, blogRes] = await Promise.all([
+    supabase
+      .from("service_categories")
+      .select("id, name, slug, icon")
+      .order("sort_order")
+      .limit(8),
+    supabase
+      .from("businesses")
+      .select(
+        "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, primary_category_id, service_categories(name, slug)",
+      )
+      .eq("is_published", true)
+      .eq("verification_status", "verified")
+      .order("is_featured", { ascending: false })
+      .limit(200),
+    supabase.from("services").select("name, business_id").eq("is_active", true),
+    supabase
+      .from("blog_posts")
+      .select("id, title, slug, excerpt, cover_url, published_at")
+      .eq("status", "published")
+      .order("published_at", { ascending: false })
+      .limit(3),
+  ]);
 
   const categories = catRes.data ?? [];
   const businesses = bizRes.data ?? [];
   const services = svcRes.data ?? [];
-  const totalBookings = bookingCount.count ?? 0;
-  const totalReviews = reviewRes.count ?? 0;
   const blogPosts = blogRes.data ?? [];
 
   const searchBusinesses = businesses.map((biz) => {
@@ -100,9 +94,6 @@ export default async function HomePage() {
 
   const featuredBusinesses = businesses.filter((b) => b.is_featured);
 
-  // Unique cities
-  const citySet = new Set(businesses.map((b) => b.city).filter(Boolean));
-
   return (
     <div className="flex min-h-full flex-col">
       <PublicHeader />
@@ -124,7 +115,8 @@ export default async function HomePage() {
             Your crown, booked.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base text-white/90 drop-shadow-sm sm:mt-6 sm:text-lg">
-            Find braiders, loc techs, and textured-hair stylists in the DMV.
+            Every stylist specializes in textured hair. Find yours, see real
+            openings, and book in seconds — no DMs, no ghosting.
           </p>
 
           <div className="mt-8 sm:mt-10">
@@ -137,55 +129,47 @@ export default async function HomePage() {
           {/* Trust badges under search */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/70 sm:text-sm">
             <span className="flex items-center gap-1.5">
-              <BadgeCheck className="h-4 w-4 text-primary" /> Verified stylists
+              <BadgeCheck className="h-4 w-4 text-primary" /> ID-verified
+              stylists
             </span>
             <span className="flex items-center gap-1.5">
-              <Shield className="h-4 w-4 text-primary" /> Secure payments
+              <Shield className="h-4 w-4 text-primary" /> Secure card payments
             </span>
             <span className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4 text-primary" /> Book in 30 seconds
+              <Clock className="h-4 w-4 text-primary" /> Instant confirmation
             </span>
           </div>
         </div>
       </section>
 
-      {/* Social proof stats bar */}
+      {/* Trust signals bar */}
       <section className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-8 px-4 py-8 sm:gap-16 sm:py-10">
           {[
             {
-              value: `${businesses.length}+`,
-              label: "Verified Stylists",
+              label: "Every stylist ID-verified",
+              icon: Fingerprint,
+            },
+            {
+              label: "Textured-hair specialists only",
               icon: Sparkles,
             },
             {
-              value: `${totalBookings > 0 ? totalBookings.toLocaleString() : "500"}+`,
-              label: "Appointments Booked",
-              icon: Calendar,
-            },
-            {
-              value: `${citySet.size}+`,
-              label: "Cities in the DMV",
-              icon: MapPin,
-            },
-            {
-              value: `${totalReviews > 0 ? totalReviews.toLocaleString() : "200"}+`,
-              label: "Client Reviews",
+              label: "Real reviews from real clients",
               icon: Star,
             },
-          ].map((stat) => (
-            <div key={stat.label} className="flex items-center gap-3 text-center">
+            {
+              label: "Serving DC \u00B7 MD \u00B7 VA",
+              icon: MapPin,
+            },
+          ].map((item) => (
+            <div key={item.label} className="flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <stat.icon className="h-5 w-5 text-primary" />
+                <item.icon className="h-5 w-5 text-primary" />
               </div>
-              <div className="text-left">
-                <p className="text-xl font-bold text-foreground sm:text-2xl">
-                  {stat.value}
-                </p>
-                <p className="text-xs text-muted-foreground sm:text-sm">
-                  {stat.label}
-                </p>
-              </div>
+              <p className="text-sm font-medium text-foreground">
+                {item.label}
+              </p>
             </div>
           ))}
         </div>
@@ -236,13 +220,18 @@ export default async function HomePage() {
       <section className="border-y border-border bg-muted/50">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-            Why Krowned?
+            Booking that finally gets your hair.
           </h2>
           <p className="mx-auto mt-2 max-w-2xl text-center text-muted-foreground">
             We built the booking platform that textured hair actually deserves.
           </p>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
+              {
+                icon: Fingerprint,
+                title: "Verified, texture-specialist stylists",
+                desc: "Every pro is ID-verified and vetted for textured-hair work — no guessing whether they can handle your 4C, your locs, or your tension.",
+              },
               {
                 icon: BadgeCheck,
                 title: "Every Stylist Verified",
@@ -271,7 +260,7 @@ export default async function HomePage() {
               {
                 icon: Users,
                 title: "Built for Our Community",
-                desc: "Krowned is made by and for the textured-hair community. Braids, locs, naturals, weaves, barbers — every style is celebrated here.",
+                desc: "Made by and for the textured-hair community — braids, locs, naturals, weaves, and cuts, all celebrated, none an afterthought.",
               },
             ].map((item) => (
               <div
@@ -429,7 +418,8 @@ export default async function HomePage() {
             You braid, loc, or style textured hair?
           </h2>
           <p className="mt-4 text-lg text-white/90">
-            Stop losing bookings to DMs. Get a real system for your craft.
+            Stop losing bookings in your DMs. Get a real calendar, take
+            deposits, cut no-shows, and get paid — free to start.
           </p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
@@ -607,9 +597,8 @@ export default async function HomePage() {
             Ready to get crowned?
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-muted-foreground">
-            Join thousands of people across DC, Maryland, and Virginia who book
-            their braider, loc tech, or barber on Krowned. Free for clients —
-            always.
+            Join clients across DC, Maryland, and Virginia who book their
+            braider, loc tech, or barber on Krowned. Free for clients — always.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
@@ -625,6 +614,15 @@ export default async function HomePage() {
               Create free account
             </Link>
           </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Are you a stylist?{" "}
+            <Link
+              href="/for-stylists"
+              className="font-medium text-primary hover:underline"
+            >
+              List your studio free &rarr;
+            </Link>
+          </p>
         </div>
       </section>
 
