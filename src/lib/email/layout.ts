@@ -93,21 +93,61 @@ export function emailDetailRow(label: string, value: string): string {
   </tr>`;
 }
 
-/** Strip HTML tags for plaintext fallback */
+/** Convert HTML email to a well-formatted plaintext fallback */
 export function htmlToPlaintext(html: string): string {
-  return html
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>/gi, "\n\n")
-    .replace(/<\/tr>/gi, "\n")
-    .replace(/<\/h[1-6]>/gi, "\n\n")
-    .replace(/<a[^>]*href="([^"]*)"[^>]*>[^<]*<\/a>/gi, "$1")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&middot;/g, "-")
-    .replace(/&ldquo;/g, '"')
-    .replace(/&rdquo;/g, '"')
-    .replace(/&copy;/g, "(c)")
-    .replace(/&amp;/g, "&")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+  let s = html;
+
+  // 1. Strip hidden elements (preheader, etc.)
+  s = s.replace(/<div[^>]*display\s*:\s*none[^>]*>[\s\S]*?<\/div>/gi, "");
+
+  // 2. Strip <head> block entirely (title, meta, etc.)
+  s = s.replace(/<head[\s\S]*?<\/head>/gi, "");
+
+  // 3. Convert <a href="URL">text</a> → "text (URL)" or just "URL" if text matches URL
+  //    Handle links with child elements (e.g. <a><img alt="X"></a>) via inner tag strip
+  s = s.replace(/<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, (_m, href, inner) => {
+    // Strip any inner tags (e.g. <img>, <strong>) — keep alt text from images
+    let text = inner.replace(/<img[^>]*alt="([^"]*)"[^>]*\/?>/gi, "$1");
+    text = text.replace(/<[^>]+>/g, "").trim();
+    if (!text || text === href) return href;
+    return `${text} (${href})`;
+  });
+
+  // 4. Extract alt text from remaining <img> tags
+  s = s.replace(/<img[^>]*alt="([^"]*)"[^>]*\/?>/gi, "$1");
+
+  // 5. Structural replacements
+  s = s.replace(/<br\s*\/?>/gi, "\n");
+  s = s.replace(/<\/h[1-6]>/gi, "\n\n");
+  s = s.replace(/<\/p>/gi, "\n\n");
+  s = s.replace(/<\/div>/gi, "\n");
+  s = s.replace(/<li[^>]*>/gi, "  • ");
+  s = s.replace(/<\/li>/gi, "\n");
+  s = s.replace(/<hr[^>]*\/?>/gi, "\n---\n");
+  s = s.replace(/<\/tr>/gi, "\n");
+  s = s.replace(/<\/td>\s*<td/gi, "  |  <td");
+
+  // 6. Strip all remaining HTML tags
+  s = s.replace(/<[^>]+>/g, "");
+
+  // 7. Decode HTML entities
+  s = s.replace(/&nbsp;/g, " ");
+  s = s.replace(/&middot;/g, "·");
+  s = s.replace(/&mdash;/g, "—");
+  s = s.replace(/&ndash;/g, "–");
+  s = s.replace(/&ldquo;/g, "\u201C");
+  s = s.replace(/&rdquo;/g, "\u201D");
+  s = s.replace(/&lsquo;/g, "\u2018");
+  s = s.replace(/&rsquo;/g, "\u2019");
+  s = s.replace(/&rarr;/g, "→");
+  s = s.replace(/&copy;/g, "©");
+  s = s.replace(/&amp;/g, "&");
+  s = s.replace(/&#(\d+);/g, (_m, code) => String.fromCharCode(Number(code)));
+
+  // 8. Clean up whitespace
+  s = s.replace(/[ \t]+/g, " ");          // collapse horizontal whitespace
+  s = s.replace(/ *\n */g, "\n");          // trim spaces around newlines
+  s = s.replace(/\n{3,}/g, "\n\n");       // max 2 consecutive newlines
+
+  return s.trim();
 }
