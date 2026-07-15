@@ -14,17 +14,23 @@ function ConfirmInner() {
   const [status, setStatus] = useState<"idle" | "verifying" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
+  function redirectForUser(user: { user_metadata?: Record<string, unknown> }) {
+    const inviteRedirect = user.user_metadata?.invite_redirect;
+    if (inviteRedirect && typeof inviteRedirect === "string" && inviteRedirect.startsWith("/")) {
+      router.replace(inviteRedirect);
+    } else if (user.user_metadata?.account_type === "professional") {
+      router.replace("/dashboard/business/onboarding");
+    } else {
+      router.replace("/dashboard");
+    }
+  }
+
   // On error, check if user already has a session (token was already used)
   async function checkExistingSession() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      // Already verified and signed in — redirect to dashboard
-      if (user.user_metadata?.account_type === "professional") {
-        router.replace("/dashboard/business/onboarding");
-      } else {
-        router.replace("/dashboard");
-      }
+      redirectForUser(user);
       return true;
     }
     return false;
@@ -65,8 +71,8 @@ function ConfirmInner() {
 
     // Get user to determine redirect
     const { data: { user } } = await supabase.auth.getUser();
-    if (user?.user_metadata?.account_type === "professional") {
-      router.replace("/dashboard/business/onboarding");
+    if (user) {
+      redirectForUser(user);
     } else {
       router.replace("/dashboard");
     }

@@ -39,6 +39,9 @@ export async function signup(
   const { full_name, email, password, account_type } = parsed.data;
   const supabase = await createClient();
 
+  // If signup came from a staff invite, store the redirect so /confirm can route back
+  const inviteRedirect = formData.get("redirect") as string | null;
+
   const { data: signUpData, error } = await supabase.auth.signUp({
     email,
     password,
@@ -46,9 +49,10 @@ export async function signup(
       data: {
         full_name,
         account_type, // stored in raw_user_meta_data for post-signup routing
+        ...(inviteRedirect ? { invite_redirect: inviteRedirect } : {}),
       },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app"}/auth/callback?next=${
-        account_type === "professional" ? "/dashboard/business/onboarding" : "/dashboard"
+        inviteRedirect ?? (account_type === "professional" ? "/dashboard/business/onboarding" : "/dashboard")
       }`,
     },
   });
