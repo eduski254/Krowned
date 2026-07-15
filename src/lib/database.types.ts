@@ -607,6 +607,33 @@ export type Database = {
           },
         ]
       }
+      crm_settings: {
+        Row: {
+          daily_cap: number | null
+          dry_run: boolean | null
+          id: string
+          nurture_paused: boolean | null
+          updated_at: string | null
+          warmup_start_date: string | null
+        }
+        Insert: {
+          daily_cap?: number | null
+          dry_run?: boolean | null
+          id?: string
+          nurture_paused?: boolean | null
+          updated_at?: string | null
+          warmup_start_date?: string | null
+        }
+        Update: {
+          daily_cap?: number | null
+          dry_run?: boolean | null
+          id?: string
+          nurture_paused?: boolean | null
+          updated_at?: string | null
+          warmup_start_date?: string | null
+        }
+        Relationships: []
+      }
       disputes: {
         Row: {
           booking_id: string
@@ -665,6 +692,30 @@ export type Database = {
           },
         ]
       }
+      email_suppression: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          meta: Json | null
+          reason: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          meta?: Json | null
+          reason: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          meta?: Json | null
+          reason?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           business_id: string
@@ -695,6 +746,137 @@ export type Database = {
           {
             foreignKeyName: "favorites_client_id_fkey"
             columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_emails: {
+        Row: {
+          error: string | null
+          id: string
+          lead_id: string
+          resend_id: string | null
+          sent_at: string | null
+          status: string
+          step: number
+          subject: string
+        }
+        Insert: {
+          error?: string | null
+          id?: string
+          lead_id: string
+          resend_id?: string | null
+          sent_at?: string | null
+          status: string
+          step: number
+          subject: string
+        }
+        Update: {
+          error?: string | null
+          id?: string
+          lead_id?: string
+          resend_id?: string | null
+          sent_at?: string | null
+          status?: string
+          step?: number
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_emails_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          business_name: string | null
+          city: string | null
+          converted_at: string | null
+          converted_business_id: string | null
+          converted_step: number | null
+          converted_user_id: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          last_contacted_at: string | null
+          name: string | null
+          notes: string | null
+          nurture_next_at: string | null
+          nurture_started_at: string | null
+          nurture_status: string | null
+          nurture_step: number | null
+          phone: string | null
+          source: string | null
+          source_captured_at: string | null
+          stage: string | null
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          business_name?: string | null
+          city?: string | null
+          converted_at?: string | null
+          converted_business_id?: string | null
+          converted_step?: number | null
+          converted_user_id?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          last_contacted_at?: string | null
+          name?: string | null
+          notes?: string | null
+          nurture_next_at?: string | null
+          nurture_started_at?: string | null
+          nurture_status?: string | null
+          nurture_step?: number | null
+          phone?: string | null
+          source?: string | null
+          source_captured_at?: string | null
+          stage?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          business_name?: string | null
+          city?: string | null
+          converted_at?: string | null
+          converted_business_id?: string | null
+          converted_step?: number | null
+          converted_user_id?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          last_contacted_at?: string | null
+          name?: string | null
+          notes?: string | null
+          nurture_next_at?: string | null
+          nurture_started_at?: string | null
+          nurture_status?: string | null
+          nurture_step?: number | null
+          phone?: string | null
+          source?: string | null
+          source_captured_at?: string | null
+          stage?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_converted_business_id_fkey"
+            columns: ["converted_business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_converted_user_id_fkey"
+            columns: ["converted_user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1596,6 +1778,8 @@ export type Database = {
         }
         Returns: string
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       blog_post_status: "draft" | "published"
