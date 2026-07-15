@@ -29,6 +29,8 @@ const publicPaths = [
   "/community-guidelines",
   "/accessibility",
   "/blog",
+  "/invite",
+  "/checkin",
   "/account-deleted",
 ];
 
@@ -80,6 +82,7 @@ export async function proxy(request: NextRequest) {
   if (!user && !isPublicPath(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }
 
