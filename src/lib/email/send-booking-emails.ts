@@ -133,7 +133,7 @@ export async function sendBookingConfirmationEmails({
     end: details.endsAt,
     timezone: details.timezone,
     location: details.address || undefined,
-    description: `Booking ref: ZW-${bookingId.replace(/-/g, "").slice(0, 8).toUpperCase()}`,
+    description: `Booking ref: KR-${bookingId.replace(/-/g, "").slice(0, 8).toUpperCase()}`,
   });
 
   // 1. Email to client (essential)
@@ -321,7 +321,7 @@ export async function sendManualBookingConfirmationEmail({
     end: new Date(data.ends_at),
     timezone,
     location: address || undefined,
-    description: `Booking ref: ZW-${bookingId.replace(/-/g, "").slice(0, 8).toUpperCase()}`,
+    description: `Booking ref: KR-${bookingId.replace(/-/g, "").slice(0, 8).toUpperCase()}`,
   });
 
   // Build and send the confirmation email
@@ -415,7 +415,7 @@ export async function sendBookingRescheduleEmail({
     end: details.endsAt,
     timezone: details.timezone,
     location: details.address || undefined,
-    description: `Booking ref: ZW-${bookingId.replace(/-/g, "").slice(0, 8).toUpperCase()} (rescheduled)`,
+    description: `Booking ref: KR-${bookingId.replace(/-/g, "").slice(0, 8).toUpperCase()} (rescheduled)`,
   });
 
   const mail = bookingRescheduleEmail({

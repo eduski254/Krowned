@@ -63,8 +63,39 @@ export async function rescheduleBooking(
     return { success: false, error: "Cannot reschedule to a time in the past." };
   }
 
-  // Check for conflicting bookings for the same staff
+  // Lead time check (1 hour)
+  const earliest = new Date(Date.now() + 60 * 60_000);
+  if (newStart < earliest) {
+    return { success: false, error: "Must be at least 1 hour from now." };
+  }
+
+  // Window check (60 days)
+  const maxDate = new Date(Date.now() + 60 * 24 * 60 * 60_000);
+  if (newStart > maxDate) {
+    return { success: false, error: "Cannot reschedule more than 60 days ahead." };
+  }
+
+  // Check staff schedule and business hours
   if (booking.staff_id) {
+    const newDayOfWeek = new Date(
+      newStart.toLocaleString("en-CA", {
+        timeZone: (booking.businesses as any)?.timezone ?? "America/New_York",
+      }).split(",")[0] + "T12:00:00"
+    ).getDay();
+
+    // Check staff works on this day
+    const { data: staffSchedule } = await admin
+      .from("staff_schedules")
+      .select("start_time, end_time")
+      .eq("staff_id", booking.staff_id)
+      .eq("day_of_week", newDayOfWeek)
+      .maybeSingle();
+
+    if (!staffSchedule) {
+      return { success: false, error: "The staff member doesn't work on that day." };
+    }
+
+    // Check conflicting bookings
     const { data: conflicts } = await admin
       .from("bookings")
       .select("id")

@@ -33,7 +33,7 @@ export default async function BookingSuccessPage({
   const service = booking.services as any;
   const staff = booking.staff as any;
   const biz = booking.businesses as any;
-  const ref = "ZW-" + booking.id.replace(/-/g, "").slice(0, 8).toUpperCase();
+  const ref = "KR-" + booking.id.replace(/-/g, "").slice(0, 8).toUpperCase();
 
   const tz = biz?.timezone ?? DEFAULT_TIMEZONE;
   const dateTimeStr = formatBookingDateTime(booking.starts_at, tz);

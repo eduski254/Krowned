@@ -5,8 +5,8 @@ export const serviceSchema = z.object({
   description: z.string().max(2000).trim().optional().default(""),
   price_amount: z.coerce
     .number()
-    .int("Price must be a whole number (in minor units/cents)")
-    .min(0, "Price cannot be negative"),
+    .min(0, "Price cannot be negative")
+    .transform((v) => Math.round(v * 100)),
   currency: z.string().min(3).max(3).trim().toUpperCase().default("USD"),
   duration_minutes: z.coerce.number().int().min(5, "Minimum 5 minutes").max(480),
   category_id: z.string().uuid("Select a category"),

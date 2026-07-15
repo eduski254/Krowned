@@ -356,7 +356,7 @@ export function NewBookingModal({ businessId, timezone, services, staffMembers, 
                           type="tel"
                           value={newPhone}
                           onChange={(e) => setNewPhone(e.target.value)}
-                          placeholder="+254..."
+                          placeholder="+1..."
                           className="w-full rounded-lg border border-input bg-background px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                         />
                       </div>
@@ -473,7 +473,7 @@ function DoneState({ bookingId, onClose }: { bookingId: string | null; onClose: 
       <h3 className="text-lg font-heading font-bold text-foreground mb-1">Booking confirmed</h3>
       {bookingId && (
         <p className="text-sm text-muted-foreground mb-1">
-          Ref: ZW-{bookingId.replace(/-/g, "").slice(0, 8).toUpperCase()}
+          Ref: KR-{bookingId.replace(/-/g, "").slice(0, 8).toUpperCase()}
         </p>
       )}
       <p className="text-sm text-muted-foreground mb-6">

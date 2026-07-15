@@ -875,7 +875,7 @@ function formatTime12h(time24: string): string {
 /** Derive a short human-readable booking ref from UUID (8 chars, uppercased) */
 function deriveBookingRef(bookingId: string): string {
   // Take first 8 hex chars of UUID, uppercase
-  return "ZW-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
+  return "KR-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
 }
 
 /** Format a Date to ICS YYYYMMDDTHHMMSSZ format (UTC) */

@@ -50,7 +50,7 @@ export function CheckInClient({
     hour12: true,
   }).format(new Date(startsAt));
 
-  const bookingRef = "ZW-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
+  const bookingRef = "KR-" + bookingId.replace(/-/g, "").slice(0, 8).toUpperCase();
 
   const handleCheckIn = () => {
     setError(null);

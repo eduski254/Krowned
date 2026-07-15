@@ -77,18 +77,19 @@ export function ServiceForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="price_amount" className="block text-sm font-medium text-foreground">
-            Price (minor units / cents)
+            Price ($)
           </label>
           <input
             id="price_amount"
             name="price_amount"
             type="number"
             min="0"
+            step="0.01"
             required
-            defaultValue={service?.price_amount ?? ""}
+            defaultValue={service?.price_amount != null ? (service.price_amount / 100).toFixed(2) : ""}
             className="mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
-          <p className="mt-1 text-xs text-muted-foreground">e.g. 2500 = $25.00</p>
+          <p className="mt-1 text-xs text-muted-foreground">e.g. 25.00 for $25</p>
         </div>
         <div>
           <label htmlFor="currency" className="block text-sm font-medium text-foreground">

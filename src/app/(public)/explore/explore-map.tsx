@@ -19,9 +19,6 @@ const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? "DEMO_MAP_ID";
 const DEFAULT_CENTER = { lat: 38.9072, lng: -77.0369 };
 const DEFAULT_ZOOM = 12;
 
-// Singleton flag to prevent multiple APIProvider script injections
-let apiProviderMounted = false;
-
 export function ExploreMap({
   businesses,
   highlightedId,
@@ -40,10 +37,7 @@ export function ExploreMap({
   }) => void;
   onSelectBiz?: (biz: ExploreBusiness) => void;
 }) {
-  useEffect(() => {
-    apiProviderMounted = true;
-    return () => { apiProviderMounted = false; };
-  }, []);
+  if (!API_KEY) return null;
 
   return (
     <APIProvider apiKey={API_KEY} libraries={["marker"]}>
