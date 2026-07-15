@@ -4,7 +4,7 @@
  *
  * Prerequisites:
  *   - RESEND_API_KEY in .env.local
- *   - EMAIL_FROM in .env.local (or defaults to noreply@krowned.app)
+ *   - EMAIL_FROM in .env.local (or defaults to hello@krowned.app)
  *   - SUPABASE_SERVICE_ROLE_KEY in .env.local
  *   - Seeded database with bookings, businesses, staff, reviews
  *

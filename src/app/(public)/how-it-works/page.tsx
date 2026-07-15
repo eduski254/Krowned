@@ -25,38 +25,67 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Steps */}
-      <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
-        <div className="space-y-12">
-          {[
-            {
-              step: "1",
-              icon: Search,
-              title: "Find your stylist",
-              desc: "Browse braiders, loc techs, natural-hair pros, and barbers across the DMV. Filter by style, location, rating, and availability. Every pro is verified before they go live.",
-            },
-            {
-              step: "2",
-              icon: Calendar,
-              title: "Book your seat",
-              desc: "Pick your service — knotless, retwist, silk press, sew-in, fade, whatever you need. Choose a time that works. Lock it in. Done.",
-            },
-            {
-              step: "3",
-              icon: CheckCircle,
-              title: "Get crowned",
-              desc: "Show up, sit back, leave feeling like royalty. Pay online beforehand or in the chair. After, leave a review so the community knows who does fire work.",
-            },
-          ].map((s) => (
-            <div key={s.step} className="flex gap-6">
+      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+        <div className="space-y-16">
+          {/* Step 1 */}
+          <div>
+            <div className="flex gap-6">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-secondary">
-                <s.icon className="h-6 w-6 text-primary" />
+                <Search className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-foreground">{s.title}</h2>
-                <p className="mt-2 text-muted-foreground">{s.desc}</p>
+                <h2 className="text-xl font-bold text-foreground">Find your stylist</h2>
+                <p className="mt-2 text-muted-foreground">
+                  Browse braiders, loc techs, natural-hair pros, and barbers across the DMV.
+                  Filter by style, location, rating, and availability. Every pro is verified before they go live.
+                </p>
               </div>
             </div>
-          ))}
+            {/* Directory preview */}
+            <div className="mt-8 overflow-hidden rounded-xl border border-border shadow-lg">
+              <div className="flex items-center gap-2 bg-muted/60 px-4 py-2.5">
+                <span className="h-3 w-3 rounded-full bg-red-400/70" />
+                <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
+                <span className="h-3 w-3 rounded-full bg-green-400/70" />
+                <span className="ml-3 flex-1 rounded-md bg-background/60 px-3 py-1 text-xs text-muted-foreground">
+                  krowned.app/explore
+                </span>
+              </div>
+              <img
+                src="/brand/directory-preview.webp"
+                alt="Krowned stylist directory — browse business cards with cover photos, ratings, and an interactive map of stylists across the DMV"
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          {/* Step 2 */}
+          <div className="flex gap-6">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-secondary">
+              <Calendar className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">Book your seat</h2>
+              <p className="mt-2 text-muted-foreground">
+                Pick your service — knotless, retwist, silk press, sew-in, fade, whatever you need.
+                Choose a time that works. Lock it in. Done.
+              </p>
+            </div>
+          </div>
+
+          {/* Step 3 */}
+          <div className="flex gap-6">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-secondary">
+              <CheckCircle className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">Get crowned</h2>
+              <p className="mt-2 text-muted-foreground">
+                Show up, sit back, leave feeling like royalty. Pay online beforehand or in the chair.
+                After, leave a review so the community knows who does fire work.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -81,6 +110,42 @@ export default function HowItWorksPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* For Stylists — dashboard preview */}
+      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-foreground">
+            Run your business, not your DMs
+          </h2>
+          <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
+            Track earnings, manage bookings, and grow your client base — all from one dashboard built for stylists.
+          </p>
+        </div>
+        {/* Dashboard preview */}
+        <div className="mt-10 overflow-hidden rounded-xl border border-border shadow-lg">
+          <div className="flex items-center gap-2 bg-muted/60 px-4 py-2.5">
+            <span className="h-3 w-3 rounded-full bg-red-400/70" />
+            <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
+            <span className="h-3 w-3 rounded-full bg-green-400/70" />
+            <span className="ml-3 flex-1 rounded-md bg-background/60 px-3 py-1 text-xs text-muted-foreground">
+              krowned.app/dashboard/business/earnings
+            </span>
+          </div>
+          <img
+            src="/brand/dashboard-preview.webp"
+            alt="Krowned business dashboard — earnings overview with revenue stats, tips, and monthly earnings chart"
+            className="w-full"
+          />
+        </div>
+        <div className="mt-8 text-center">
+          <Link
+            href="/for-stylists"
+            className="inline-block rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            List your studio — it&apos;s free
+          </Link>
         </div>
       </section>
 

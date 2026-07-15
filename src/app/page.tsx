@@ -394,6 +394,24 @@ export default async function HomePage() {
             </div>
           ))}
         </div>
+        {/* Directory preview */}
+        <div className="mx-auto mt-12 max-w-5xl overflow-hidden rounded-xl border border-border shadow-lg">
+          <div className="flex items-center gap-2 bg-muted/60 px-4 py-2.5">
+            <span className="h-3 w-3 rounded-full bg-red-400/70" />
+            <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
+            <span className="h-3 w-3 rounded-full bg-green-400/70" />
+            <span className="ml-3 flex-1 rounded-md bg-background/60 px-3 py-1 text-xs text-muted-foreground">
+              krowned.app/explore
+            </span>
+          </div>
+          <img
+            src="/brand/directory-preview.webp"
+            alt="Krowned stylist directory — browse business cards with cover photos, ratings, and an interactive map of stylists across the DMV"
+            loading="lazy"
+            className="w-full"
+          />
+        </div>
+
         <div className="mt-10 text-center">
           <Link
             href="/explore"
@@ -405,7 +423,7 @@ export default async function HomePage() {
       </section>
 
       {/* CTA band — for stylists */}
-      <section className="relative overflow-hidden px-4 py-16 text-center text-white">
+      <section className="relative overflow-hidden px-4 py-16 text-white sm:py-20">
         <img
           src="/brand/bg-hero.webp"
           alt=""
@@ -413,32 +431,55 @@ export default async function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
-        <div className="relative z-10 mx-auto max-w-2xl">
-          <h2 className="text-2xl font-bold sm:text-3xl">
-            You braid, loc, or style textured hair?
-          </h2>
-          <p className="mt-4 text-lg text-white/90">
-            Stop losing bookings in your DMs. Get a real calendar, take
-            deposits, cut no-shows, and get paid — free to start.
-          </p>
-          <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <Link
-              href="/for-stylists"
-              className="inline-block rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
-            >
-              List your studio — it&apos;s free
-            </Link>
-            <Link
-              href="/how-it-works"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-white/90 underline underline-offset-4 hover:text-white"
-            >
-              See how it works <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+        <div className="relative z-10 mx-auto max-w-5xl">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold sm:text-3xl">
+              You braid, loc, or style textured hair?
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-white/90">
+              Stop losing bookings in your DMs. Get a real calendar, take
+              deposits, cut no-shows, and get paid — free to start.
+            </p>
           </div>
-          <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-white/60 sm:text-sm">
-            <span>14-day free trial</span>
-            <span>No credit card required</span>
-            <span>Cancel anytime</span>
+
+          {/* Dashboard preview */}
+          <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-xl border border-white/10 shadow-2xl">
+            <div className="flex items-center gap-2 bg-black/40 px-4 py-2.5 backdrop-blur-sm">
+              <span className="h-3 w-3 rounded-full bg-red-400/70" />
+              <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
+              <span className="h-3 w-3 rounded-full bg-green-400/70" />
+              <span className="ml-3 flex-1 rounded-md bg-white/10 px-3 py-1 text-xs text-white/60">
+                krowned.app/dashboard
+              </span>
+            </div>
+            <img
+              src="/brand/dashboard-preview.webp"
+              alt="Krowned business dashboard — track earnings, manage bookings, and see monthly revenue charts"
+              loading="lazy"
+              className="w-full"
+            />
+          </div>
+
+          <div className="mt-8 text-center">
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+              <Link
+                href="/for-stylists"
+                className="inline-block rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
+              >
+                List your studio — it&apos;s free
+              </Link>
+              <Link
+                href="/how-it-works"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-white/90 underline underline-offset-4 hover:text-white"
+              >
+                See how it works <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-white/60 sm:text-sm">
+              <span>14-day free trial</span>
+              <span>No credit card required</span>
+              <span>Cancel anytime</span>
+            </div>
           </div>
         </div>
       </section>
