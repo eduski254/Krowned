@@ -19,6 +19,7 @@ import {
   PenSquare,
   UserCircle,
   LifeBuoy,
+  UserPlus,
   type LucideIcon,
 } from "lucide-react";
 
@@ -43,4 +44,5 @@ export const iconMap: Record<string, LucideIcon> = {
   PenSquare,
   UserCircle,
   LifeBuoy,
+  UserPlus,
 };
