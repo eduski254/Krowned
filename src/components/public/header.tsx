@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
 import { PublicMobileNav } from "./mobile-nav";
@@ -37,15 +38,21 @@ export async function PublicHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm pt-[env(safe-area-inset-top)]">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center">
-          <img
+          <Image
             src="/brand/logo-white.png"
             alt="Krowned"
+            width={120}
+            height={32}
             className="h-8 w-auto hidden dark:block"
+            priority
           />
-          <img
+          <Image
             src="/brand/logo-black.png"
             alt="Krowned"
+            width={120}
+            height={32}
             className="h-8 w-auto block dark:hidden"
+            priority
           />
         </Link>
 
@@ -72,9 +79,11 @@ export async function PublicHeader() {
                 className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
                 {avatarUrl ? (
-                  <img
+                  <Image
                     src={avatarUrl}
                     alt=""
+                    width={28}
+                    height={28}
                     className="h-7 w-7 rounded-full object-cover"
                   />
                 ) : (

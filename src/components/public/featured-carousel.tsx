@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight, MapPin, ArrowRight } from "lucide-react";
 
 interface FeaturedBusiness {
@@ -102,11 +103,13 @@ export function FeaturedCarousel({ businesses }: { businesses: FeaturedBusiness[
           >
             <div className="relative aspect-[16/10] overflow-hidden bg-muted">
               {biz.imageUrl ? (
-                <img
+                <Image
                   src={biz.imageUrl}
                   alt={biz.name}
+                  fill
+                  sizes="(max-width: 640px) 80vw, (max-width: 1024px) 40vw, 25vw"
                   loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-3xl font-bold text-primary">

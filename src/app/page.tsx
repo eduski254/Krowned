@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/public/header";
 import { Footer } from "@/components/public/footer";
@@ -22,13 +23,24 @@ import { TestimonialsCarousel } from "@/components/public/testimonials-carousel"
 import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { resolveCardImage } from "@/lib/explore/utils";
 import { FeaturedCarousel } from "@/components/public/featured-carousel";
+import { JsonLd, organizationSchema, webSiteSchema } from "@/lib/schema";
+
+/** Revalidate homepage every hour (ISR) */
+export const revalidate = 3600;
 
 const HERO_BG_IMAGE = "/brand/hero-salon.webp";
 
-export const metadata = {
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
   title: "Krowned — Book Braids, Locs & Textured Hair in the DMV",
   description:
     "Find and book braiders, loc techs, and textured-hair stylists in DC, Maryland, and Northern Virginia. Knotless braids, retwists, silk press, sew-ins, fades — your crown, booked.",
+  openGraph: {
+    title: "Krowned — Book Braids, Locs & Textured Hair in the DMV",
+    description:
+      "Find and book braiders, loc techs, and textured-hair stylists in DC, Maryland, and Northern Virginia.",
+  },
 };
 
 export default async function HomePage() {
@@ -96,16 +108,19 @@ export default async function HomePage() {
 
   return (
     <div className="flex min-h-full flex-col">
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={webSiteSchema()} />
       <PublicHeader />
 
       {/* Hero */}
       <section className="relative flex min-h-[85dvh] items-center justify-center overflow-hidden text-center sm:min-h-[100dvh]">
-        <img
+        <Image
           src={HERO_BG_IMAGE}
           alt=""
-          loading="eager"
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover object-top"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-top"
         />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
@@ -190,7 +205,7 @@ export default async function HomePage() {
               .map((cat) => (
                 <Link
                   key={cat.id}
-                  href={`/explore?category=${cat.slug}`}
+                  href={`/styles/${cat.slug}`}
                   style={{
                     boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px",
                   }}
@@ -404,9 +419,11 @@ export default async function HomePage() {
               krowned.app/explore
             </span>
           </div>
-          <img
+          <Image
             src="/brand/directory-preview.webp"
             alt="Krowned stylist directory — browse business cards with cover photos, ratings, and an interactive map of stylists across the DMV"
+            width={1280}
+            height={800}
             loading="lazy"
             className="w-full"
           />
@@ -424,10 +441,12 @@ export default async function HomePage() {
 
       {/* CTA band — for stylists */}
       <section className="relative overflow-hidden px-4 py-16 text-white sm:py-20">
-        <img
+        <Image
           src="/brand/bg-hero.webp"
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          fill
+          sizes="100vw"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
@@ -452,9 +471,11 @@ export default async function HomePage() {
                 krowned.app/dashboard
               </span>
             </div>
-            <img
+            <Image
               src="/brand/dashboard-preview.webp"
               alt="Krowned business dashboard — track earnings, manage bookings, and see monthly revenue charts"
+              width={1024}
+              height={640}
               loading="lazy"
               className="w-full"
             />
@@ -593,12 +614,14 @@ export default async function HomePage() {
                   className="group overflow-hidden rounded-xl border border-border bg-card transition-all hover:shadow-[0_12px_28px_rgba(0,0,0,0.15)] hover:-translate-y-0.5"
                 >
                   {post.cover_url && (
-                    <div className="aspect-[16/9] overflow-hidden bg-muted">
-                      <img
+                    <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+                      <Image
                         src={post.cover_url}
                         alt={post.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
                   )}

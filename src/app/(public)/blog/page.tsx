@@ -3,7 +3,7 @@ import { BlogGrid } from "./blog-client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog | Krowned",
+  title: "Blog",
   description: "Tips, trends, and insights on beauty, wellness, and self-care from the Krowned team.",
 };
 

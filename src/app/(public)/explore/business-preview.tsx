@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   X,
   Clock,
@@ -145,10 +146,12 @@ export function BusinessPreview({
               {/* Cover image */}
               <div className="relative aspect-[2/1] w-full overflow-hidden bg-muted">
                 {imageUrl || biz.cover_url ? (
-                  <img
+                  <Image
                     src={(imageUrl || biz.cover_url)!}
                     alt={biz.name}
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-primary/10 text-5xl font-bold text-primary">
@@ -256,9 +259,11 @@ export function BusinessPreview({
                           className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2"
                         >
                           {s.avatar_url ? (
-                            <img
+                            <Image
                               src={s.avatar_url}
                               alt=""
+                              width={32}
+                              height={32}
                               className="h-8 w-8 rounded-full object-cover"
                             />
                           ) : (
@@ -361,9 +366,11 @@ export function BusinessPreview({
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               {r.avatarUrl ? (
-                                <img
+                                <Image
                                   src={r.avatarUrl}
                                   alt=""
+                                  width={28}
+                                  height={28}
                                   className="h-7 w-7 rounded-full object-cover"
                                 />
                               ) : (

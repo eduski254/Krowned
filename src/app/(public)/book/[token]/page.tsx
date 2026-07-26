@@ -1,9 +1,32 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { isBookable } from "@/lib/plans";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { BookingFlow } from "./booking-flow";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}): Promise<Metadata> {
+  const { token } = await params;
+  const supabase = await createClient();
+  const { data: biz } = await supabase
+    .from("businesses")
+    .select("name, city")
+    .eq("booking_link_token", token)
+    .eq("is_published", true)
+    .maybeSingle();
+
+  if (!biz) return { title: "Book an Appointment" };
+
+  return {
+    title: `Book at ${biz.name}`,
+    description: `Book an appointment at ${biz.name}${biz.city ? ` in ${biz.city}` : ""} — pick your service, choose a time, and confirm instantly.`,
+  };
+}
 
 export default async function BookingPage({
   params,

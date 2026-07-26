@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Stylist & Business Terms — Krowned",
+  title: "Stylist & Business Terms",
   description: "Terms for Service Providers listing on the Krowned marketplace.",
 };
 

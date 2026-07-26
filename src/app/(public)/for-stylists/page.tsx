@@ -1,11 +1,17 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Calendar, Users, DollarSign, BarChart3, Link2, Star, Check, X, Zap, Crown, Building2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "For Stylists — List Your Studio on Krowned | DMV Booking",
+  title: "For Stylists — List Your Studio on Krowned",
   description:
     "Stop losing bookings to DMs. Krowned gives braiders, loc techs, and textured-hair stylists a real booking system. Deposits, scheduling, new clients — all in one place.",
+  openGraph: {
+    title: "List Your Studio on Krowned",
+    description:
+      "Real calendar, deposits, no-show protection, and new clients — free to start.",
+  },
 };
 
 export default function ForStylistsPage() {
@@ -13,7 +19,7 @@ export default function ForStylistsPage() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-20 text-center text-white">
-        <img src="/brand/bg-hero.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <Image src="/brand/bg-hero.webp" alt="" fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10">
@@ -180,7 +186,7 @@ export default function ForStylistsPage() {
 
       {/* Final CTA */}
       <section className="relative overflow-hidden px-4 py-16 text-center text-white">
-        <img src="/brand/bg-hero.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <Image src="/brand/bg-hero.webp" alt="" fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10">

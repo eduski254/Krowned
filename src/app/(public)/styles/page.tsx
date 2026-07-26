@@ -1,13 +1,19 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Styles — Braids, Locs, Silk Press, Weaves & More | Krowned",
+  title: "Styles — Braids, Locs, Silk Press, Weaves & More",
   description:
     "Browse textured-hair styles: knotless braids, locs, silk press, sew-ins, fades, and color. Find inspiration and book a stylist in the DMV.",
+  openGraph: {
+    title: "Textured Hair Styles — Braids, Locs, Silk Press & More",
+    description:
+      "Browse textured-hair styles and book a stylist in the DMV.",
+  },
 };
 
 const STYLE_DESCRIPTIONS: Record<string, string> = {
@@ -38,7 +44,7 @@ export default async function StylesPage() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-16 text-center text-white">
-        <img src="/brand/bg-hero.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <Image src="/brand/bg-hero.webp" alt="" fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10">
@@ -59,7 +65,7 @@ export default async function StylesPage() {
             return (
               <Link
                 key={cat.id}
-                href={`/explore?category=${cat.slug}`}
+                href={`/styles/${cat.slug}`}
                 className="group flex flex-col rounded-xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg"
               >
                 {Icon && (

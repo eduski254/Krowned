@@ -1,11 +1,17 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, Calendar, CheckCircle, Star, Shield, CreditCard } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "How Krowned Works — Book Braids, Locs & Textured Hair",
+  title: "How It Works — Book Braids, Locs & Textured Hair",
   description:
     "Book braiders, loc techs, and textured-hair stylists in the DMV in three steps. Find your stylist, book your seat, get crowned.",
+  openGraph: {
+    title: "How Krowned Works",
+    description:
+      "Three steps to your next appointment. Find a stylist, book your seat, get crowned.",
+  },
 };
 
 export default function HowItWorksPage() {
@@ -13,7 +19,7 @@ export default function HowItWorksPage() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-16 text-center text-white">
-        <img src="/brand/bg-hero.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <Image src="/brand/bg-hero.webp" alt="" fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10">

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Cookie Policy — Krowned",
+  title: "Cookie Policy",
   description: "How Krowned uses cookies and similar technologies.",
 };
 

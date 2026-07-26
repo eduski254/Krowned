@@ -7,8 +7,11 @@ import {
   useMemo,
   forwardRef,
   useEffect,
+  lazy,
+  Suspense,
 } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Search,
   MapPin,
@@ -34,7 +37,9 @@ import {
   type TimeOfDay,
 } from "@/components/search/when-filter";
 
-import { ExploreMap } from "./explore-map";
+const ExploreMap = lazy(() =>
+  import("./explore-map").then((m) => ({ default: m.ExploreMap })),
+);
 import { BusinessPreview } from "./business-preview";
 
 type Category = { id: string; name: string; slug: string };
@@ -603,13 +608,21 @@ export function ExploreClient({
               </button>
             )}
 
-            <ExploreMap
-              businesses={mappable}
-              highlightedId={highlightedId}
-              onPinClick={handlePinClick}
-              onBoundsChanged={() => {}}
-              onSelectBiz={setPreviewBiz}
-            />
+            <Suspense
+              fallback={
+                <div className="flex h-full items-center justify-center bg-muted">
+                  <p className="text-sm text-muted-foreground">Loading map...</p>
+                </div>
+              }
+            >
+              <ExploreMap
+                businesses={mappable}
+                highlightedId={highlightedId}
+                onPinClick={handlePinClick}
+                onBoundsChanged={() => {}}
+                onSelectBiz={setPreviewBiz}
+              />
+            </Suspense>
           </div>
         )}
 
@@ -698,11 +711,13 @@ const BusinessCard = forwardRef<
       >
         <div className="relative aspect-[16/10] overflow-hidden bg-muted">
           {imageUrl ? (
-            <img
+            <Image
               src={imageUrl}
               alt={biz.name}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
             />
           ) : (
             letterAvatar
@@ -761,11 +776,13 @@ const BusinessCard = forwardRef<
     >
       <div className="relative hidden w-40 shrink-0 overflow-hidden bg-muted sm:block">
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={biz.name}
+            fill
+            sizes="160px"
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
           letterAvatar

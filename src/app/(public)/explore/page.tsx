@@ -3,12 +3,40 @@ import { createClient } from "@/lib/supabase/server";
 import { ExploreClient } from "./explore-client";
 import type { ExploreBusiness } from "@/lib/explore/actions";
 import { resolveCardImage } from "@/lib/explore/utils";
+import { JsonLd, breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
-  title: "Find a Stylist — Braiders, Loc Techs & Barbers in the DMV | Krowned",
-  description:
-    "Browse and book braiders, loc techs, natural-hair stylists, and barbers in DC, Maryland, and Northern Virginia. Filter by style, location, and availability.",
-};
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; city?: string }>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+
+  if (params.category) {
+    const supabase = await createClient();
+    const { data: cat } = await supabase
+      .from("service_categories")
+      .select("name")
+      .eq("slug", params.category)
+      .maybeSingle();
+
+    if (cat) {
+      const city = params.city || "the DMV";
+      return {
+        title: `${cat.name} Stylists in ${city}`,
+        description: `Find and book ${cat.name.toLowerCase()} specialists in ${city}. Browse verified stylists, see real availability, and book instantly on Krowned.`,
+      };
+    }
+  }
+
+  return {
+    title: "Find a Stylist — Braiders, Loc Techs & Barbers in the DMV",
+    description:
+      "Browse and book braiders, loc techs, natural-hair stylists, and barbers in DC, Maryland, and Northern Virginia. Filter by style, location, and availability.",
+  };
+}
 
 export default async function ExplorePage({
   searchParams,
@@ -145,7 +173,23 @@ export default async function ExplorePage({
     };
   });
 
+  const breadcrumbItems = [
+    { name: "Home", url: SITE_URL },
+    { name: "Explore", url: `${SITE_URL}/explore` },
+  ];
+  if (params.category) {
+    const cat = categories.find((c) => c.slug === params.category);
+    if (cat) {
+      breadcrumbItems.push({
+        name: cat.name,
+        url: `${SITE_URL}/explore?category=${cat.slug}`,
+      });
+    }
+  }
+
   return (
+    <>
+    <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
     <ExploreClient
       businesses={serialized}
       categories={categories}
@@ -161,5 +205,6 @@ export default async function ExplorePage({
       isLoggedIn={!!user}
       hasMapKey={!!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
     />
+    </>
   );
 }

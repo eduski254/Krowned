@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Accessibility — Krowned",
+  title: "Accessibility",
   description: "Our commitment to making Krowned accessible to everyone.",
 };
 

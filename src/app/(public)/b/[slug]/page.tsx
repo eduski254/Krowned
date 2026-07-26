@@ -1,19 +1,56 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { isBookable } from "@/lib/plans";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Suspense, lazy } from "react";
 import { Clock, MapPin, Phone, Mail, Home, Star, ArrowLeft } from "lucide-react";
 import { StarRating } from "@/components/star-rating";
 import { FavoriteButton } from "@/components/favorite-button";
 import { SocialLinksBar } from "@/components/social-icons";
 import { PhotoGallery } from "./photo-gallery";
+import { JsonLd, localBusinessSchema, breadcrumbSchema } from "@/lib/schema";
 
 const BusinessMiniMap = lazy(() =>
   import("./business-mini-map").then((m) => ({ default: m.BusinessMiniMap })),
 );
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
+  const { data: biz } = await supabase
+    .from("businesses")
+    .select("name, description, cover_url, city, country")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .maybeSingle();
+
+  if (!biz) return { title: "Stylist Not Found" };
+
+  const title = `${biz.name}${biz.city ? ` — ${biz.city}` : ""} | Krowned`;
+  const description =
+    biz.description?.slice(0, 155) ||
+    `Book ${biz.name} on Krowned — textured-hair specialist in ${biz.city || "the DMV"}.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/b/${slug}`,
+      ...(biz.cover_url ? { images: [{ url: biz.cover_url }] } : {}),
+    },
+  };
+}
 
 export default async function BusinessProfilePage({
   params,
@@ -99,8 +136,52 @@ export default async function BusinessProfilePage({
     isFavorited = !!fav;
   }
 
+  const categoryName = (business.service_categories as unknown as { name: string } | null)?.name ?? null;
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <JsonLd
+        data={localBusinessSchema({
+          name: business.name,
+          slug: business.slug,
+          description: business.description,
+          address: business.address,
+          city: business.city,
+          country: business.country,
+          phone: business.phone,
+          email: business.email,
+          logo_url: business.logo_url,
+          cover_url: business.cover_url,
+          latitude: business.latitude,
+          longitude: business.longitude,
+          categoryName,
+          avgRating: avgRating ? parseFloat(avgRating) : null,
+          reviewCount: reviews.length,
+          reviews: reviews.slice(0, 5).map((r) => {
+            const client = r.clients as unknown as { full_name: string | null } | null;
+            return {
+              rating: r.rating,
+              comment: r.comment,
+              authorName: client?.full_name || "A client",
+              datePublished: new Date(r.created_at).toISOString().split("T")[0],
+            };
+          }),
+          services: services.map((s) => ({
+            name: s.name,
+            description: s.description,
+            priceAmount: s.price_amount,
+            currency: s.currency ?? "usd",
+          })),
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", url: SITE_URL },
+          { name: "Explore", url: `${SITE_URL}/explore` },
+          { name: business.name, url: `${SITE_URL}/b/${business.slug}` },
+        ])}
+      />
+
       {/* Back link */}
       <Link
         href="/explore"
@@ -114,7 +195,7 @@ export default async function BusinessProfilePage({
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
         <div className="flex items-center gap-4">
           {business.logo_url ? (
-            <img src={business.logo_url} alt="" className="h-20 w-20 rounded-xl object-cover" />
+            <Image src={business.logo_url} alt="" width={80} height={80} className="h-20 w-20 rounded-xl object-cover" />
           ) : (
             <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-primary/10 text-3xl font-bold text-primary">
               {business.name.charAt(0)}
@@ -132,7 +213,7 @@ export default async function BusinessProfilePage({
               />
             </div>
             <p className="text-muted-foreground">
-              {(business.service_categories as unknown as { name: string } | null)?.name}
+              {categoryName}
               {business.city && ` — ${business.city}`}
             </p>
             <div className="mt-1">
@@ -229,7 +310,7 @@ export default async function BusinessProfilePage({
                 {staff.map((s) => (
                   <div key={s.id} className="flex items-center gap-3 rounded-xl border border-border bg-card p-4">
                     {s.avatar_url ? (
-                      <img src={s.avatar_url} alt="" className="h-12 w-12 rounded-full object-cover" />
+                      <Image src={s.avatar_url} alt="" width={48} height={48} className="h-12 w-12 rounded-full object-cover" />
                     ) : (
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
                         {(s.display_name ?? "?").charAt(0)}
@@ -259,9 +340,11 @@ export default async function BusinessProfilePage({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {client?.avatar_url ? (
-                          <img
+                          <Image
                             src={client.avatar_url}
                             alt=""
+                            width={36}
+                            height={36}
                             className="h-9 w-9 rounded-full object-cover"
                           />
                         ) : (

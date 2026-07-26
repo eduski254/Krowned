@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Cancellation & Refund Policy — Krowned",
+  title: "Cancellation & Refund Policy",
   description: "How cancellations, deposits, no-shows, and refunds work on Krowned.",
 };
 

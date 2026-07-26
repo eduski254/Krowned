@@ -1,8 +1,10 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+import { JsonLd, faqPageSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "FAQ — What to Expect | Krowned",
+  title: "FAQ — What to Expect",
   description:
     "Deposits, cancellations, how long styles take, what to bring, how payment works. Everything you need to know before your appointment.",
 };
@@ -53,9 +55,11 @@ const FAQS = [
 export default function FAQPage() {
   return (
     <div>
+      <JsonLd data={faqPageSchema(FAQS)} />
+
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-16 text-center text-white">
-        <img src="/brand/bg-hero.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <Image src="/brand/bg-hero.webp" alt="" fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10">

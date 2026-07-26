@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Privacy Policy — Krowned",
+  title: "Privacy Policy",
   description: "How Krowned collects, uses, and protects your personal information.",
 };
 

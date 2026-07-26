@@ -6,5 +6,5 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  redirect(`/explore?category=${encodeURIComponent(slug)}`);
+  redirect(`/styles/${encodeURIComponent(slug)}`);
 }

@@ -16,10 +16,25 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
+
 export const metadata: Metadata = {
-  title: "Krowned — Book Braids, Locs & Textured Hair in the DMV",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Krowned — Book Braids, Locs & Textured Hair in the DMV",
+    template: "%s | Krowned",
+  },
   description:
     "Find and book braiders, loc techs, and textured-hair stylists in DC, Maryland, and Northern Virginia.",
+  openGraph: {
+    type: "website",
+    siteName: "Krowned",
+    locale: "en_US",
+    images: [{ url: "/brand/logo-black.png" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

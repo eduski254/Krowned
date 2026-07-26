@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Terms of Service — Krowned",
+  title: "Terms of Service",
   description: "Terms of Service for the Krowned booking marketplace.",
 };
 

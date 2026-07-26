@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Community Guidelines — Krowned",
+  title: "Community Guidelines",
   description: "How we expect everyone on Krowned to treat each other.",
 };
 

@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Mail, MapPin } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description:
+    "Have a question about Krowned? Reach out — we're based in the DC metro area and happy to help.",
+};
 
 export default function ContactPage() {
   return (

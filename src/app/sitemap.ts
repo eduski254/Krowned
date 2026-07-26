@@ -105,10 +105,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Category filter pages on /explore
+  // Category style pages (canonical landing pages)
   const categoryPages: MetadataRoute.Sitemap = categories.map((cat) => ({
-    url: `${SITE_URL}/explore?category=${encodeURIComponent(cat.slug)}`,
-    changeFrequency: "daily" as const,
+    url: `${SITE_URL}/styles/${cat.slug}`,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
+
+  // City landing pages
+  const cityPageSlugs = [
+    "washington-dc",
+    "silver-spring-md",
+    "bowie-md",
+    "hyattsville-md",
+    "largo-md",
+    "bethesda-md",
+    "alexandria-va",
+    "arlington-va",
+    "fairfax-va",
+  ];
+  const cityPages: MetadataRoute.Sitemap = cityPageSlugs.map((slug) => ({
+    url: `${SITE_URL}/explore/${slug}`,
+    changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
@@ -128,5 +146,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...categoryPages, ...businessPages, ...blogPages];
+  return [
+    ...staticPages,
+    ...categoryPages,
+    ...cityPages,
+    ...businessPages,
+    ...blogPages,
+  ];
 }

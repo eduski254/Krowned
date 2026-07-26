@@ -19,10 +19,10 @@ export async function generateMetadata({
     .eq("status", "published")
     .single();
 
-  if (!post) return { title: "Post Not Found | Krowned" };
+  if (!post) return { title: "Post Not Found" };
 
   return {
-    title: `${post.meta_title || post.title} | Krowned Blog`,
+    title: post.meta_title || post.title,
     description: post.meta_description || post.excerpt || undefined,
     openGraph: {
       title: post.meta_title || post.title,

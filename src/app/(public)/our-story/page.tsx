@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Our Story — Krowned",
+  title: "Our Story",
   description:
     "The world was never built for this hair. Krowned is the front door for braiders, loc techs, and textured-hair stylists in the DMV.",
 };
@@ -12,11 +13,7 @@ export default function OurStoryPage() {
     <div>
       {/* Hero — full bleed */}
       <section className="relative flex min-h-[60vh] items-end overflow-hidden sm:min-h-[70vh]">
-        <img
-          src="/brand/bg-hero.webp"
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        <Image src="/brand/bg-hero.webp" alt="" fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
         <div className="relative z-10 px-6 pb-12 sm:px-12 sm:pb-16 lg:px-20">
           <h1 className="max-w-lg font-heading text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
