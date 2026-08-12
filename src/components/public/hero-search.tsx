@@ -125,7 +125,7 @@ export function HeroSearch({
     return (
       <div className="relative w-full max-w-[600px]">
         {/* Search card — dark with purple accents */}
-        <div className="relative z-10 overflow-visible rounded-[20px] border border-[#5e17eb]/25 bg-[#1C1A17]/70 p-2 shadow-[0_24px_50px_rgba(0,0,0,0.35)] sm:p-2.5">
+        <div className="relative z-10 overflow-visible rounded-[20px] border border-white/20 bg-[#1C1A17]/70 p-2 shadow-[0_24px_50px_rgba(0,0,0,0.35)] sm:p-2.5">
           {/* Service field — full width */}
           <div ref={searchRef} className="relative">
             <div className="group flex items-center gap-3 px-3.5 py-3 sm:px-[18px] sm:py-3.5">
@@ -165,7 +165,7 @@ export function HeroSearch({
           </div>
 
           {/* Horizontal divider */}
-          <div className="mx-3.5 h-px bg-[#5e17eb]/15" />
+          <div className="mx-3.5 h-px bg-white/10" />
 
           {/* Location + Date row */}
           <div className="flex flex-col sm:flex-row">
@@ -197,8 +197,8 @@ export function HeroSearch({
             </div>
 
             {/* Vertical divider (desktop) / Horizontal divider (mobile) */}
-            <div className="mx-3.5 h-px bg-[#5e17eb]/15 sm:hidden" />
-            <div className="hidden sm:block w-px my-2.5 bg-[#5e17eb]/15" />
+            <div className="mx-3.5 h-px bg-white/10 sm:hidden" />
+            <div className="hidden sm:block w-px my-2.5 bg-white/10" />
 
             <div ref={whenRef} className="relative flex-1 min-w-0">
               <button
