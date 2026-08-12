@@ -124,12 +124,12 @@ export function HeroSearch({
   if (variant === "card") {
     return (
       <div className="relative w-full max-w-[600px]">
-        {/* Search card — dark with gold accents */}
-        <div className="relative z-10 overflow-visible rounded-[20px] border border-[#D9B36C]/25 bg-[#1C1A17]/70 p-2.5 shadow-[0_24px_50px_rgba(0,0,0,0.35)]">
+        {/* Search card — dark with purple accents */}
+        <div className="relative z-10 overflow-visible rounded-[20px] border border-[#5e17eb]/25 bg-[#1C1A17]/70 p-2 shadow-[0_24px_50px_rgba(0,0,0,0.35)] sm:p-2.5">
           {/* Service field — full width */}
           <div ref={searchRef} className="relative">
-            <div className="group flex items-center gap-3 px-[18px] py-3.5">
-              <Search className="h-[19px] w-[19px] shrink-0 text-[#E4C783]" />
+            <div className="group flex items-center gap-3 px-3.5 py-3 sm:px-[18px] sm:py-3.5">
+              <Search className="h-[18px] w-[18px] shrink-0 text-[#5e17eb] sm:h-[19px] sm:w-[19px]" />
               <input
                 type="text"
                 value={qInput}
@@ -140,7 +140,7 @@ export function HeroSearch({
                 onFocus={() => qInput.length > 0 && setShowSearch(true)}
                 onKeyDown={handleSearchKeyDown}
                 placeholder="Knotless braids, retwist, silk press…"
-                className="w-full min-w-0 bg-transparent text-[15px] text-[#F2E7D3] placeholder:text-[#F2E7D3]/55 outline-none"
+                className="w-full min-w-0 bg-transparent text-sm text-[#F2E7D3] placeholder:text-[#F2E7D3]/55 outline-none sm:text-[15px]"
               />
               {qInput && (
                 <button
@@ -165,13 +165,13 @@ export function HeroSearch({
           </div>
 
           {/* Horizontal divider */}
-          <div className="mx-3.5 h-px bg-[#E4C783]/15" />
+          <div className="mx-3.5 h-px bg-[#5e17eb]/15" />
 
           {/* Location + Date row */}
           <div className="flex flex-col sm:flex-row">
             <div ref={locationRef} className="relative flex-1 min-w-0">
-              <div className="group flex items-center gap-3 px-[18px] py-3.5">
-                <MapPin className="h-[19px] w-[19px] shrink-0 text-[#E4C783]" />
+              <div className="group flex items-center gap-3 px-3.5 py-3 sm:px-[18px] sm:py-3.5">
+                <MapPin className="h-[18px] w-[18px] shrink-0 text-[#5e17eb] sm:h-[19px] sm:w-[19px]" />
                 <input
                   type="text"
                   value={cityInput}
@@ -179,7 +179,7 @@ export function HeroSearch({
                   onFocus={() => setShowLocation(true)}
                   onKeyDown={handleCityKeyDown}
                   placeholder="DMV, city or area"
-                  className="w-full min-w-0 bg-transparent text-[15px] text-[#F2E7D3] placeholder:text-[#F2E7D3]/55 outline-none"
+                  className="w-full min-w-0 bg-transparent text-sm text-[#F2E7D3] placeholder:text-[#F2E7D3]/55 outline-none sm:text-[15px]"
                 />
                 {cityInput && (
                   <button
@@ -197,20 +197,20 @@ export function HeroSearch({
             </div>
 
             {/* Vertical divider (desktop) / Horizontal divider (mobile) */}
-            <div className="mx-3.5 h-px bg-[#E4C783]/15 sm:hidden" />
-            <div className="hidden sm:block w-px my-2.5 bg-[#E4C783]/15" />
+            <div className="mx-3.5 h-px bg-[#5e17eb]/15 sm:hidden" />
+            <div className="hidden sm:block w-px my-2.5 bg-[#5e17eb]/15" />
 
             <div ref={whenRef} className="relative flex-1 min-w-0">
               <button
                 type="button"
                 onClick={() => setShowWhen(!showWhen)}
-                className={`flex w-full items-center gap-3 px-[18px] py-3.5 text-left text-[15px] transition-all ${
+                className={`flex w-full items-center gap-3 px-3.5 py-3 text-left text-sm transition-all sm:px-[18px] sm:py-3.5 sm:text-[15px] ${
                   whenLabel
                     ? "font-medium text-[#F2E7D3]"
                     : "text-[#F2E7D3]/55 hover:text-[#F2E7D3]"
                 }`}
               >
-                <Calendar className="h-[19px] w-[19px] shrink-0 text-[#E4C783]" />
+                <Calendar className="h-[18px] w-[18px] shrink-0 text-[#5e17eb] sm:h-[19px] sm:w-[19px]" />
                 <span className="flex-1 truncate">
                   {whenLabel ?? "Any date"}
                 </span>
@@ -259,9 +259,9 @@ export function HeroSearch({
           <button
             type="button"
             onClick={handleSubmit}
-            className="mt-2 flex w-full items-center justify-center gap-2.5 rounded-[14px] bg-gradient-to-br from-[#E4C783] to-[#C6A15B] px-4 py-4 text-base font-semibold text-[#0C0B0A] transition-all hover:brightness-105 hover:-translate-y-px active:scale-[0.99]"
+            className="mt-2 flex w-full items-center justify-center gap-2.5 rounded-[14px] bg-[#5e17eb] px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#5e17eb]/25 transition-all hover:bg-[#6d2bf5] hover:-translate-y-px active:scale-[0.99] sm:py-4 sm:text-base"
           >
-            <Search className="h-[18px] w-[18px]" />
+            <Search className="h-[17px] w-[17px] sm:h-[18px] sm:w-[18px]" />
             Search stylists
           </button>
         </div>
@@ -277,7 +277,7 @@ export function HeroSearch({
                 setQInput(term);
                 handleSubmitWithQuery(term);
               }}
-              className="shrink-0 rounded-full border border-[#D9B36C]/40 bg-transparent px-4 py-1.5 text-[13px] text-[#F2E7D3] transition-all hover:bg-[#E4C783]/12 hover:border-[#E4C783] active:scale-95"
+              className="shrink-0 rounded-full border border-[#5e17eb]/40 bg-transparent px-3.5 py-1.5 text-xs text-[#F2E7D3] transition-all hover:bg-[#5e17eb]/12 hover:border-[#5e17eb] active:scale-95 sm:px-4 sm:text-[13px]"
             >
               {term}
             </button>
