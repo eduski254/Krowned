@@ -176,48 +176,50 @@ export default async function HomePage() {
 
       {/* Browse by Style */}
       {categories && categories.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-            Browse by Style
-          </h2>
-          <p className="mt-2 text-center text-muted-foreground">
-            Whatever your texture needs, we got you.
-          </p>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {categories
-              .filter((cat) => cat.slug !== "new-category")
-              .map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/styles/${cat.slug}`}
-                  style={{
-                    boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px",
-                  }}
-                  className="group relative flex flex-col items-center justify-center rounded-xl border border-border bg-card p-8 text-center transition-all hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] hover:-translate-y-0.5"
-                >
-                  {cat.icon &&
-                    CATEGORY_ICONS[cat.icon] &&
-                    (() => {
-                      const Icon = CATEGORY_ICONS[cat.icon];
-                      return (
-                        <Icon className="mb-3 h-8 w-8 text-primary" />
-                      );
-                    })()}
-                  <h3 className="font-semibold text-foreground transition-colors group-hover:text-primary">
-                    {cat.name}
-                  </h3>
-                  <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
-                    Explore <ArrowRight className="h-3 w-3" />
-                  </span>
-                </Link>
-              ))}
+        <section className="w-full px-5 py-16 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-7xl">
+            <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
+              Browse by Style
+            </h2>
+            <p className="mt-2 text-center text-muted-foreground">
+              Whatever your texture needs, we got you.
+            </p>
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {categories
+                .filter((cat) => cat.slug !== "new-category")
+                .map((cat) => (
+                  <Link
+                    key={cat.id}
+                    href={`/styles/${cat.slug}`}
+                    style={{
+                      boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px",
+                    }}
+                    className="group relative flex flex-col items-center justify-center rounded-xl border border-border bg-card p-8 text-center transition-all hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] hover:-translate-y-0.5"
+                  >
+                    {cat.icon &&
+                      CATEGORY_ICONS[cat.icon] &&
+                      (() => {
+                        const Icon = CATEGORY_ICONS[cat.icon];
+                        return (
+                          <Icon className="mb-3 h-8 w-8 text-primary" />
+                        );
+                      })()}
+                    <h3 className="font-semibold text-foreground transition-colors group-hover:text-primary">
+                      {cat.name}
+                    </h3>
+                    <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
+                      Explore <ArrowRight className="h-3 w-3" />
+                    </span>
+                  </Link>
+                ))}
+            </div>
           </div>
         </section>
       )}
 
       {/* Why Krowned */}
-      <section className="border-y border-border bg-muted/50">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <section className="w-full border-y border-border bg-muted/50 px-5 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-7xl py-16">
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
             Booking that finally gets your hair.
           </h2>
@@ -283,7 +285,7 @@ export default async function HomePage() {
 
       {/* Featured Stylists */}
       {featuredBusinesses.length > 0 && (
-        <section className="px-4 py-16 sm:px-6 lg:px-8">
+        <section className="w-full px-5 py-16 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-7xl">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               Featured Stylists
@@ -324,8 +326,8 @@ export default async function HomePage() {
 
       {/* Popular Services */}
       {serviceNames.length > 0 && (
-        <section className="border-y border-border bg-muted/30">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <section className="w-full border-y border-border bg-muted/30 px-5 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-7xl py-16">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               Popular Services
             </h2>
@@ -351,80 +353,82 @@ export default async function HomePage() {
       )}
 
       {/* How it works */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-          How It Works
-        </h2>
-        <p className="mt-2 text-center text-muted-foreground">
-          Three steps. No DMs. No drama.
-        </p>
-        <div className="mt-12 grid gap-8 md:grid-cols-3">
-          {[
-            {
-              icon: Search,
-              step: "1",
-              title: "Find your stylist",
-              desc: "Browse braiders, loc techs, and natural-hair pros across the DMV. Filter by style, location, and availability.",
-            },
-            {
-              icon: Calendar,
-              step: "2",
-              title: "Book your seat",
-              desc: "Pick your service, choose a time, lock it in. No DMs. No back-and-forth. Confirmed instantly.",
-            },
-            {
-              icon: CheckCircle,
-              step: "3",
-              title: "Get crowned",
-              desc: "Show up, sit back, leave feeling like royalty. Pay online or in the chair — tip your stylist right from the app.",
-            },
-          ].map((item) => (
-            <div key={item.title} className="text-center">
-              <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
-                <item.icon className="h-7 w-7 text-primary" />
-                <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                  {item.step}
-                </span>
+      <section className="w-full px-5 py-16 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
+            How It Works
+          </h2>
+          <p className="mt-2 text-center text-muted-foreground">
+            Three steps. No DMs. No drama.
+          </p>
+          <div className="mt-12 grid gap-8 md:grid-cols-3">
+            {[
+              {
+                icon: Search,
+                step: "1",
+                title: "Find your stylist",
+                desc: "Browse braiders, loc techs, and natural-hair pros across the DMV. Filter by style, location, and availability.",
+              },
+              {
+                icon: Calendar,
+                step: "2",
+                title: "Book your seat",
+                desc: "Pick your service, choose a time, lock it in. No DMs. No back-and-forth. Confirmed instantly.",
+              },
+              {
+                icon: CheckCircle,
+                step: "3",
+                title: "Get crowned",
+                desc: "Show up, sit back, leave feeling like royalty. Pay online or in the chair — tip your stylist right from the app.",
+              },
+            ].map((item) => (
+              <div key={item.title} className="text-center">
+                <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
+                  <item.icon className="h-7 w-7 text-primary" />
+                  <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                    {item.step}
+                  </span>
+                </div>
+                <h3 className="mt-4 text-lg font-semibold text-foreground">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-foreground">
-                {item.title}
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-        {/* Directory preview */}
-        <div className="mx-auto mt-12 max-w-5xl overflow-hidden rounded-xl border border-border shadow-lg">
-          <div className="flex items-center gap-2 bg-muted/60 px-4 py-2.5">
-            <span className="h-3 w-3 rounded-full bg-red-400/70" />
-            <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
-            <span className="h-3 w-3 rounded-full bg-green-400/70" />
-            <span className="ml-3 flex-1 rounded-md bg-background/60 px-3 py-1 text-xs text-muted-foreground">
-              krowned.app/explore
-            </span>
+            ))}
           </div>
-          <Image
-            src="/brand/directory-preview.webp"
-            alt="Krowned stylist directory — browse business cards with cover photos, ratings, and an interactive map of stylists across the DMV"
-            width={1280}
-            height={800}
-            loading="lazy"
-            className="w-full"
-          />
-        </div>
+          {/* Directory preview */}
+          <div className="mx-auto mt-12 max-w-5xl overflow-hidden rounded-xl border border-border shadow-lg">
+            <div className="flex items-center gap-2 bg-muted/60 px-4 py-2.5">
+              <span className="h-3 w-3 rounded-full bg-red-400/70" />
+              <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
+              <span className="h-3 w-3 rounded-full bg-green-400/70" />
+              <span className="ml-3 flex-1 rounded-md bg-background/60 px-3 py-1 text-xs text-muted-foreground">
+                krowned.app/explore
+              </span>
+            </div>
+            <Image
+              src="/brand/directory-preview.webp"
+              alt="Krowned stylist directory — browse business cards with cover photos, ratings, and an interactive map of stylists across the DMV"
+              width={1280}
+              height={800}
+              loading="lazy"
+              className="w-full"
+            />
+          </div>
 
-        <div className="mt-10 text-center">
-          <Link
-            href="/explore"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-          >
-            Find your stylist <ArrowRight className="h-4 w-4" />
-          </Link>
+          <div className="mt-10 text-center">
+            <Link
+              href="/explore"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+            >
+              Find your stylist <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* CTA band — for stylists */}
-      <section className="relative overflow-hidden px-4 py-16 text-white sm:py-20">
+      <section className="relative w-full overflow-hidden px-5 py-16 text-white sm:px-8 sm:py-20 lg:px-12">
         <Image
           src="/brand/bg-hero.webp"
           alt=""
@@ -490,15 +494,16 @@ export default async function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-          What People Are Saying
-        </h2>
-        <p className="mt-2 text-center text-muted-foreground">
-          Real clients, real stylists, real experiences.
-        </p>
-        <div className="mt-10">
-          <TestimonialsCarousel
+      <section className="w-full px-5 py-16 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
+            What People Are Saying
+          </h2>
+          <p className="mt-2 text-center text-muted-foreground">
+            Real clients, real stylists, real experiences.
+          </p>
+          <div className="mt-10">
+            <TestimonialsCarousel
             testimonials={[
               {
                 name: "Jasmine T.",
@@ -577,13 +582,14 @@ export default async function HomePage() {
               },
             ]}
           />
+          </div>
         </div>
       </section>
 
       {/* From the Blog */}
       {blogPosts.length > 0 && (
-        <section className="border-t border-border bg-muted/30">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <section className="w-full border-t border-border bg-muted/30 px-5 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-7xl py-16">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               From the Blog
             </h2>
@@ -638,8 +644,8 @@ export default async function HomePage() {
       )}
 
       {/* Final CTA — for clients */}
-      <section className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:px-8">
-        <div className="rounded-2xl border border-border bg-card p-8 sm:p-12">
+      <section className="w-full px-5 py-16 text-center sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-4xl rounded-2xl border border-border bg-card p-8 sm:p-12">
           <Sparkles className="mx-auto h-10 w-10 text-primary" />
           <h2 className="mt-4 text-2xl font-bold text-foreground sm:text-3xl">
             Ready to get crowned?
