@@ -112,81 +112,65 @@ export default async function HomePage() {
       <JsonLd data={webSiteSchema()} />
       <PublicHeader />
 
-      {/* Hero */}
-      <section className="relative flex min-h-[85dvh] items-center justify-center overflow-hidden text-center sm:min-h-[100dvh]">
-        <Image
-          src={HERO_BG_IMAGE}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-top"
-        />
-        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
-        <div className="absolute inset-0 bg-black/20" />
+      {/* Hero — Split Frame */}
+      <section className="flex min-h-[calc(100svh-57px)] flex-col lg:flex-row bg-[#0C0B0A]">
+        {/* Photo panel — top on mobile/tablet, right on desktop */}
+        <div className="relative order-1 h-[clamp(240px,35svh,380px)] overflow-hidden lg:order-2 lg:h-auto lg:flex-[1_1_44%]">
+          <Image
+            src={HERO_BG_IMAGE}
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 44vw"
+            className="object-cover object-[center_30%]"
+          />
+          {/* Gradient overlay: bottom-fade on mobile, left-fade on desktop */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0C0B0A]/55 via-transparent to-[#0C0B0A]/90 lg:bg-[linear-gradient(90deg,rgba(12,11,10,0.90)_0%,rgba(12,11,10,0.10)_22%,transparent_45%)]" />
 
-        <div className="relative z-10 mx-auto w-full max-w-3xl px-4 py-8 sm:py-12 lg:py-14">
-          <h1 className="font-heading text-3xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
-            Your crown, booked.
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-base text-white/90 drop-shadow-sm sm:mt-6 sm:text-lg">
-            Every stylist specializes in textured hair. Find yours, see real
-            openings, and book in seconds — no DMs, no ghosting.
-          </p>
-
-          <div className="mt-8 sm:mt-10">
-            <HeroSearch
-              businesses={searchBusinesses}
-              serviceNames={serviceNames}
-            />
-          </div>
-
-          {/* Trust badges under search */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/70 sm:text-sm">
-            <span className="flex items-center gap-1.5">
-              <BadgeCheck className="h-4 w-4 text-primary" /> ID-verified
-              stylists
+          {/* Glassmorphic trust bar */}
+          <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-center gap-5 rounded-2xl border border-[#D9B36C]/25 bg-[#0C0B0A]/60 px-5 py-3 backdrop-blur-md max-sm:flex-nowrap max-sm:justify-start max-sm:gap-3.5 max-sm:overflow-x-auto max-sm:scrollbar-hide max-sm:rounded-xl max-sm:px-3 max-sm:py-2.5 max-sm:text-xs lg:bottom-9 lg:left-9 lg:right-9 lg:gap-6 lg:py-4">
+            <span className="flex shrink-0 items-center gap-2 text-[13px] text-[#F2E7D3]/85">
+              <BadgeCheck className="h-4 w-4 text-[#E4C783]" /> ID-verified
             </span>
-            <span className="flex items-center gap-1.5">
-              <Shield className="h-4 w-4 text-primary" /> Secure card payments
+            <span className="flex shrink-0 items-center gap-2 text-[13px] text-[#F2E7D3]/85">
+              <Shield className="h-4 w-4 text-[#E4C783]" /> Secure payments
             </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4 text-primary" /> Instant confirmation
+            <span className="flex shrink-0 items-center gap-2 text-[13px] text-[#F2E7D3]/85">
+              <Clock className="h-4 w-4 text-[#E4C783]" /> Instant confirm
             </span>
           </div>
         </div>
-      </section>
 
-      {/* Trust signals bar */}
-      <section className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-8 px-4 py-8 sm:gap-16 sm:py-10">
-          {[
-            {
-              label: "Every stylist ID-verified",
-              icon: Fingerprint,
-            },
-            {
-              label: "Textured-hair specialists only",
-              icon: Sparkles,
-            },
-            {
-              label: "Real reviews from real clients",
-              icon: Star,
-            },
-            {
-              label: "Serving DC \u00B7 MD \u00B7 VA",
-              icon: MapPin,
-            },
-          ].map((item) => (
-            <div key={item.label} className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <item.icon className="h-5 w-5 text-primary" />
-              </div>
-              <p className="text-sm font-medium text-foreground">
-                {item.label}
-              </p>
+        {/* Editorial panel — below photo on mobile/tablet, left on desktop */}
+        <div className="relative order-2 flex flex-1 flex-col justify-center px-5 py-8 sm:px-10 lg:order-1 lg:flex-[0_0_56%] lg:px-[clamp(28px,4.2vw,60px)] lg:py-[clamp(32px,3.6vw,56px)]">
+          {/* Radial gold glow */}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(217,179,108,0.14),transparent_55%)]" />
+
+          <div className="relative z-10 max-w-[600px]">
+            {/* Eyebrow badge */}
+            <span className="mb-7 inline-flex items-center rounded-full bg-[#D9B36C] px-4 py-1.5 text-xs font-medium uppercase tracking-[0.22em] text-[#0C0B0A] max-sm:mb-5 max-sm:text-[11px] max-sm:tracking-[0.18em]">
+              DMV textured-hair pros
+            </span>
+
+            <h1 className="font-heading text-[clamp(40px,6.1vw,88px)] font-extrabold leading-[0.96] tracking-tight text-[#FBF6EC]">
+              Your crown,
+              <br />
+              booked.
+            </h1>
+
+            <p className="mt-7 max-w-[520px] text-[clamp(16.5px,1.4vw,20px)] font-light leading-relaxed text-[#F2E7D3]/80 max-sm:mt-5">
+              Every stylist specializes in textured hair. Find yours, see real
+              openings, and book in seconds — no DMs, no ghosting.
+            </p>
+
+            <div className="mt-9 max-sm:mt-7">
+              <HeroSearch
+                businesses={searchBusinesses}
+                serviceNames={serviceNames}
+                variant="card"
+              />
             </div>
-          ))}
+          </div>
         </div>
       </section>
 

@@ -21,9 +21,11 @@ import {
 export function HeroSearch({
   businesses,
   serviceNames,
+  variant = "pill",
 }: {
   businesses: SearchBusiness[];
   serviceNames: ServiceSuggestion[];
+  variant?: "pill" | "card";
 }) {
   const router = useRouter();
 
@@ -117,6 +119,172 @@ export function HeroSearch({
     if (whenDate) params.set("date", whenDate);
     if (whenTime !== "anytime") params.set("time", whenTime);
     router.push(`/explore?${params}`);
+  }
+
+  if (variant === "card") {
+    return (
+      <div className="relative w-full max-w-[600px]">
+        {/* Search card — dark with gold accents */}
+        <div className="relative z-10 overflow-visible rounded-[20px] border border-[#D9B36C]/25 bg-[#1C1A17]/70 p-2.5 shadow-[0_24px_50px_rgba(0,0,0,0.35)]">
+          {/* Service field — full width */}
+          <div ref={searchRef} className="relative">
+            <div className="group flex items-center gap-3 px-[18px] py-3.5">
+              <Search className="h-[19px] w-[19px] shrink-0 text-[#E4C783]" />
+              <input
+                type="text"
+                value={qInput}
+                onChange={(e) => {
+                  setQInput(e.target.value);
+                  setShowSearch(e.target.value.length > 0);
+                }}
+                onFocus={() => qInput.length > 0 && setShowSearch(true)}
+                onKeyDown={handleSearchKeyDown}
+                placeholder="Knotless braids, retwist, silk press…"
+                className="w-full min-w-0 bg-transparent text-[15px] text-[#F2E7D3] placeholder:text-[#F2E7D3]/55 outline-none"
+              />
+              {qInput && (
+                <button
+                  type="button"
+                  onClick={() => { setQInput(""); setShowSearch(false); }}
+                  className="shrink-0 rounded-full p-0.5 text-[#F2E7D3]/50 hover:text-[#F2E7D3] transition-colors"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            {showSearch && (
+              <SearchDropdown
+                query={qInput}
+                businesses={businesses}
+                serviceNames={serviceNames}
+                onSelectService={handleSearchSelect}
+                onSelectBusiness={handleBusinessSelect}
+                variant="glass"
+              />
+            )}
+          </div>
+
+          {/* Horizontal divider */}
+          <div className="mx-3.5 h-px bg-[#E4C783]/15" />
+
+          {/* Location + Date row */}
+          <div className="flex flex-col sm:flex-row">
+            <div ref={locationRef} className="relative flex-1 min-w-0">
+              <div className="group flex items-center gap-3 px-[18px] py-3.5">
+                <MapPin className="h-[19px] w-[19px] shrink-0 text-[#E4C783]" />
+                <input
+                  type="text"
+                  value={cityInput}
+                  onChange={(e) => setCityInput(e.target.value)}
+                  onFocus={() => setShowLocation(true)}
+                  onKeyDown={handleCityKeyDown}
+                  placeholder="DMV, city or area"
+                  className="w-full min-w-0 bg-transparent text-[15px] text-[#F2E7D3] placeholder:text-[#F2E7D3]/55 outline-none"
+                />
+                {cityInput && (
+                  <button
+                    type="button"
+                    onClick={() => { setCityInput(""); setShowLocation(false); }}
+                    className="shrink-0 rounded-full p-0.5 text-[#F2E7D3]/50 hover:text-[#F2E7D3] transition-colors"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              {showLocation && (
+                <LocationDropdown onSelectLocation={handleLocationSelect} variant="glass" />
+              )}
+            </div>
+
+            {/* Vertical divider (desktop) / Horizontal divider (mobile) */}
+            <div className="mx-3.5 h-px bg-[#E4C783]/15 sm:hidden" />
+            <div className="hidden sm:block w-px my-2.5 bg-[#E4C783]/15" />
+
+            <div ref={whenRef} className="relative flex-1 min-w-0">
+              <button
+                type="button"
+                onClick={() => setShowWhen(!showWhen)}
+                className={`flex w-full items-center gap-3 px-[18px] py-3.5 text-left text-[15px] transition-all ${
+                  whenLabel
+                    ? "font-medium text-[#F2E7D3]"
+                    : "text-[#F2E7D3]/55 hover:text-[#F2E7D3]"
+                }`}
+              >
+                <Calendar className="h-[19px] w-[19px] shrink-0 text-[#E4C783]" />
+                <span className="flex-1 truncate">
+                  {whenLabel ?? "Any date"}
+                </span>
+                {whenLabel && (
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setWhenDate(null);
+                      setWhenTime("anytime");
+                      setShowWhen(false);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.stopPropagation();
+                        setWhenDate(null);
+                        setWhenTime("anytime");
+                        setShowWhen(false);
+                      }
+                    }}
+                    className="shrink-0 rounded-full p-0.5 text-[#F2E7D3]/50 hover:text-[#F2E7D3] transition-colors cursor-pointer"
+                  >
+                    <X className="h-3 w-3" />
+                  </span>
+                )}
+              </button>
+              {showWhen && (
+                <WhenDropdown
+                  selectedDate={whenDate}
+                  selectedTime={whenTime}
+                  onDateChange={(d) => setWhenDate(d)}
+                  onTimeChange={(t) => setWhenTime(t)}
+                  onClear={() => {
+                    setWhenDate(null);
+                    setWhenTime("anytime");
+                    setShowWhen(false);
+                  }}
+                  variant="glass"
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Full-width search button */}
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="mt-2 flex w-full items-center justify-center gap-2.5 rounded-[14px] bg-gradient-to-br from-[#E4C783] to-[#C6A15B] px-4 py-4 text-base font-semibold text-[#0C0B0A] transition-all hover:brightness-105 hover:-translate-y-px active:scale-[0.99]"
+          >
+            <Search className="h-[18px] w-[18px]" />
+            Search stylists
+          </button>
+        </div>
+
+        {/* Popular chips */}
+        <div className="relative z-0 mt-6 flex flex-wrap items-center gap-2.5 sm:flex-wrap max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:scrollbar-hide max-sm:pb-1">
+          <span className="shrink-0 text-[13px] text-[#F2E7D3]/55">Popular</span>
+          {["Knotless braids", "Locs", "Silk press", "Sew-in", "Retwist"].map((term) => (
+            <button
+              key={term}
+              type="button"
+              onClick={() => {
+                setQInput(term);
+                handleSubmitWithQuery(term);
+              }}
+              className="shrink-0 rounded-full border border-[#D9B36C]/40 bg-transparent px-4 py-1.5 text-[13px] text-[#F2E7D3] transition-all hover:bg-[#E4C783]/12 hover:border-[#E4C783] active:scale-95"
+            >
+              {term}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
