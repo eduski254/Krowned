@@ -148,7 +148,7 @@ export default async function HomePage() {
 
           <div className="relative z-10 mx-auto max-w-[600px] lg:mx-0">
             {/* Eyebrow — no background, just accent text */}
-            <span className="mb-5 inline-flex items-center text-xs font-medium uppercase tracking-[0.22em] text-white/70 sm:mb-6 sm:text-sm lg:mb-7">
+            <span className="mb-7 inline-flex items-center text-xs font-medium uppercase tracking-[0.22em] text-white sm:mb-8 sm:text-sm lg:mb-9">
               DMV textured-hair pros
             </span>
 
