@@ -128,15 +128,15 @@ export default async function HomePage() {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0C0B0A]/55 via-transparent to-[#0C0B0A]/90 lg:bg-[linear-gradient(90deg,rgba(12,11,10,0.90)_0%,rgba(12,11,10,0.10)_22%,transparent_45%)]" />
 
           {/* Glassmorphic trust bar */}
-          <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-center gap-4 rounded-xl border border-[#5e17eb]/25 bg-[#0C0B0A]/60 px-4 py-2.5 backdrop-blur-md sm:bottom-5 sm:left-5 sm:right-5 sm:gap-5 sm:rounded-2xl sm:px-5 sm:py-3 lg:bottom-9 lg:left-9 lg:right-9 lg:gap-6 lg:py-4 max-sm:flex-nowrap max-sm:justify-start max-sm:overflow-x-auto max-sm:scrollbar-hide">
+          <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-center gap-4 rounded-xl border border-white/20 bg-[#0C0B0A]/60 px-4 py-2.5 backdrop-blur-md sm:bottom-5 sm:left-5 sm:right-5 sm:gap-5 sm:rounded-2xl sm:px-5 sm:py-3 lg:bottom-9 lg:left-9 lg:right-9 lg:gap-6 lg:py-4 max-sm:flex-nowrap max-sm:justify-start max-sm:overflow-x-auto max-sm:scrollbar-hide">
             <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
-              <BadgeCheck className="h-3.5 w-3.5 text-[#5e17eb] sm:h-4 sm:w-4" /> ID-verified
+              <BadgeCheck className="h-3.5 w-3.5 text-white/70 sm:h-4 sm:w-4" /> ID-verified
             </span>
             <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
-              <Shield className="h-3.5 w-3.5 text-[#5e17eb] sm:h-4 sm:w-4" /> Secure payments
+              <Shield className="h-3.5 w-3.5 text-white/70 sm:h-4 sm:w-4" /> Secure payments
             </span>
             <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
-              <Clock className="h-3.5 w-3.5 text-[#5e17eb] sm:h-4 sm:w-4" /> Instant confirm
+              <Clock className="h-3.5 w-3.5 text-white/70 sm:h-4 sm:w-4" /> Instant confirm
             </span>
           </div>
         </div>
@@ -148,7 +148,7 @@ export default async function HomePage() {
 
           <div className="relative z-10 mx-auto max-w-[600px] lg:mx-0">
             {/* Eyebrow — no background, just accent text */}
-            <span className="mb-5 inline-flex items-center text-xs font-medium uppercase tracking-[0.22em] text-[#5e17eb] sm:mb-6 sm:text-sm lg:mb-7">
+            <span className="mb-5 inline-flex items-center text-xs font-medium uppercase tracking-[0.22em] text-white/70 sm:mb-6 sm:text-sm lg:mb-7">
               DMV textured-hair pros
             </span>
 
