@@ -177,7 +177,7 @@ export default async function HomePage() {
       {/* Browse by Style */}
       {categories && categories.length > 0 && (
         <section className="w-full border-b border-border bg-muted/30 px-5 py-16 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-7xl">
+          <div>
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               Browse by Style
             </h2>
@@ -219,7 +219,7 @@ export default async function HomePage() {
 
       {/* Why Krowned */}
       <section className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-7xl">
+        <div>
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
             Booking that finally gets your hair.
           </h2>
@@ -286,7 +286,7 @@ export default async function HomePage() {
       {/* Featured Stylists */}
       {featuredBusinesses.length > 0 && (
         <section className="w-full border-b border-border bg-muted/30 px-5 py-16 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-7xl">
+          <div>
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               Featured Stylists
             </h2>
@@ -327,7 +327,7 @@ export default async function HomePage() {
       {/* Popular Services */}
       {serviceNames.length > 0 && (
         <section className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-7xl">
+          <div>
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               Popular Services
             </h2>
@@ -354,7 +354,7 @@ export default async function HomePage() {
 
       {/* How it works */}
       <section className="w-full border-b border-border bg-muted/30 px-5 py-16 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-7xl">
+        <div>
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
             How It Works
           </h2>
@@ -438,7 +438,7 @@ export default async function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-hero opacity-60" />
         <div className="absolute inset-0 bg-black/20" />
-        <div className="relative z-10 mx-auto max-w-5xl">
+        <div className="relative z-10">
           <div className="text-center">
             <h2 className="text-2xl font-bold sm:text-3xl">
               You braid, loc, or style textured hair?
@@ -495,7 +495,7 @@ export default async function HomePage() {
 
       {/* Testimonials */}
       <section className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-7xl">
+        <div>
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
             What People Are Saying
           </h2>
@@ -589,7 +589,7 @@ export default async function HomePage() {
       {/* From the Blog */}
       {blogPosts.length > 0 && (
         <section className="w-full border-b border-border bg-muted/30 px-5 py-16 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-7xl">
+          <div>
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               From the Blog
             </h2>

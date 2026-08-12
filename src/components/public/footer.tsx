@@ -32,7 +32,7 @@ function TikTokIcon({ className }: { className?: string }) {
 export function Footer() {
   return (
     <footer className="w-full border-t border-border bg-card px-5 sm:px-8 lg:px-12">
-      <div className="mx-auto max-w-7xl py-12">
+      <div className="py-12">
         {/* Main grid */}
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
