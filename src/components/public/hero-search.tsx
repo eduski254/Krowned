@@ -129,7 +129,7 @@ export function HeroSearch({
           {/* Service field — full width */}
           <div ref={searchRef} className="relative">
             <div className="group flex items-center gap-3 px-3.5 py-3 sm:px-[18px] sm:py-3.5">
-              <Search className="h-[18px] w-[18px] shrink-0 text-[#5e17eb] sm:h-[19px] sm:w-[19px]" />
+              <Search className="h-[18px] w-[18px] shrink-0 text-white/70 sm:h-[19px] sm:w-[19px]" />
               <input
                 type="text"
                 value={qInput}
@@ -171,7 +171,7 @@ export function HeroSearch({
           <div className="flex flex-col sm:flex-row">
             <div ref={locationRef} className="relative flex-1 min-w-0">
               <div className="group flex items-center gap-3 px-3.5 py-3 sm:px-[18px] sm:py-3.5">
-                <MapPin className="h-[18px] w-[18px] shrink-0 text-[#5e17eb] sm:h-[19px] sm:w-[19px]" />
+                <MapPin className="h-[18px] w-[18px] shrink-0 text-white/70 sm:h-[19px] sm:w-[19px]" />
                 <input
                   type="text"
                   value={cityInput}
@@ -210,7 +210,7 @@ export function HeroSearch({
                     : "text-[#F2E7D3]/55 hover:text-[#F2E7D3]"
                 }`}
               >
-                <Calendar className="h-[18px] w-[18px] shrink-0 text-[#5e17eb] sm:h-[19px] sm:w-[19px]" />
+                <Calendar className="h-[18px] w-[18px] shrink-0 text-white/70 sm:h-[19px] sm:w-[19px]" />
                 <span className="flex-1 truncate">
                   {whenLabel ?? "Any date"}
                 </span>
