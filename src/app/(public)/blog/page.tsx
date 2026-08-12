@@ -39,7 +39,7 @@ export default async function BlogPage() {
   const allTags = Array.from(new Set(serialized.flatMap((p) => p.tags))).sort();
 
   return (
-    <div className="w-full px-5 py-12 sm:px-8 lg:px-12">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-10 text-center">
         <h1 className="text-4xl font-bold font-heading text-foreground sm:text-5xl">

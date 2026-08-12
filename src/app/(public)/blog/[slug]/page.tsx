@@ -126,7 +126,7 @@ export default async function BlogPostPage({
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
             {/* Title overlay on the hero */}
-            <div className="absolute inset-x-0 bottom-0 px-5 pb-8 sm:px-8 sm:pb-10 lg:px-12">
+            <div className="absolute inset-x-0 bottom-0 mx-auto max-w-4xl px-4 pb-8 sm:px-6 sm:pb-10 lg:px-8">
               {/* Tags */}
               {(post.tags as string[])?.length > 0 && (
                 <div className="mb-3 flex flex-wrap gap-2">
@@ -170,7 +170,7 @@ export default async function BlogPostPage({
         </div>
       ) : (
         /* No cover image fallback */
-        <div className="w-full px-5 pt-8 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-4xl px-4 pt-8 sm:px-6 lg:px-8">
           <Link
             href="/blog"
             className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -226,7 +226,7 @@ export default async function BlogPostPage({
       )}
 
       {/* Article body */}
-      <div className="w-full px-5 sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         {/* Author bar (shown below hero when cover exists) */}
         {post.cover_image_url && (authorBio || true) && (
           <div className="mt-8 flex items-center gap-3 border-b border-border pb-6">
