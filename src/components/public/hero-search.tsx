@@ -124,12 +124,12 @@ export function HeroSearch({
   if (variant === "card") {
     return (
       <div className="relative w-full max-w-[600px]">
-        {/* Search card — dark with purple accents */}
-        <div className="relative z-10 overflow-visible rounded-[20px] border border-white/20 bg-[#1C1A17]/70 p-2 shadow-[0_24px_50px_rgba(0,0,0,0.35)] sm:p-2.5">
+        {/* Search card — dark with gold accents */}
+        <div className="relative z-10 overflow-visible rounded-[20px] border border-[#D9B36C]/25 bg-[#1C1A17]/70 p-2 shadow-[0_24px_50px_rgba(0,0,0,0.35)] sm:p-2.5">
           {/* Service field — full width */}
           <div ref={searchRef} className="relative">
             <div className="group flex items-center gap-3 px-3.5 py-3 sm:px-[18px] sm:py-3.5">
-              <Search className="h-[18px] w-[18px] shrink-0 text-white/70 sm:h-[19px] sm:w-[19px]" />
+              <Search className="h-[18px] w-[18px] shrink-0 text-[#E4C783] sm:h-[19px] sm:w-[19px]" />
               <input
                 type="text"
                 value={qInput}
@@ -165,13 +165,13 @@ export function HeroSearch({
           </div>
 
           {/* Horizontal divider */}
-          <div className="mx-3.5 h-px bg-white/10" />
+          <div className="mx-3.5 h-px bg-[#E4C783]/15" />
 
           {/* Location + Date row */}
           <div className="flex flex-col sm:flex-row">
             <div ref={locationRef} className="relative flex-1 min-w-0">
               <div className="group flex items-center gap-3 px-3.5 py-3 sm:px-[18px] sm:py-3.5">
-                <MapPin className="h-[18px] w-[18px] shrink-0 text-white/70 sm:h-[19px] sm:w-[19px]" />
+                <MapPin className="h-[18px] w-[18px] shrink-0 text-[#E4C783] sm:h-[19px] sm:w-[19px]" />
                 <input
                   type="text"
                   value={cityInput}
@@ -197,8 +197,8 @@ export function HeroSearch({
             </div>
 
             {/* Vertical divider (desktop) / Horizontal divider (mobile) */}
-            <div className="mx-3.5 h-px bg-white/10 sm:hidden" />
-            <div className="hidden sm:block w-px my-2.5 bg-white/10" />
+            <div className="mx-3.5 h-px bg-[#E4C783]/15 sm:hidden" />
+            <div className="hidden sm:block w-px my-2.5 bg-[#E4C783]/15" />
 
             <div ref={whenRef} className="relative flex-1 min-w-0">
               <button
@@ -210,7 +210,7 @@ export function HeroSearch({
                     : "text-[#F2E7D3]/55 hover:text-[#F2E7D3]"
                 }`}
               >
-                <Calendar className="h-[18px] w-[18px] shrink-0 text-white/70 sm:h-[19px] sm:w-[19px]" />
+                <Calendar className="h-[18px] w-[18px] shrink-0 text-[#E4C783] sm:h-[19px] sm:w-[19px]" />
                 <span className="flex-1 truncate">
                   {whenLabel ?? "Any date"}
                 </span>
@@ -259,7 +259,7 @@ export function HeroSearch({
           <button
             type="button"
             onClick={handleSubmit}
-            className="mt-2 flex w-full items-center justify-center gap-2.5 rounded-[14px] bg-[#5e17eb] px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#5e17eb]/25 transition-all hover:bg-[#6d2bf5] hover:-translate-y-px active:scale-[0.99] sm:py-4 sm:text-base"
+            className="mt-2 flex w-full items-center justify-center gap-2.5 rounded-[14px] bg-gradient-to-br from-[#E4C783] to-[#C6A15B] px-4 py-3.5 text-sm font-semibold text-[#0C0B0A] shadow-lg shadow-[#D9B36C]/25 transition-all hover:from-[#EDD49A] hover:to-[#D9B36C] hover:-translate-y-px active:scale-[0.99] sm:py-4 sm:text-base"
           >
             <Search className="h-[17px] w-[17px] sm:h-[18px] sm:w-[18px]" />
             Search stylists
@@ -277,7 +277,7 @@ export function HeroSearch({
                 setQInput(term);
                 handleSubmitWithQuery(term);
               }}
-              className="shrink-0 rounded-full border border-[#5e17eb]/40 bg-transparent px-3.5 py-1.5 text-xs text-[#F2E7D3] transition-all hover:bg-[#5e17eb]/12 hover:border-[#5e17eb] active:scale-95 sm:px-4 sm:text-[13px]"
+              className="shrink-0 rounded-full border border-[#D9B36C]/40 bg-transparent px-3.5 py-1.5 text-xs text-[#F2E7D3] transition-all hover:bg-[#D9B36C]/12 hover:border-[#D9B36C] active:scale-95 sm:px-4 sm:text-[13px]"
             >
               {term}
             </button>
