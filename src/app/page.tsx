@@ -176,7 +176,7 @@ export default async function HomePage() {
 
       {/* Browse by Style */}
       {categories && categories.length > 0 && (
-        <section className="w-full px-5 py-16 sm:px-8 lg:px-12">
+        <section className="w-full border-b border-border bg-muted/30 px-5 py-16 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-7xl">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               Browse by Style
@@ -218,8 +218,8 @@ export default async function HomePage() {
       )}
 
       {/* Why Krowned */}
-      <section className="w-full border-y border-border bg-muted/50 px-5 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-7xl py-16">
+      <section className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
             Booking that finally gets your hair.
           </h2>
@@ -285,7 +285,7 @@ export default async function HomePage() {
 
       {/* Featured Stylists */}
       {featuredBusinesses.length > 0 && (
-        <section className="w-full px-5 py-16 sm:px-8 lg:px-12">
+        <section className="w-full border-b border-border bg-muted/30 px-5 py-16 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-7xl">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               Featured Stylists
@@ -326,8 +326,8 @@ export default async function HomePage() {
 
       {/* Popular Services */}
       {serviceNames.length > 0 && (
-        <section className="w-full border-y border-border bg-muted/30 px-5 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-7xl py-16">
+        <section className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-7xl">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               Popular Services
             </h2>
@@ -353,7 +353,7 @@ export default async function HomePage() {
       )}
 
       {/* How it works */}
-      <section className="w-full px-5 py-16 sm:px-8 lg:px-12">
+      <section className="w-full border-b border-border bg-muted/30 px-5 py-16 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
             How It Works
@@ -494,7 +494,7 @@ export default async function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="w-full px-5 py-16 sm:px-8 lg:px-12">
+      <section className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
             What People Are Saying
@@ -588,8 +588,8 @@ export default async function HomePage() {
 
       {/* From the Blog */}
       {blogPosts.length > 0 && (
-        <section className="w-full border-t border-border bg-muted/30 px-5 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-7xl py-16">
+        <section className="w-full border-b border-border bg-muted/30 px-5 py-16 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-7xl">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
               From the Blog
             </h2>
