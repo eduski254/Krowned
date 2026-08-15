@@ -144,7 +144,7 @@ export default async function HomePage() {
 
               <div className="font-heading text-[clamp(36px,8vw,52px)] font-extrabold leading-[1.05] tracking-tight text-[#FBF6EC] sm:text-[clamp(44px,6.5vw,64px)] lg:text-[clamp(52px,5.5vw,88px)]" role="heading" aria-level={1}>
                 <span className="block">Book your next</span>
-                <span className="block h-[1.1em] overflow-hidden whitespace-nowrap text-[0.85em]">
+                <span className="block h-[1.2em] overflow-hidden whitespace-nowrap text-[0.7em] sm:text-[0.8em] lg:text-[0.85em]">
                   <RotatingService className="text-[#E4C783]" />
                 </span>
               </div>
