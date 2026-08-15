@@ -142,12 +142,12 @@ export default async function HomePage() {
                 DMV textured-hair pros
               </span>
 
-              <h1 className="font-heading text-[clamp(36px,8vw,52px)] font-extrabold leading-[1.05] tracking-tight text-[#FBF6EC] sm:text-[clamp(44px,6.5vw,64px)] lg:text-[clamp(52px,5.5vw,88px)]">
+              <div className="font-heading text-[clamp(36px,8vw,52px)] font-extrabold leading-[1.05] tracking-tight text-[#FBF6EC] sm:text-[clamp(44px,6.5vw,64px)] lg:text-[clamp(52px,5.5vw,88px)]" role="heading" aria-level={1}>
                 <span className="block">Book your next</span>
-                <span className="block min-h-[1.1em]">
+                <span className="block h-[1.1em] overflow-hidden whitespace-nowrap">
                   <RotatingService className="text-[#E4C783]" />
                 </span>
-              </h1>
+              </div>
 
               <p className="mt-5 max-w-[520px] text-[15px] font-light leading-relaxed text-[#F2E7D3]/80 sm:mt-6 sm:text-[17px] lg:mt-7 lg:text-[clamp(17px,1.4vw,20px)]">
                 Every stylist specializes in textured hair. Find yours, see real

@@ -36,7 +36,6 @@ export function RotatingService({ className }: { className?: string }) {
         TYPE_SPEED,
       );
     } else {
-      // Done typing — pause then delete
       timeoutRef.current = setTimeout(() => deleteWord(word, word.length), PAUSE_AFTER_TYPE);
     }
   }, []);
@@ -49,7 +48,6 @@ export function RotatingService({ className }: { className?: string }) {
         DELETE_SPEED,
       );
     } else {
-      // Done deleting — move to next word
       indexRef.current = (indexRef.current + 1) % SERVICES.length;
       timeoutRef.current = setTimeout(
         () => typeWord(SERVICES[indexRef.current], 0),
@@ -72,17 +70,13 @@ export function RotatingService({ className }: { className?: string }) {
   }, []);
 
   return (
-    <span className={`inline-flex items-baseline ${className ?? ""}`}>
-      <span className="whitespace-nowrap">{displayed}</span>
+    <span className={className ?? ""}>
+      {displayed}
       <span
-        className={`ml-[2px] inline-block h-[0.85em] w-[3px] self-center rounded-full bg-current transition-opacity duration-100 ${
+        className={`ml-[2px] inline-block h-[0.75em] w-[3px] translate-y-[0.05em] rounded-full bg-current ${
           showCursor ? "opacity-100" : "opacity-0"
         }`}
       />
-      {/* Invisible longest word to reserve space and prevent layout shift */}
-      <span className="invisible absolute whitespace-nowrap" aria-hidden="true">
-        Two-Strand Twists.
-      </span>
     </span>
   );
 }
