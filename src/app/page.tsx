@@ -179,6 +179,146 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* CTA1 — Client Section */}
+      <section className="w-full bg-[#FBF6EC] dark:bg-[#141210]">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
+          {/* Text — left */}
+          <div>
+            <h2 className="font-heading text-3xl font-bold leading-tight tracking-tight text-[#1A1816] dark:text-[#FBF6EC] sm:text-4xl lg:text-[clamp(36px,3.2vw,48px)]">
+              Find your stylist.<br />Book your crown.
+            </h2>
+            <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-[#4A4540] dark:text-[#C8BFAD] sm:text-base lg:text-[17px]">
+              Stop scrolling through Instagram and waiting for a reply. Krowned
+              helps you discover trusted stylists who specialize in textured
+              hair, see their work, check real availability, and book your
+              appointment in seconds.
+            </p>
+
+            <div className="mt-8 space-y-5">
+              {[
+                {
+                  title: "Find your specialty",
+                  desc: "Braids, locs, fades, silk presses, twists, and more.",
+                },
+                {
+                  title: "See their work",
+                  desc: "Explore styles, profiles, and verified reviews before you book.",
+                },
+                {
+                  title: "Book with confidence",
+                  desc: "Real availability means no more \"Are you free this weekend?\" DMs.",
+                },
+              ].map((item) => (
+                <div key={item.title} className="flex gap-3">
+                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#D9B36C]/20">
+                    <CheckCircle className="h-3.5 w-3.5 text-[#B8943F]" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[#1A1816] dark:text-[#FBF6EC]">
+                      {item.title}
+                    </p>
+                    <p className="mt-0.5 text-sm text-[#6B6560] dark:text-[#A89E8E]">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-9">
+              <Link
+                href="/explore"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                Find a stylist <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Image — right */}
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl lg:rounded-3xl">
+            <Image
+              src="/brand/cta-client.jpeg"
+              alt="Client getting her textured hair styled at a Krowned salon"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              loading="lazy"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA2 — Stylist Section */}
+      <section className="w-full bg-[#F5EFE3] dark:bg-[#11100E]">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
+          {/* Image — left (on desktop, stacks below text on mobile via order) */}
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl lg:rounded-3xl order-2 lg:order-1">
+            <Image
+              src="/brand/cta-stylist.jpeg"
+              alt="Stylist managing her bookings on a tablet at a Krowned salon"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              loading="lazy"
+              className="object-cover"
+            />
+          </div>
+
+          {/* Text — right */}
+          <div className="order-1 lg:order-2">
+            <h2 className="font-heading text-3xl font-bold leading-tight tracking-tight text-[#1A1816] dark:text-[#FBF6EC] sm:text-4xl lg:text-[clamp(36px,3.2vw,48px)]">
+              Turn your talent into<br />a booked business.
+            </h2>
+            <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-[#4A4540] dark:text-[#C8BFAD] sm:text-base lg:text-[17px]">
+              Krowned puts your work in front of people actively looking for
+              textured-hair specialists. Showcase your craft, control your
+              availability, manage your bookings, and build a reputation clients
+              can trust — all in one place.
+            </p>
+
+            <div className="mt-8 space-y-5">
+              {[
+                {
+                  title: "Get discovered",
+                  desc: "Put your work in front of clients searching for what you do best.",
+                },
+                {
+                  title: "Own your schedule",
+                  desc: "Set your availability and let clients book when it works for you.",
+                },
+                {
+                  title: "Build your reputation",
+                  desc: "Grow your profile with verified reviews and real client experiences.",
+                },
+              ].map((item) => (
+                <div key={item.title} className="flex gap-3">
+                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#D9B36C]/20">
+                    <CheckCircle className="h-3.5 w-3.5 text-[#B8943F]" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[#1A1816] dark:text-[#FBF6EC]">
+                      {item.title}
+                    </p>
+                    <p className="mt-0.5 text-sm text-[#6B6560] dark:text-[#A89E8E]">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-9">
+              <Link
+                href="/for-stylists"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                Join Krowned <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Browse by Style */}
       {categories && categories.length > 0 && (
         <section className="w-full border-b border-border bg-muted/30 px-5 py-16 sm:px-8 lg:px-12">
