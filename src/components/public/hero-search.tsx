@@ -259,7 +259,7 @@ export function HeroSearch({
           <button
             type="button"
             onClick={handleSubmit}
-            className="mt-2 flex w-full items-center justify-center gap-2.5 rounded-[14px] border border-white/25 bg-white/10 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-white/5 backdrop-blur-md transition-all hover:bg-white/20 hover:border-white/35 hover:-translate-y-px active:scale-[0.99] sm:py-4 sm:text-base"
+            className="mt-2 flex w-full items-center justify-center gap-2.5 rounded-[14px] bg-[linear-gradient(150deg,rgba(228,199,131,0.25)_0%,rgba(228,199,131,0.15)_50%,rgba(198,161,91,0.25)_100%)] border border-[#E4C783]/30 px-4 py-3.5 text-sm font-semibold text-white backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),inset_0_-1px_0_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(228,199,131,0.08),0_4px_16px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-[linear-gradient(150deg,rgba(228,199,131,0.35)_0%,rgba(228,199,131,0.25)_50%,rgba(198,161,91,0.35)_100%)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),inset_0_-1px_0_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(228,199,131,0.15),0_8px_24px_rgba(0,0,0,0.3)] hover:-translate-y-px active:scale-[0.98] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15),0_0_0_1px_rgba(228,199,131,0.08)] sm:py-4 sm:text-base"
           >
             <Search className="h-[17px] w-[17px] sm:h-[18px] sm:w-[18px]" />
             Search stylists
