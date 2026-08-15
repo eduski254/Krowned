@@ -3,6 +3,7 @@ import { ExternalLink } from "lucide-react";
 import { MobileNav } from "./mobile-nav";
 import { NotificationBell } from "./notification-bell";
 import { AvatarDropdown } from "./avatar-dropdown";
+import { ThemeToggle } from "@/components/theme-toggle";
 import type { NavGroup } from "./nav-config";
 
 export function Topbar({
@@ -29,6 +30,7 @@ export function Topbar({
         </Link>
       </div>
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <NotificationBell userId={userId} />
         <AvatarDropdown userName={userName} avatarUrl={avatarUrl} />
       </div>
