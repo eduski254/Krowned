@@ -28,7 +28,7 @@ import { JsonLd, organizationSchema, webSiteSchema } from "@/lib/schema";
 /** Revalidate homepage every hour (ISR) */
 export const revalidate = 3600;
 
-const HERO_BG_IMAGE = "/brand/hero-salon.webp";
+const HERO_BG_IMAGE = "/brand/hero-salon.png";
 
 import type { Metadata } from "next";
 
@@ -122,7 +122,7 @@ export default async function HomePage() {
             fill
             priority
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 44vw"
-            className="object-cover object-[center_30%]"
+            className="object-cover object-center"
           />
           {/* Gradient overlay: bottom-fade on mobile, left-fade on desktop */}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0C0B0A]/55 via-transparent to-[#0C0B0A]/90 lg:bg-[linear-gradient(90deg,rgba(12,11,10,0.90)_0%,rgba(12,11,10,0.10)_22%,transparent_45%)]" />
