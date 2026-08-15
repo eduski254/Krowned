@@ -114,7 +114,7 @@ export default async function HomePage() {
       <PublicHeader />
 
       {/* Hero — Full-bleed BG with left fade */}
-      <section className="relative min-h-[calc(100svh-57px)] overflow-hidden bg-[#0C0B0A]">
+      <section className="relative min-h-[100svh] overflow-hidden bg-[#0C0B0A] sm:min-h-[calc(100svh-57px)]">
         {/* Background image — spans entire hero */}
         <Image
           src={HERO_BG_IMAGE}
@@ -122,39 +122,39 @@ export default async function HomePage() {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[70%_center] sm:object-[65%_center] lg:object-right"
+          className="object-cover object-[70%_bottom] sm:object-[65%_center] lg:object-right"
         />
 
         {/* Gradient overlays */}
-        {/* Mobile/Tablet: strong bottom fade for stacked content */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0C0B0A]/60 via-[#0C0B0A]/30 to-[#0C0B0A] lg:hidden" />
+        {/* Mobile/Tablet: heavier overlay so text is always readable */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0C0B0A]/80 via-[#0C0B0A]/50 to-[#0C0B0A] lg:hidden" />
         {/* Desktop: solid left → transparent right blend */}
         <div className="pointer-events-none absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,#0C0B0A_0%,#0C0B0A_30%,rgba(12,11,10,0.85)_42%,rgba(12,11,10,0.4)_58%,transparent_75%)]" />
         {/* Subtle bottom fade on desktop too */}
         <div className="pointer-events-none absolute inset-0 hidden lg:block bg-gradient-to-t from-[#0C0B0A]/60 via-transparent to-transparent" />
 
-        {/* Content — left-aligned on desktop, centered on mobile/tablet */}
-        <div className="relative z-10 flex min-h-[calc(100svh-57px)] flex-col">
-          <div className="flex flex-1 flex-col justify-center px-5 py-16 sm:px-8 sm:py-20 md:px-10 lg:max-w-[55%] lg:px-[clamp(28px,4.2vw,60px)] lg:py-[clamp(32px,3.6vw,56px)]">
+        {/* Content */}
+        <div className="relative z-10 flex min-h-[100svh] flex-col sm:min-h-[calc(100svh-57px)]">
+          <div className="flex flex-1 flex-col justify-center px-4 pb-6 pt-20 sm:px-8 sm:py-16 md:px-10 lg:max-w-[55%] lg:px-[clamp(28px,4.2vw,60px)] lg:py-[clamp(32px,3.6vw,56px)]">
             <div className="mx-auto max-w-[600px] lg:mx-0">
               {/* Eyebrow */}
-              <span className="mb-7 inline-flex items-center rounded-full bg-[#D9B36C] px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] text-[#0C0B0A] sm:mb-8 sm:text-sm lg:mb-9">
+              <span className="mb-5 inline-flex items-center rounded-full bg-[#D9B36C] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-[#0C0B0A] sm:mb-8 sm:text-sm lg:mb-9">
                 DMV textured-hair pros
               </span>
 
-              <div className="font-heading text-[clamp(36px,8vw,52px)] font-extrabold leading-[1.05] tracking-tight text-[#FBF6EC] sm:text-[clamp(44px,6.5vw,64px)] lg:text-[clamp(52px,5.5vw,88px)]" role="heading" aria-level={1}>
+              <div className="font-heading text-[clamp(30px,8vw,48px)] font-extrabold leading-[1.05] tracking-tight text-[#FBF6EC] sm:text-[clamp(44px,6.5vw,64px)] lg:text-[clamp(52px,5.5vw,88px)]" role="heading" aria-level={1}>
                 <span className="block">Book your next</span>
-                <span className="block h-[1.2em] overflow-hidden whitespace-nowrap text-[0.7em] sm:text-[0.8em] lg:text-[0.85em]">
+                <span className="block h-[1.2em] overflow-hidden whitespace-nowrap text-[0.65em] sm:text-[0.8em] lg:text-[0.85em]">
                   <RotatingService className="text-[#E4C783]" />
                 </span>
               </div>
 
-              <p className="mt-5 max-w-[520px] text-[15px] font-light leading-relaxed text-[#F2E7D3]/80 sm:mt-6 sm:text-[17px] lg:mt-7 lg:text-[clamp(17px,1.4vw,20px)]">
+              <p className="mt-4 max-w-[520px] text-[14px] font-light leading-relaxed text-[#F2E7D3]/80 sm:mt-6 sm:text-[17px] lg:mt-7 lg:text-[clamp(17px,1.4vw,20px)]">
                 Every stylist specializes in textured hair. Find yours, see real
                 openings, and book in seconds — no DMs, no ghosting.
               </p>
 
-              <div className="mt-7 sm:mt-8 lg:mt-9">
+              <div className="mt-5 sm:mt-8 lg:mt-9">
                 <HeroSearch
                   businesses={searchBusinesses}
                   serviceNames={serviceNames}
@@ -165,15 +165,15 @@ export default async function HomePage() {
           </div>
 
           {/* Trust bar — pinned to bottom */}
-          <div className="mx-4 mb-4 flex items-center justify-center gap-4 rounded-xl border border-[#D9B36C]/25 bg-[#0C0B0A]/60 px-4 py-2.5 backdrop-blur-md sm:mx-6 sm:mb-6 sm:gap-5 sm:rounded-2xl sm:px-5 sm:py-3 lg:mx-8 lg:mb-8 lg:gap-6 lg:py-4 max-sm:flex-nowrap max-sm:justify-start max-sm:overflow-x-auto max-sm:scrollbar-hide">
-            <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
-              <BadgeCheck className="h-3.5 w-3.5 text-[#E4C783] sm:h-4 sm:w-4" /> ID-verified
+          <div className="mx-3 mb-3 flex items-center justify-center gap-3 rounded-xl border border-[#D9B36C]/25 bg-[#0C0B0A]/60 px-3 py-2 backdrop-blur-md sm:mx-6 sm:mb-6 sm:gap-5 sm:rounded-2xl sm:px-5 sm:py-3 lg:mx-8 lg:mb-8 lg:gap-6 lg:py-4 max-sm:flex-nowrap max-sm:justify-start max-sm:overflow-x-auto max-sm:scrollbar-hide">
+            <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-[#F2E7D3]/85 sm:gap-2 sm:text-[13px]">
+              <BadgeCheck className="h-3 w-3 text-[#E4C783] sm:h-4 sm:w-4" /> ID-verified
             </span>
-            <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
-              <Shield className="h-3.5 w-3.5 text-[#E4C783] sm:h-4 sm:w-4" /> Secure payments
+            <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-[#F2E7D3]/85 sm:gap-2 sm:text-[13px]">
+              <Shield className="h-3 w-3 text-[#E4C783] sm:h-4 sm:w-4" /> Secure payments
             </span>
-            <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
-              <Clock className="h-3.5 w-3.5 text-[#E4C783] sm:h-4 sm:w-4" /> Instant confirm
+            <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-[#F2E7D3]/85 sm:gap-2 sm:text-[13px]">
+              <Clock className="h-3 w-3 text-[#E4C783] sm:h-4 sm:w-4" /> Instant confirm
             </span>
           </div>
         </div>

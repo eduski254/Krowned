@@ -26,7 +26,7 @@ export function RotatingService({ className }: { className?: string }) {
   const [displayed, setDisplayed] = useState("");
   const [showCursor, setShowCursor] = useState(true);
   const indexRef = useRef(0);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const typeWord = useCallback((word: string, charIndex: number) => {
     if (charIndex <= word.length) {
