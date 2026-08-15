@@ -138,7 +138,7 @@ export default async function HomePage() {
           <div className="flex flex-1 flex-col justify-center px-4 pb-6 pt-20 sm:px-8 sm:py-16 md:px-10 lg:max-w-[55%] lg:px-[clamp(28px,4.2vw,60px)] lg:py-[clamp(32px,3.6vw,56px)]">
             <div className="mx-auto max-w-[600px] lg:mx-0">
               {/* Eyebrow */}
-              <span className="mb-5 inline-flex items-center rounded-full bg-[#D9B36C] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-[#0C0B0A] sm:mb-8 sm:text-sm lg:mb-9">
+              <span className="mb-5 inline-flex items-center text-[10px] font-medium uppercase tracking-[0.22em] text-[#D9B36C] sm:mb-8 sm:text-sm lg:mb-9">
                 DMV textured-hair pros
               </span>
 
