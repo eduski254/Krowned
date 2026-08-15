@@ -54,7 +54,7 @@ export default async function HomePage() {
     supabase
       .from("businesses")
       .select(
-        "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, primary_category_id, service_categories(name, slug)",
+        "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, created_at, primary_category_id, service_categories(name, slug)",
       )
       .eq("is_published", true)
       .eq("verification_status", "verified")
@@ -104,6 +104,42 @@ export default async function HomePage() {
     .sort((a, b) => b.count - a.count);
 
   const featuredBusinesses = businesses.filter((b) => b.is_featured);
+
+  // Find the top city for "Featured in" section
+  const DMV_STATES: Record<string, string> = {
+    "Washington": "DC",
+    "Silver Spring": "MD",
+    "Bethesda": "MD",
+    "Baltimore": "MD",
+    "Bowie": "MD",
+    "Largo": "MD",
+    "Hyattsville": "MD",
+    "College Park": "MD",
+    "Greenbelt": "MD",
+    "Rockville": "MD",
+    "Germantown": "MD",
+    "Gaithersburg": "MD",
+    "Laurel": "MD",
+    "Columbia": "MD",
+    "Annapolis": "MD",
+    "Arlington": "VA",
+    "Alexandria": "VA",
+    "Fairfax": "VA",
+    "Reston": "VA",
+    "Tysons": "VA",
+    "McLean": "VA",
+    "Manassas": "VA",
+  };
+  const cityCount = new Map<string, number>();
+  for (const b of businesses) {
+    if (b.city) cityCount.set(b.city, (cityCount.get(b.city) ?? 0) + 1);
+  }
+  const topCity = Array.from(cityCount.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "Washington";
+  const topCityState = DMV_STATES[topCity] ?? "DC";
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const featuredInCity = businesses
+    .filter((b) => b.city === topCity)
+    .slice(0, 12);
 
   return (
     <div className="flex min-h-full flex-col">
@@ -316,6 +352,77 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Featured in [City] */}
+      {featuredInCity.length > 0 && (
+        <section className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
+          <div>
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+                Featured in {topCity}, {topCityState}
+              </h2>
+              <Link
+                href={`/explore?city=${encodeURIComponent(topCity)}`}
+                className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+              >
+                See all <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {featuredInCity.map((biz) => {
+                const cat = biz.service_categories as unknown as {
+                  name: string;
+                  slug: string;
+                } | null;
+                const isNew = biz.created_at >= oneWeekAgo;
+                return (
+                  <Link
+                    key={biz.id}
+                    href={`/b/${biz.slug}`}
+                    className="group overflow-hidden rounded-xl border border-border bg-card transition-all hover:shadow-[0_12px_28px_rgba(0,0,0,0.15)] hover:-translate-y-0.5"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                      {resolveCardImage(biz) ? (
+                        <Image
+                          src={resolveCardImage(biz)!}
+                          alt={biz.name}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                          loading="lazy"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-3xl font-bold text-primary">
+                          {biz.name.charAt(0)}
+                        </div>
+                      )}
+                      {isNew && (
+                        <span className="absolute left-2.5 top-2.5 rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-bold text-primary-foreground shadow">
+                          New
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-foreground transition-colors group-hover:text-primary line-clamp-1">
+                        {biz.name}
+                      </h3>
+                      {cat?.name && (
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {cat.name}
+                        </p>
+                      )}
+                      <p className="mt-1 text-xs text-muted-foreground/70 flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        {biz.city}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Browse by Style */}
       {categories && categories.length > 0 && (
