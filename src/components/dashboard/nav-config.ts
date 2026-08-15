@@ -15,6 +15,7 @@ export const clientNav: NavGroup[] = [
     items: [
       { label: "Dashboard", href: "/dashboard", icon: "Home" },
       { label: "My Bookings", href: "/dashboard/bookings", icon: "Calendar" },
+      { label: "Messages", href: "/dashboard/messages", icon: "MessageSquare" },
       { label: "Favorites", href: "/dashboard/favorites", icon: "Heart" },
     ],
   },
@@ -34,6 +35,7 @@ export const businessNav: NavGroup[] = [
     items: [
       { label: "Dashboard", href: "/dashboard/business", icon: "Home" },
       { label: "Calendar", href: "/dashboard/business/calendar", icon: "Calendar" },
+      { label: "Messages", href: "/dashboard/business/messages", icon: "MessageSquare" },
     ],
   },
   {

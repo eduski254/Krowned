@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const BADGE_ITEMS = ["/dashboard/support", "/dashboard/admin/support"];
 const BOOKING_BADGE_ITEMS = ["/dashboard/business/calendar"];
+const MESSAGE_BADGE_ITEMS = ["/dashboard/messages", "/dashboard/business/messages"];
 
 const ROOT_HREFS = [
   "/dashboard",
@@ -44,6 +45,11 @@ export function Sidebar({
       if (data.bookings > 0) {
         for (const href of BOOKING_BADGE_ITEMS) {
           newBadges[href] = data.bookings;
+        }
+      }
+      if (data.messages > 0) {
+        for (const href of MESSAGE_BADGE_ITEMS) {
+          newBadges[href] = data.messages;
         }
       }
       setBadges(newBadges);

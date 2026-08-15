@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Star } from "lucide-react";
+import { ReviewPhotosInline } from "@/components/review-photos-inline";
 
 export default async function ClientReviewsPage() {
   const supabase = await createClient();
@@ -13,7 +14,7 @@ export default async function ClientReviewsPage() {
   const { data: reviews } = await supabase
     .from("reviews")
     .select(
-      "id, rating, comment, created_at, businesses(name), staff(display_name)",
+      "id, rating, comment, photos, created_at, businesses(name), staff(display_name)",
     )
     .eq("client_id", user.id)
     .order("created_at", { ascending: false })
@@ -55,6 +56,11 @@ export default async function ClientReviewsPage() {
               {r.comment && (
                 <p className="mt-2 text-sm text-foreground">{r.comment}</p>
               )}
+              {(() => {
+                const photos = Array.isArray(r.photos) ? (r.photos as string[]) : [];
+                if (photos.length === 0) return null;
+                return <ReviewPhotosInline photos={photos} />;
+              })()}
               <p className="mt-2 text-xs text-muted-foreground">
                 {new Date(r.created_at).toLocaleDateString("en-US", {
                   month: "short",

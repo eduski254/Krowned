@@ -113,7 +113,7 @@ export function HomeScreen() {
                     {item.cover_url ? (
                       <Image
                         source={{ uri: item.cover_url }}
-                        style={StyleSheet.absoluteFillObject}
+                        style={StyleSheet.absoluteFill}
                         resizeMode="cover"
                       />
                     ) : (

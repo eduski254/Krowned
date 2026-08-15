@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const formData = await request.formData();
+  const formData: any = await request.formData();
   const file = formData.get("file") as File | null;
   const businessId = formData.get("business_id") as string | null;
   const imageType = formData.get("type") as string | null; // "logo" | "gallery"

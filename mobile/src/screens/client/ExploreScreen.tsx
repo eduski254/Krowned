@@ -90,7 +90,7 @@ export function ExploreScreen() {
                 {imageUrl ? (
                   <Image
                     source={{ uri: imageUrl }}
-                    style={StyleSheet.absoluteFillObject}
+                    style={StyleSheet.absoluteFill}
                     resizeMode="cover"
                   />
                 ) : (

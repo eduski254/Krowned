@@ -28,7 +28,7 @@ export async function GET() {
     .neq("type", "last_bell_read")
     .is("read_at", null);
 
-  const counts = { support: 0, bookings: 0, total: 0 };
+  const counts = { support: 0, bookings: 0, messages: 0, total: 0 };
 
   for (const n of unread ?? []) {
     counts.total++;
@@ -63,6 +63,31 @@ export async function GET() {
       .gte("created_at", oneDayAgo.toISOString());
 
     counts.bookings = Math.max(counts.bookings, count ?? 0);
+  }
+
+  // Count unread messages across all conversations
+  const { data: participations } = await admin
+    .from("conversation_participants")
+    .select("conversation_id, last_read_at")
+    .eq("user_id", user.id);
+
+  if (participations && participations.length > 0) {
+    let totalUnread = 0;
+    for (const p of participations) {
+      let q = admin
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", p.conversation_id)
+        .neq("sender_id", user.id);
+
+      if (p.last_read_at) {
+        q = q.gt("created_at", p.last_read_at);
+      }
+
+      const { count } = await q;
+      totalUnread += count ?? 0;
+    }
+    counts.messages = totalUnread;
   }
 
   return NextResponse.json(counts);

@@ -3,7 +3,8 @@ import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { EmptyState } from "@/components/dashboard/empty-state";
-import { Star, MessageSquare } from "lucide-react";
+import Image from "next/image";
+import { Star, MessageSquare, Camera } from "lucide-react";
 
 export default async function BusinessReviewsPage() {
   const effectiveUserId = await getEffectiveUserId();
@@ -21,7 +22,7 @@ export default async function BusinessReviewsPage() {
   const { data: reviews } = await admin
     .from("reviews")
     .select(
-      "id, rating, comment, status, created_at, clients:client_id(full_name, avatar_url), staff(display_name)",
+      "id, rating, comment, photos, status, created_at, clients:client_id(full_name, avatar_url), staff(display_name)",
     )
     .eq("business_id", business.id)
     .order("created_at", { ascending: false })
@@ -92,6 +93,25 @@ export default async function BusinessReviewsPage() {
                     {r.comment}
                   </p>
                 )}
+                {(() => {
+                  const photos = Array.isArray(r.photos) ? (r.photos as string[]) : [];
+                  if (photos.length === 0) return null;
+                  return (
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="flex -space-x-1">
+                        {photos.slice(0, 3).map((url, i) => (
+                          <div key={url} className="relative h-8 w-8 overflow-hidden rounded border-2 border-card">
+                            <Image src={url} alt="" fill className="object-cover" sizes="32px" unoptimized />
+                          </div>
+                        ))}
+                      </div>
+                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Camera className="h-3 w-3" />
+                        {photos.length} photo{photos.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                  );
+                })()}
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">
                     {new Date(r.created_at).toLocaleDateString()}

@@ -3,6 +3,7 @@ import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Star } from "lucide-react";
+import { ReviewPhotosInline } from "@/components/review-photos-inline";
 import { ResponseForm } from "./response-form";
 
 export default async function ReviewDetailPage({
@@ -27,7 +28,7 @@ export default async function ReviewDetailPage({
   const { data: review } = await supabase
     .from("reviews")
     .select(
-      "id, rating, comment, status, created_at, booking_id, clients:client_id(full_name, avatar_url), staff(display_name)",
+      "id, rating, comment, photos, status, created_at, booking_id, clients:client_id(full_name, avatar_url), staff(display_name)",
     )
     .eq("id", id)
     .eq("business_id", business.id)
@@ -113,6 +114,16 @@ export default async function ReviewDetailPage({
           {review.comment && (
             <p className="mt-4 text-foreground">{review.comment}</p>
           )}
+
+          {(() => {
+            const photos = Array.isArray(review.photos) ? (review.photos as string[]) : [];
+            if (photos.length === 0) return null;
+            return (
+              <div className="mt-4">
+                <ReviewPhotosInline photos={photos} />
+              </div>
+            );
+          })()}
 
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <span>{new Date(review.created_at).toLocaleDateString()}</span>

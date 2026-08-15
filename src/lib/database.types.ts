@@ -1270,6 +1270,7 @@ export type Database = {
           comment: string | null
           created_at: string
           id: string
+          photos: string[] | null
           rating: number
           staff_id: string
           status: Database["public"]["Enums"]["review_status"]
@@ -1282,6 +1283,7 @@ export type Database = {
           comment?: string | null
           created_at?: string
           id?: string
+          photos?: string[] | null
           rating: number
           staff_id: string
           status?: Database["public"]["Enums"]["review_status"]
@@ -1294,6 +1296,7 @@ export type Database = {
           comment?: string | null
           created_at?: string
           id?: string
+          photos?: string[] | null
           rating?: number
           staff_id?: string
           status?: Database["public"]["Enums"]["review_status"]

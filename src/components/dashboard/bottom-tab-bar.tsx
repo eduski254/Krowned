@@ -14,6 +14,7 @@ import {
   LayoutGrid,
   Building2,
   Clock,
+  MessageSquare,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -26,16 +27,16 @@ type Tab = {
 const CLIENT_TABS: Tab[] = [
   { label: "Home", href: "/dashboard", icon: Home },
   { label: "Bookings", href: "/dashboard/bookings", icon: Calendar },
+  { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
   { label: "Explore", href: "/explore", icon: Search },
-  { label: "Favorites", href: "/dashboard/favorites", icon: Heart },
   { label: "Profile", href: "/dashboard/profile", icon: User },
 ];
 
 const BUSINESS_TABS: Tab[] = [
   { label: "Home", href: "/dashboard/business", icon: Home },
   { label: "Calendar", href: "/dashboard/business/calendar", icon: Calendar },
+  { label: "Messages", href: "/dashboard/business/messages", icon: MessageSquare },
   { label: "Services", href: "/dashboard/business/services", icon: Scissors },
-  { label: "Staff", href: "/dashboard/business/staff", icon: Users },
   { label: "Profile", href: "/dashboard/business/profile", icon: Building2 },
 ];
 

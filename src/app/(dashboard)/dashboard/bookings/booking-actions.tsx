@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { X, Star, Send, CalendarClock, AlertTriangle } from "lucide-react";
+import { useState, useTransition, useRef, useCallback } from "react";
+import { X, Star, Send, CalendarClock, AlertTriangle, ImagePlus, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { Spinner } from "@/components/spinner";
 import { cancelBooking } from "@/lib/booking/cancel-action";
 import { submitReview } from "@/lib/booking/review-action";
@@ -155,6 +156,8 @@ export function RescheduleButton({ bookingId, timezone }: { bookingId: string; t
   );
 }
 
+const MAX_REVIEW_PHOTOS = 5;
+
 export function ReviewButton({
   bookingId,
   hasReview,
@@ -169,6 +172,47 @@ export function ReviewButton({
   const [isPending, startTransition] = useTransition();
   const [done, setDone] = useState(hasReview);
   const [error, setError] = useState<string | null>(null);
+
+  // Photo upload state
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    const remaining = MAX_REVIEW_PHOTOS - selectedFiles.length;
+    const toAdd = files.slice(0, remaining);
+
+    // Validate each file
+    for (const file of toAdd) {
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        setError("Only JPG, PNG, and WebP images are allowed");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Each image must be under 5MB");
+        return;
+      }
+    }
+
+    setError(null);
+    const newFiles = [...selectedFiles, ...toAdd];
+    setSelectedFiles(newFiles);
+
+    // Generate preview URLs
+    const newPreviews = toAdd.map((f) => URL.createObjectURL(f));
+    setPreviewUrls((prev) => [...prev, ...newPreviews]);
+
+    // Reset input so the same file can be selected again
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, [selectedFiles]);
+
+  const removePhoto = useCallback((index: number) => {
+    URL.revokeObjectURL(previewUrls[index]);
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+  }, [previewUrls]);
 
   if (done) {
     return (
@@ -227,6 +271,56 @@ export function ReviewButton({
         className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
       />
 
+      {/* Photo upload */}
+      <div className="space-y-2">
+        {previewUrls.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {previewUrls.map((url, i) => (
+              <div key={url} className="group relative h-16 w-16 overflow-hidden rounded-lg border border-border">
+                <Image
+                  src={url}
+                  alt={`Photo ${i + 1}`}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+                <button
+                  type="button"
+                  onClick={() => removePhoto(i)}
+                  className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+                >
+                  <Trash2 className="h-4 w-4 text-white" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        {selectedFiles.length < MAX_REVIEW_PHOTOS && (
+          <>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-1.5 rounded-lg border border-dashed border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+            >
+              <ImagePlus className="h-3.5 w-3.5" />
+              Add photos ({selectedFiles.length}/{MAX_REVIEW_PHOTOS})
+            </button>
+          </>
+        )}
+      </div>
+
+      {uploadProgress && (
+        <p className="text-xs text-muted-foreground">{uploadProgress}</p>
+      )}
+
       {error && (
         <p className="text-xs text-destructive">{error}</p>
       )}
@@ -240,17 +334,45 @@ export function ReviewButton({
             }
             setError(null);
             startTransition(async () => {
+              // Submit the review text + rating
               const result = await submitReview({
                 bookingId,
                 rating,
                 comment: comment.trim(),
               });
-              if (result.success) {
-                setDone(true);
-                setOpen(false);
-              } else {
+              if (!result.success) {
                 setError(result.error ?? "Failed");
+                return;
               }
+
+              // Upload photos if any
+              if (selectedFiles.length > 0 && result.reviewId) {
+                setUploadProgress(`Uploading photos (0/${selectedFiles.length})...`);
+                for (let i = 0; i < selectedFiles.length; i++) {
+                  setUploadProgress(`Uploading photos (${i + 1}/${selectedFiles.length})...`);
+                  const fd = new FormData();
+                  fd.append("file", selectedFiles[i]);
+                  fd.append("reviewId", result.reviewId);
+                  try {
+                    const res = await fetch("/api/review-images", {
+                      method: "POST",
+                      body: fd,
+                    });
+                    if (!res.ok) {
+                      const data = await res.json();
+                      console.error("Photo upload failed:", data.error);
+                    }
+                  } catch (err) {
+                    console.error("Photo upload error:", err);
+                  }
+                }
+                setUploadProgress(null);
+              }
+
+              // Clean up preview URLs
+              previewUrls.forEach((url) => URL.revokeObjectURL(url));
+              setDone(true);
+              setOpen(false);
             });
           }}
           disabled={isPending || rating === 0}
@@ -269,6 +391,10 @@ export function ReviewButton({
             setRating(0);
             setComment("");
             setError(null);
+            previewUrls.forEach((url) => URL.revokeObjectURL(url));
+            setSelectedFiles([]);
+            setPreviewUrls([]);
+            setUploadProgress(null);
           }}
           className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
         >

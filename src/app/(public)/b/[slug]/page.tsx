@@ -6,10 +6,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Suspense, lazy } from "react";
 import { Clock, MapPin, Phone, Mail, Home, Star, ArrowLeft } from "lucide-react";
+import { MessageBusinessButton } from "@/components/messaging/message-business-button";
 import { StarRating } from "@/components/star-rating";
 import { FavoriteButton } from "@/components/favorite-button";
 import { SocialLinksBar } from "@/components/social-icons";
 import { PhotoGallery } from "./photo-gallery";
+import { ReviewPhotos } from "./review-photos";
 import { JsonLd, localBusinessSchema, breadcrumbSchema } from "@/lib/schema";
 
 const BusinessMiniMap = lazy(() =>
@@ -89,7 +91,7 @@ export default async function BusinessProfilePage({
       .order("day_of_week"),
     supabase
       .from("reviews")
-      .select("id, rating, comment, created_at, clients:client_id(full_name, avatar_url), review_responses(body, created_at)")
+      .select("id, rating, comment, photos, created_at, clients:client_id(full_name, avatar_url), review_responses(body, created_at)")
       .eq("business_id", business.id)
       .eq("status", "published")
       .order("created_at", { ascending: false })
@@ -221,14 +223,22 @@ export default async function BusinessProfilePage({
             </div>
           </div>
         </div>
-        {bookable && (
-          <Link
-            href={`/book/${business.booking_link_token}?source=marketplace`}
-            className="self-start rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-          >
-            Book Now
-          </Link>
-        )}
+        <div className="flex items-center gap-3 self-start">
+          <MessageBusinessButton
+            businessId={business.id}
+            isLoggedIn={!!user}
+            isOwnBusiness={user?.id === business.owner_id}
+            slug={business.slug}
+          />
+          {bookable && (
+            <Link
+              href={`/book/${business.booking_link_token}?source=marketplace`}
+              className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+            >
+              Book Now
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Description */}
@@ -364,6 +374,11 @@ export default async function BusinessProfilePage({
                       </div>
                     </div>
                     {r.comment && <p className="mt-2 text-sm text-foreground">{r.comment}</p>}
+                    {(() => {
+                      const photos = Array.isArray(r.photos) ? (r.photos as string[]) : [];
+                      if (photos.length === 0) return null;
+                      return <ReviewPhotos photos={photos} />;
+                    })()}
                     <p className="mt-1 text-xs text-muted-foreground">
                       {new Date(r.created_at).toLocaleDateString()}
                     </p>

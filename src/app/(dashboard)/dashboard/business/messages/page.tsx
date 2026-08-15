@@ -1,0 +1,118 @@
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getAuthedBusiness } from "@/lib/business-auth";
+import { redirect } from "next/navigation";
+import { MessageSquare } from "lucide-react";
+import {
+  ConversationList,
+  type ConversationPreview,
+} from "@/components/messaging/conversation-list";
+
+export const dynamic = "force-dynamic";
+
+export default async function BusinessMessagesPage() {
+  const { userId, business } = await getAuthedBusiness();
+  if (!userId) redirect("/login");
+  if (!business) redirect("/dashboard/business/onboarding");
+
+  const admin = createAdminClient();
+
+  // Fetch conversations for this business
+  const { data: conversations } = await admin
+    .from("conversations")
+    .select(
+      `
+      id,
+      client_id,
+      booking_id,
+      last_message_at,
+      profiles!conversations_client_id_fkey(full_name, avatar_url)
+    `,
+    )
+    .eq("business_id", business.id)
+    .order("last_message_at", { ascending: false, nullsFirst: false });
+
+  if (!conversations || conversations.length === 0) {
+    return (
+      <div>
+        <h1 className="mb-6 text-2xl font-bold text-foreground font-heading">
+          Messages
+        </h1>
+        <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
+          <MessageSquare className="mx-auto h-10 w-10 text-muted-foreground" />
+          <h2 className="mt-4 text-lg font-semibold text-foreground">
+            No messages yet
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            When clients message you, their conversations will appear here.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Build previews
+  const previews: ConversationPreview[] = await Promise.all(
+    conversations.map(async (convo) => {
+      // Get last message
+      const { data: lastMsg } = await admin
+        .from("messages")
+        .select("body")
+        .eq("conversation_id", convo.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      // Get user's last_read_at
+      const { data: participant } = await admin
+        .from("conversation_participants")
+        .select("last_read_at")
+        .eq("conversation_id", convo.id)
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      // Count unread
+      let unreadCount = 0;
+      if (participant) {
+        let countQuery = admin
+          .from("messages")
+          .select("id", { count: "exact", head: true })
+          .eq("conversation_id", convo.id)
+          .neq("sender_id", userId);
+
+        if (participant.last_read_at) {
+          countQuery = countQuery.gt("created_at", participant.last_read_at);
+        }
+
+        const { count } = await countQuery;
+        unreadCount = count ?? 0;
+      }
+
+      const client = convo.profiles as unknown as {
+        full_name: string | null;
+        avatar_url: string | null;
+      } | null;
+
+      return {
+        id: convo.id,
+        other_party_name: client?.full_name || "Unknown Client",
+        last_message_body: lastMsg?.body ?? null,
+        last_message_at: convo.last_message_at,
+        unread_count: unreadCount,
+        booking_id: convo.booking_id,
+      };
+    }),
+  );
+
+  return (
+    <div>
+      <h1 className="mb-6 text-2xl font-bold text-foreground font-heading">
+        Messages
+      </h1>
+      <ConversationList
+        conversations={previews}
+        basePath="/dashboard/business/messages"
+        emptyMessage="When clients message you, their conversations will appear here."
+      />
+    </div>
+  );
+}

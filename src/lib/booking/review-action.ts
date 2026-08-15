@@ -17,7 +17,7 @@ export type SubmitReviewInput = z.infer<typeof reviewSchema>;
 
 export async function submitReview(
   input: SubmitReviewInput,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; reviewId?: string }> {
   const parsed = reviewSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -55,7 +55,7 @@ export async function submitReview(
   if (existing) return { success: false, error: "You already reviewed this booking." };
 
   // Insert the review
-  const { error: insertErr } = await admin.from("reviews").insert({
+  const { data: newReview, error: insertErr } = await admin.from("reviews").insert({
     booking_id: bookingId,
     client_id: user.id,
     business_id: booking.business_id,
@@ -63,9 +63,11 @@ export async function submitReview(
     staff_id: booking.staff_id,
     rating,
     comment: comment || null,
-  });
+  }).select("id").single();
 
-  if (insertErr) return { success: false, error: "Failed to submit review." };
+  if (insertErr || !newReview) return { success: false, error: "Failed to submit review." };
+
+  const reviewId = newReview.id;
 
   // Fire-and-forget: send review notification to business owner
   (async () => {
@@ -111,5 +113,5 @@ export async function submitReview(
     }
   })();
 
-  return { success: true };
+  return { success: true, reviewId };
 }
