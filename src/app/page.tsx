@@ -112,25 +112,43 @@ export default async function HomePage() {
       <JsonLd data={webSiteSchema()} />
       <PublicHeader />
 
-      {/* Hero — Full-width background */}
-      <section className="relative min-h-[calc(100svh-57px)] overflow-hidden bg-[#0C0B0A]">
-        {/* Full-bleed background image */}
-        <Image
-          src={HERO_BG_IMAGE}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
-        {/* Dark overlay for text readability */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0C0B0A] via-[#0C0B0A]/70 to-[#0C0B0A]/40" />
+      {/* Hero — Split Frame */}
+      <section className="flex min-h-[calc(100svh-57px)] flex-col lg:flex-row bg-[#0C0B0A] pb-10 sm:pb-14 lg:pb-0">
+        {/* Photo panel — top on mobile/tablet, right on desktop */}
+        <div className="relative order-1 h-[clamp(220px,32svh,340px)] overflow-hidden sm:h-[clamp(280px,38svh,420px)] lg:order-2 lg:h-auto lg:flex-[1_1_44%]">
+          <Image
+            src={HERO_BG_IMAGE}
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 44vw"
+            className="object-cover object-center"
+          />
+          {/* Gradient overlay: bottom-fade on mobile, left-fade on desktop */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0C0B0A]/55 via-transparent to-[#0C0B0A]/90 lg:bg-[linear-gradient(90deg,rgba(12,11,10,0.90)_0%,rgba(12,11,10,0.10)_22%,transparent_45%)]" />
 
-        {/* Content */}
-        <div className="relative z-10 flex min-h-[calc(100svh-57px)] flex-col items-center justify-center px-5 py-16 sm:px-8 sm:py-20 lg:py-24">
-          <div className="mx-auto max-w-[600px] text-center">
-            {/* Eyebrow */}
-            <span className="mb-6 inline-flex items-center rounded-full bg-[#D9B36C] px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] text-[#0C0B0A] sm:mb-7 sm:text-sm">
+          {/* Glassmorphic trust bar */}
+          <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-center gap-4 rounded-xl border border-[#D9B36C]/25 bg-[#0C0B0A]/60 px-4 py-2.5 backdrop-blur-md sm:bottom-5 sm:left-5 sm:right-5 sm:gap-5 sm:rounded-2xl sm:px-5 sm:py-3 lg:bottom-9 lg:left-9 lg:right-9 lg:gap-6 lg:py-4 max-sm:flex-nowrap max-sm:justify-start max-sm:overflow-x-auto max-sm:scrollbar-hide">
+            <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
+              <BadgeCheck className="h-3.5 w-3.5 text-[#E4C783] sm:h-4 sm:w-4" /> ID-verified
+            </span>
+            <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
+              <Shield className="h-3.5 w-3.5 text-[#E4C783] sm:h-4 sm:w-4" /> Secure payments
+            </span>
+            <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
+              <Clock className="h-3.5 w-3.5 text-[#E4C783] sm:h-4 sm:w-4" /> Instant confirm
+            </span>
+          </div>
+        </div>
+
+        {/* Editorial panel — below photo on mobile/tablet, left on desktop */}
+        <div className="relative order-2 flex flex-1 flex-col justify-center px-5 py-8 sm:px-8 sm:py-10 md:px-10 lg:order-1 lg:flex-[0_0_56%] lg:px-[clamp(28px,4.2vw,60px)] lg:py-[clamp(32px,3.6vw,56px)]">
+          {/* Radial gold glow */}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(217,179,108,0.14),transparent_55%)]" />
+
+          <div className="relative z-10 mx-auto max-w-[600px] lg:mx-0">
+            {/* Eyebrow — no background, just accent text */}
+            <span className="mb-7 inline-flex items-center rounded-full bg-[#D9B36C] px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] text-[#0C0B0A] sm:mb-8 sm:text-sm lg:mb-9">
               DMV textured-hair pros
             </span>
 
@@ -140,7 +158,7 @@ export default async function HomePage() {
               booked.
             </h1>
 
-            <p className="mx-auto mt-5 max-w-[520px] text-[15px] font-light leading-relaxed text-[#F2E7D3]/80 sm:mt-6 sm:text-[17px] lg:mt-7 lg:text-[clamp(17px,1.4vw,20px)]">
+            <p className="mt-5 max-w-[520px] text-[15px] font-light leading-relaxed text-[#F2E7D3]/80 sm:mt-6 sm:text-[17px] lg:mt-7 lg:text-[clamp(17px,1.4vw,20px)]">
               Every stylist specializes in textured hair. Find yours, see real
               openings, and book in seconds — no DMs, no ghosting.
             </p>
@@ -152,19 +170,6 @@ export default async function HomePage() {
                 variant="card"
               />
             </div>
-          </div>
-
-          {/* Trust bar at bottom */}
-          <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-center gap-4 rounded-xl border border-[#D9B36C]/25 bg-[#0C0B0A]/60 px-4 py-2.5 backdrop-blur-md sm:bottom-6 sm:left-6 sm:right-6 sm:gap-5 sm:rounded-2xl sm:px-5 sm:py-3 lg:bottom-8 lg:left-8 lg:right-8 lg:gap-6 lg:py-4 max-sm:flex-nowrap max-sm:justify-start max-sm:overflow-x-auto max-sm:scrollbar-hide">
-            <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
-              <BadgeCheck className="h-3.5 w-3.5 text-[#E4C783] sm:h-4 sm:w-4" /> ID-verified
-            </span>
-            <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
-              <Shield className="h-3.5 w-3.5 text-[#E4C783] sm:h-4 sm:w-4" /> Secure payments
-            </span>
-            <span className="flex shrink-0 items-center gap-2 text-xs text-[#F2E7D3]/85 sm:text-[13px]">
-              <Clock className="h-3.5 w-3.5 text-[#E4C783] sm:h-4 sm:w-4" /> Instant confirm
-            </span>
           </div>
         </div>
       </section>
