@@ -179,7 +179,7 @@ export default async function HomePage() {
 
       {/* CTA1 — Client Section */}
       <section className="w-full bg-[#FBF6EC] dark:bg-[#141210]">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
+        <div className="grid items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
           {/* Text — left */}
           <div>
             <h2 className="font-heading text-2xl font-bold leading-tight tracking-tight text-[#1A1816] dark:text-[#FBF6EC] sm:text-3xl lg:text-[clamp(30px,2.8vw,40px)]">
@@ -249,7 +249,7 @@ export default async function HomePage() {
 
       {/* CTA2 — Stylist Section */}
       <section className="w-full bg-[#F5EFE3] dark:bg-[#11100E]">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
+        <div className="grid items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
           {/* Image — left (on desktop, stacks below text on mobile via order) */}
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl lg:rounded-3xl order-2 lg:order-1">
             <Image
