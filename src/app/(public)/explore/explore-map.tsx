@@ -210,7 +210,7 @@ function MapContent({
                 setSelectedBiz(null);
               }
             }}
-            className="block max-w-[240px] cursor-pointer overflow-hidden rounded-lg"
+            className="block max-w-[240px] cursor-pointer overflow-hidden rounded-lg bg-card"
           >
             {/* Cover image */}
             {selectedBiz.imageUrl ? (
@@ -227,16 +227,16 @@ function MapContent({
               </div>
             )}
             <div className="p-2.5">
-              <p className="font-semibold text-sm text-gray-900">
+              <p className="font-semibold text-sm text-foreground">
                 {selectedBiz.name}
               </p>
               {selectedBiz.categoryName && (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {selectedBiz.categoryName}
                 </p>
               )}
               {selectedBiz.city && (
-                <p className="text-xs text-gray-400">{selectedBiz.city}</p>
+                <p className="text-xs text-muted-foreground/70">{selectedBiz.city}</p>
               )}
               <div className="mt-1.5 flex items-center justify-between">
                 <StarRating
