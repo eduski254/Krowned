@@ -41,6 +41,32 @@ export const metadata: Metadata = {
   },
 };
 
+function isBusinessOpen(
+  hours: { day_of_week: number; open_time: string | null; close_time: string | null }[],
+  timezone: string,
+): boolean | null {
+  if (!hours || hours.length === 0) return null;
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(now);
+  const dayName = parts.find((p) => p.type === "weekday")?.value ?? "";
+  const dayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  const dayOfWeek = dayMap[dayName] ?? now.getDay();
+  const hour = parts.find((p) => p.type === "hour")?.value ?? "00";
+  const minute = parts.find((p) => p.type === "minute")?.value ?? "00";
+  const currentTime = `${hour}:${minute}`;
+
+  const todayHours = hours.find((h) => h.day_of_week === dayOfWeek);
+  if (!todayHours || !todayHours.open_time || !todayHours.close_time) return false;
+  return currentTime >= todayHours.open_time && currentTime < todayHours.close_time;
+}
+
 export default async function HomePage() {
   const supabase = await createClient();
 
@@ -53,7 +79,7 @@ export default async function HomePage() {
     supabase
       .from("businesses")
       .select(
-        "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, created_at, primary_category_id, service_categories(name, slug)",
+        "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, created_at, timezone, primary_category_id, service_categories(name, slug), business_hours(day_of_week, open_time, close_time)",
       )
       .eq("is_published", true)
       .eq("verification_status", "verified")
@@ -373,7 +399,9 @@ export default async function HomePage() {
                   name: string;
                   slug: string;
                 } | null;
+                const hours = (biz.business_hours ?? []) as { day_of_week: number; open_time: string | null; close_time: string | null }[];
                 const isNew = biz.created_at >= oneWeekAgo;
+                const openStatus = isBusinessOpen(hours, biz.timezone ?? "America/New_York");
                 return (
                   <Link
                     key={biz.id}
@@ -395,9 +423,27 @@ export default async function HomePage() {
                           {biz.name.charAt(0)}
                         </div>
                       )}
-                      {isNew && (
-                        <span className="absolute left-2.5 top-2.5 rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-bold text-primary-foreground shadow">
-                          New
+                      {/* Top-left badges */}
+                      <div className="absolute left-2.5 top-2.5 flex flex-col gap-1.5">
+                        {biz.is_featured && (
+                          <span className="rounded-full bg-[#D9B36C] px-2.5 py-0.5 text-[11px] font-bold text-[#1A1816] shadow">
+                            Featured
+                          </span>
+                        )}
+                        {isNew && (
+                          <span className="rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-bold text-primary-foreground shadow">
+                            New
+                          </span>
+                        )}
+                      </div>
+                      {/* Open/Closed badge — top right */}
+                      {openStatus !== null && (
+                        <span className={`absolute right-2.5 top-2.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold shadow ${
+                          openStatus
+                            ? "bg-emerald-500 text-white"
+                            : "bg-[#1A1816] text-white"
+                        }`}>
+                          {openStatus ? "Open Now" : "Closed"}
                         </span>
                       )}
                     </div>
