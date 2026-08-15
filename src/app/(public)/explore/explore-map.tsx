@@ -11,7 +11,6 @@ import {
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
 import { StarRating } from "@/components/star-rating";
-import { useTheme } from "@/components/theme-provider";
 import type { ExploreBusiness } from "@/lib/explore/actions";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
@@ -84,8 +83,6 @@ function MapContent({
   onSelectBiz?: (biz: ExploreBusiness) => void;
 }) {
   const map = useMap();
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   const clustererRef = useRef<MarkerClusterer | null>(null);
   const markersRef = useRef<globalThis.Map<string, Marker> | null>(null);
   if (!markersRef.current) markersRef.current = new globalThis.Map();
@@ -168,7 +165,7 @@ function MapContent({
               {/* Pin body */}
               <path
                 d="M16 0C7.163 0 0 7.163 0 16c0 10 14.4 23.1 15 23.7.3.2.7.3 1 .3s.7-.1 1-.3c.6-.6 15-13.7 15-23.7C32 7.163 24.837 0 16 0z"
-                fill={highlightedId === biz.id ? (isDark ? "#8A6A2F" : "#000000") : (isDark ? "#D9B36C" : "#1A1816")}
+                fill={highlightedId === biz.id ? "#000000" : "#1A1816"}
               />
               {/* White inner circle */}
               <circle cx="16" cy="15" r="7" fill="white" />
@@ -179,7 +176,7 @@ function MapContent({
                 textAnchor="middle"
                 fontSize="10"
                 fontWeight="700"
-                fill={highlightedId === biz.id ? (isDark ? "#8A6A2F" : "#000000") : (isDark ? "#D9B36C" : "#1A1816")}
+                fill={highlightedId === biz.id ? "#000000" : "#1A1816"}
                 fontFamily="system-ui, sans-serif"
               >
                 {biz.name.charAt(0)}
