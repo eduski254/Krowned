@@ -76,14 +76,14 @@ export default async function DashboardLayout({
     (isImpersonating ? "Unknown User" : (user.user_metadata?.full_name ?? user.email ?? "User"));
 
   return (
-    <div className="flex h-full min-h-screen flex-col">
+    <div className="flex h-screen flex-col overflow-hidden">
       {isImpersonating && (
         <ImpersonationBanner targetName={fullName} targetRole={roleLabels[role]} />
       )}
-      <div className="flex flex-1">
+      <div className="flex min-h-0 flex-1">
         <IdleTimeout />
         <Sidebar groups={navGroups} role={roleLabels[role]} userId={effectiveUserId} />
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-h-0 flex-1 flex-col">
           <Topbar
             userId={effectiveUserId}
             userName={fullName}
