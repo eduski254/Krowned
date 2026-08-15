@@ -184,7 +184,7 @@ export default async function HomePage() {
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
           {/* Text — left */}
           <div>
-            <h2 className="font-heading text-3xl font-bold leading-tight tracking-tight text-[#1A1816] dark:text-[#FBF6EC] sm:text-4xl lg:text-[clamp(36px,3.2vw,48px)]">
+            <h2 className="font-heading text-2xl font-bold leading-tight tracking-tight text-[#1A1816] dark:text-[#FBF6EC] sm:text-3xl lg:text-[clamp(30px,2.8vw,40px)]">
               Find your stylist.<br />Book your crown.
             </h2>
             <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-[#4A4540] dark:text-[#C8BFAD] sm:text-base lg:text-[17px]">
@@ -266,7 +266,7 @@ export default async function HomePage() {
 
           {/* Text — right */}
           <div className="order-1 lg:order-2">
-            <h2 className="font-heading text-3xl font-bold leading-tight tracking-tight text-[#1A1816] dark:text-[#FBF6EC] sm:text-4xl lg:text-[clamp(36px,3.2vw,48px)]">
+            <h2 className="font-heading text-2xl font-bold leading-tight tracking-tight text-[#1A1816] dark:text-[#FBF6EC] sm:text-3xl lg:text-[clamp(30px,2.8vw,40px)]">
               Turn your talent into<br />a booked business.
             </h2>
             <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-[#4A4540] dark:text-[#C8BFAD] sm:text-base lg:text-[17px]">
