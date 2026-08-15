@@ -259,7 +259,7 @@ export function HeroSearch({
           <button
             type="button"
             onClick={handleSubmit}
-            className="mt-2 flex w-full items-center justify-center gap-2.5 rounded-[14px] bg-gradient-to-br from-[#E4C783] to-[#C6A15B] px-4 py-3.5 text-sm font-semibold text-[#0C0B0A] shadow-lg shadow-[#D9B36C]/25 transition-all hover:from-[#EDD49A] hover:to-[#D9B36C] hover:-translate-y-px active:scale-[0.99] sm:py-4 sm:text-base"
+            className="mt-2 flex w-full items-center justify-center gap-2.5 rounded-[14px] border border-white/25 bg-white/10 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-white/5 backdrop-blur-md transition-all hover:bg-white/20 hover:border-white/35 hover:-translate-y-px active:scale-[0.99] sm:py-4 sm:text-base"
           >
             <Search className="h-[17px] w-[17px] sm:h-[18px] sm:w-[18px]" />
             Search stylists
