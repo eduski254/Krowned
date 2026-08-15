@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 const SERVICES = [
   "Retwist",
@@ -17,34 +17,72 @@ const SERVICES = [
   "Crown Refresh",
 ];
 
-const INTERVAL = 3000;
+const TYPE_SPEED = 70;
+const DELETE_SPEED = 40;
+const PAUSE_AFTER_TYPE = 2200;
+const PAUSE_AFTER_DELETE = 300;
 
 export function RotatingService({ className }: { className?: string }) {
-  const [index, setIndex] = useState(0);
-  const [phase, setPhase] = useState<"in" | "out">("in");
+  const [displayed, setDisplayed] = useState("");
+  const [showCursor, setShowCursor] = useState(true);
+  const indexRef = useRef(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const cycle = useCallback(() => {
-    setPhase("out");
-    setTimeout(() => {
-      setIndex((prev) => (prev + 1) % SERVICES.length);
-      setPhase("in");
-    }, 400);
+  const typeWord = useCallback((word: string, charIndex: number) => {
+    if (charIndex <= word.length) {
+      setDisplayed(word.slice(0, charIndex));
+      timeoutRef.current = setTimeout(
+        () => typeWord(word, charIndex + 1),
+        TYPE_SPEED,
+      );
+    } else {
+      // Done typing — pause then delete
+      timeoutRef.current = setTimeout(() => deleteWord(word, word.length), PAUSE_AFTER_TYPE);
+    }
   }, []);
 
+  const deleteWord = useCallback((word: string, charIndex: number) => {
+    if (charIndex >= 0) {
+      setDisplayed(word.slice(0, charIndex));
+      timeoutRef.current = setTimeout(
+        () => deleteWord(word, charIndex - 1),
+        DELETE_SPEED,
+      );
+    } else {
+      // Done deleting — move to next word
+      indexRef.current = (indexRef.current + 1) % SERVICES.length;
+      timeoutRef.current = setTimeout(
+        () => typeWord(SERVICES[indexRef.current], 0),
+        PAUSE_AFTER_DELETE,
+      );
+    }
+  }, [typeWord]);
+
   useEffect(() => {
-    const id = setInterval(cycle, INTERVAL);
+    typeWord(SERVICES[0], 0);
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [typeWord]);
+
+  // Blinking cursor
+  useEffect(() => {
+    const id = setInterval(() => setShowCursor((prev) => !prev), 530);
     return () => clearInterval(id);
-  }, [cycle]);
+  }, []);
 
   return (
-    <span
-      className={`inline-block transition-all duration-400 ${
-        phase === "in"
-          ? "opacity-100 translate-y-0 blur-0"
-          : "opacity-0 translate-y-3 blur-[2px]"
-      } ${className ?? ""}`}
-    >
-      {SERVICES[index]}.
+    <span className={`inline-flex items-baseline ${className ?? ""}`}>
+      <span className="whitespace-nowrap">{displayed}</span>
+      <span
+        className={`ml-[2px] inline-block h-[0.85em] w-[3px] self-center rounded-full bg-current transition-opacity duration-100 ${
+          showCursor ? "opacity-100" : "opacity-0"
+        }`}
+      />
+      {/* Invisible longest word to reserve space and prevent layout shift */}
+      <span className="invisible absolute whitespace-nowrap" aria-hidden="true">
+        Two-Strand Twists.
+      </span>
     </span>
   );
 }
