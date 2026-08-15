@@ -149,7 +149,7 @@ export default async function HomePage() {
                 </span>
               </div>
 
-              <p className="mt-4 max-w-[520px] text-[14px] font-light leading-relaxed text-[#F2E7D3]/80 sm:mt-6 sm:text-[17px] lg:mt-7 lg:text-[clamp(17px,1.4vw,20px)]">
+              <p className="mt-4 max-w-[520px] text-[13px] font-light leading-relaxed text-[#F2E7D3]/60 sm:mt-6 sm:text-[15px] lg:mt-7 lg:text-[clamp(15px,1.2vw,17px)]">
                 Every stylist specializes in textured hair. Find yours, see real
                 openings, and book in seconds — no DMs, no ghosting.
               </p>
