@@ -13,6 +13,7 @@ import { SocialLinksBar } from "@/components/social-icons";
 import { PhotoGallery } from "./photo-gallery";
 import { ReviewPhotos } from "./review-photos";
 import { JsonLd, localBusinessSchema, breadcrumbSchema } from "@/lib/schema";
+import { ClaimListingButton } from "@/components/public/claim-listing-button";
 
 const BusinessMiniMap = lazy(() =>
   import("./business-mini-map").then((m) => ({ default: m.BusinessMiniMap })),
@@ -240,6 +241,23 @@ export default async function BusinessProfilePage({
           )}
         </div>
       </div>
+
+      {/* Claim listing banner for unclaimed businesses */}
+      {!business.claimed && (
+        <div className="mt-6 flex flex-col gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-semibold text-foreground">This listing hasn&apos;t been claimed yet</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              If you own this business, claim it to manage your profile, add services, and accept bookings.
+            </p>
+          </div>
+          <ClaimListingButton
+            businessId={business.id}
+            businessName={business.name}
+            isLoggedIn={!!user}
+          />
+        </div>
+      )}
 
       {/* Description */}
       {business.description && (

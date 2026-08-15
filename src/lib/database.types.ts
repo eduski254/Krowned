@@ -369,6 +369,7 @@ export type Database = {
           booking_link_token: string | null
           charges_enabled: boolean
           city: string | null
+          claimed: boolean
           commission_rate: number
           country: string | null
           cover_url: string | null
@@ -412,6 +413,7 @@ export type Database = {
           booking_link_token?: string | null
           charges_enabled?: boolean
           city?: string | null
+          claimed?: boolean
           commission_rate?: number
           country?: string | null
           cover_url?: string | null
@@ -455,6 +457,7 @@ export type Database = {
           booking_link_token?: string | null
           charges_enabled?: boolean
           city?: string | null
+          claimed?: boolean
           commission_rate?: number
           country?: string | null
           cover_url?: string | null
@@ -883,6 +886,73 @@ export type Database = {
           },
         ]
       }
+      listing_claims: {
+        Row: {
+          business_id: string
+          claimant_id: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string | null
+          proof_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          claimant_id: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          proof_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          claimant_id?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          proof_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_claims_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_claims_claimant_id_fkey"
+            columns: ["claimant_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_claims_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           body: string
@@ -1270,7 +1340,7 @@ export type Database = {
           comment: string | null
           created_at: string
           id: string
-          photos: string[] | null
+          photos: Json | null
           rating: number
           staff_id: string
           status: Database["public"]["Enums"]["review_status"]
@@ -1283,7 +1353,7 @@ export type Database = {
           comment?: string | null
           created_at?: string
           id?: string
-          photos?: string[] | null
+          photos?: Json | null
           rating: number
           staff_id: string
           status?: Database["public"]["Enums"]["review_status"]
@@ -1296,7 +1366,7 @@ export type Database = {
           comment?: string | null
           created_at?: string
           id?: string
-          photos?: string[] | null
+          photos?: Json | null
           rating?: number
           staff_id?: string
           status?: Database["public"]["Enums"]["review_status"]
