@@ -24,6 +24,7 @@ import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { resolveCardImage } from "@/lib/explore/utils";
 import { FeaturedCarousel } from "@/components/public/featured-carousel";
 import { JsonLd, organizationSchema, webSiteSchema } from "@/lib/schema";
+import { RotatingService } from "@/components/public/rotating-service";
 
 /** Revalidate homepage every hour (ISR) */
 export const revalidate = 3600;
@@ -141,10 +142,10 @@ export default async function HomePage() {
                 DMV textured-hair pros
               </span>
 
-              <h1 className="font-heading text-[clamp(36px,8vw,52px)] font-extrabold leading-[0.96] tracking-tight text-[#FBF6EC] sm:text-[clamp(44px,6.5vw,64px)] lg:text-[clamp(52px,5.5vw,88px)]">
-                Your crown,
+              <h1 className="font-heading text-[clamp(36px,8vw,52px)] font-extrabold leading-[1.05] tracking-tight text-[#FBF6EC] sm:text-[clamp(44px,6.5vw,64px)] lg:text-[clamp(52px,5.5vw,88px)]">
+                Book your next
                 <br />
-                booked.
+                <RotatingService className="text-[#E4C783]" />
               </h1>
 
               <p className="mt-5 max-w-[520px] text-[15px] font-light leading-relaxed text-[#F2E7D3]/80 sm:mt-6 sm:text-[17px] lg:mt-7 lg:text-[clamp(17px,1.4vw,20px)]">
