@@ -15,7 +15,6 @@ import {
   Users,
   MapPin,
   BadgeCheck,
-  Fingerprint,
 } from "lucide-react";
 import { TestimonialsCarousel } from "@/components/public/testimonials-carousel";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
@@ -478,12 +477,7 @@ export default async function HomePage() {
           </p>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              {
-                icon: Fingerprint,
-                title: "Verified, texture-specialist stylists",
-                desc: "Every pro is ID-verified and vetted for textured-hair work — no guessing whether they can handle your 4C, your locs, or your tension.",
-              },
-              {
+{
                 icon: BadgeCheck,
                 title: "Every Stylist Verified",
                 desc: "No fake pages or dead accounts. Every business on Krowned is verified with real work, real reviews, and a real booking system.",
