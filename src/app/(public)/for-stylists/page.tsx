@@ -276,12 +276,15 @@ function PlanCard({
 
       <Link
         href={ctaHref}
-        className={`mt-6 block rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors ${
+        className={`relative mt-6 block overflow-hidden rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors ${
           isPrimary
             ? "bg-primary text-primary-foreground hover:bg-primary/90"
             : "border border-border text-foreground hover:bg-muted"
         }`}
       >
+        {isPrimary && (
+          <span className="pointer-events-none absolute inset-0 -translate-x-full animate-[glare_3s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+        )}
         {cta}
       </Link>
     </div>
