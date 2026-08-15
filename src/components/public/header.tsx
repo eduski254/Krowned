@@ -62,7 +62,7 @@ export async function PublicHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground dark:text-white"
             >
               {link.label}
             </Link>
