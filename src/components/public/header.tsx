@@ -43,7 +43,7 @@ export async function PublicHeader() {
             alt="Krowned"
             width={120}
             height={32}
-            className="h-8 w-auto hidden dark:block"
+            className="h-7 w-auto hidden dark:block"
             priority
           />
           <Image
@@ -51,7 +51,7 @@ export async function PublicHeader() {
             alt="Krowned"
             width={120}
             height={32}
-            className="h-8 w-auto block dark:hidden"
+            className="h-7 w-auto block dark:hidden"
             priority
           />
         </Link>
