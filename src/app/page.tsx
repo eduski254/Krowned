@@ -25,7 +25,6 @@ import { resolveCardImage } from "@/lib/explore/utils";
 import { FeaturedCarousel } from "@/components/public/featured-carousel";
 import { JsonLd, organizationSchema, webSiteSchema } from "@/lib/schema";
 import { RotatingService } from "@/components/public/rotating-service";
-import { SocialProof } from "@/components/home/social-proof";
 
 /** Revalidate homepage every hour (ISR) */
 export const revalidate = 3600;
@@ -179,9 +178,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Social Proof — credibility strip */}
-      <SocialProof />
 
       {/* CTA1 — Client Section */}
       <section className="w-full bg-[#FBF6EC] dark:bg-[#141210]">
