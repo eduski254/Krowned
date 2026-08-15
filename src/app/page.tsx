@@ -142,7 +142,7 @@ export default async function HomePage() {
                 DMV textured-hair pros
               </span>
 
-              <div className="font-heading text-[clamp(28px,7vw,42px)] font-extrabold leading-[1.25] tracking-tight text-[#FBF6EC] sm:text-[clamp(40px,6vw,56px)] lg:text-[clamp(48px,5vw,76px)]" role="heading" aria-level={1}>
+              <div className="font-heading text-[clamp(28px,7vw,42px)] font-extrabold leading-[1.4] tracking-tight text-[#FBF6EC] sm:text-[clamp(40px,6vw,56px)] lg:text-[clamp(48px,5vw,76px)]" role="heading" aria-level={1}>
                 <span className="block">Book your next</span>
                 <span className="block h-[1.3em] overflow-hidden whitespace-nowrap text-[0.65em] sm:text-[0.8em] lg:text-[0.85em]">
                   <RotatingService className="text-[#E4C783]" />
