@@ -47,65 +47,65 @@ export function Footer() {
               alt="Krowned"
               className="h-7 w-auto block dark:hidden"
             />
-            <p className="mt-3 text-sm text-muted-foreground">
+            <p className="mt-3 text-sm text-muted-foreground dark:text-white/70">
               Your crown, booked.
             </p>
           </div>
 
           {/* For Clients */}
           <div>
-            <h3 className="text-sm font-semibold text-foreground">For Clients</h3>
+            <h3 className="text-sm font-semibold text-foreground dark:text-white">For Clients</h3>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><Link href="/explore" className="text-muted-foreground hover:text-foreground">Find a stylist</Link></li>
-              <li><Link href="/styles" className="text-muted-foreground hover:text-foreground">Browse styles</Link></li>
-              <li><Link href="/how-it-works" className="text-muted-foreground hover:text-foreground">How it works</Link></li>
-              <li><Link href="/faq" className="text-muted-foreground hover:text-foreground">FAQ</Link></li>
+              <li><Link href="/explore" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Find a stylist</Link></li>
+              <li><Link href="/styles" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Browse styles</Link></li>
+              <li><Link href="/how-it-works" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">How it works</Link></li>
+              <li><Link href="/faq" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">FAQ</Link></li>
             </ul>
           </div>
 
           {/* For Stylists */}
           <div>
-            <h3 className="text-sm font-semibold text-foreground">For Stylists</h3>
+            <h3 className="text-sm font-semibold text-foreground dark:text-white">For Stylists</h3>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><Link href="/for-stylists" className="text-muted-foreground hover:text-foreground">List your studio</Link></li>
-              <li><Link href="/for-professionals" className="text-muted-foreground hover:text-foreground">Pricing</Link></li>
-              <li><Link href="/community-guidelines" className="text-muted-foreground hover:text-foreground">Community guidelines</Link></li>
-              <li><Link href="/stylist-terms" className="text-muted-foreground hover:text-foreground">Stylist terms</Link></li>
+              <li><Link href="/for-stylists" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">List your studio</Link></li>
+              <li><Link href="/for-professionals" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Pricing</Link></li>
+              <li><Link href="/community-guidelines" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Community guidelines</Link></li>
+              <li><Link href="/stylist-terms" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Stylist terms</Link></li>
             </ul>
           </div>
 
           {/* Company */}
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Company</h3>
+            <h3 className="text-sm font-semibold text-foreground dark:text-white">Company</h3>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><Link href="/our-story" className="text-muted-foreground hover:text-foreground">Our story</Link></li>
-              <li><Link href="/blog" className="text-muted-foreground hover:text-foreground">Blog</Link></li>
-              <li><Link href="/contact" className="text-muted-foreground hover:text-foreground">Contact</Link></li>
+              <li><Link href="/our-story" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Our story</Link></li>
+              <li><Link href="/blog" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Blog</Link></li>
+              <li><Link href="/contact" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Contact</Link></li>
             </ul>
           </div>
 
           {/* Legal */}
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Legal</h3>
+            <h3 className="text-sm font-semibold text-foreground dark:text-white">Legal</h3>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><Link href="/terms" className="text-muted-foreground hover:text-foreground">Terms of Service</Link></li>
-              <li><Link href="/privacy" className="text-muted-foreground hover:text-foreground">Privacy Policy</Link></li>
-              <li><Link href="/cookie-policy" className="text-muted-foreground hover:text-foreground">Cookie Policy</Link></li>
-              <li><Link href="/cancellation-policy" className="text-muted-foreground hover:text-foreground">Cancellation &amp; Refunds</Link></li>
-              <li><Link href="/accessibility" className="text-muted-foreground hover:text-foreground">Accessibility</Link></li>
+              <li><Link href="/terms" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Terms of Service</Link></li>
+              <li><Link href="/privacy" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Privacy Policy</Link></li>
+              <li><Link href="/cookie-policy" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Cookie Policy</Link></li>
+              <li><Link href="/cancellation-policy" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Cancellation &amp; Refunds</Link></li>
+              <li><Link href="/accessibility" className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">Accessibility</Link></li>
             </ul>
           </div>
         </div>
 
         {/* Popular areas (local SEO) */}
         <div className="mt-10 border-t border-border pt-8">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground dark:text-white/70">
             Popular Areas
           </h4>
           <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
             {SEO_LINKS.map((link, i) => (
               <span key={link.label}>
-                <Link href={link.href} className="text-muted-foreground hover:text-foreground">
+                <Link href={link.href} className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white">
                   {link.label}
                 </Link>
                 {i < SEO_LINKS.length - 1 && (
@@ -118,7 +118,7 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-8 flex flex-col items-center gap-4 border-t border-border pt-8 sm:flex-row sm:justify-between">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground dark:text-white/70">
             &copy; {new Date().getFullYear()} Krowned &middot; Made in the DMV
           </p>
 
@@ -134,7 +134,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white transition-colors"
             >
               <InstagramIcon className="h-5 w-5" />
             </a>
@@ -143,7 +143,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="TikTok"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground dark:text-white/70 dark:hover:text-white transition-colors"
             >
               <TikTokIcon className="h-5 w-5" />
             </a>
