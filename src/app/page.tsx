@@ -5,8 +5,6 @@ import { PublicHeader } from "@/components/public/header";
 import { Footer } from "@/components/public/footer";
 import { HeroSearch } from "@/components/public/hero-search";
 import {
-  Search,
-  Calendar,
   CheckCircle,
   ArrowRight,
   Shield,
@@ -509,35 +507,46 @@ export default async function HomePage() {
           <div className="mt-12 grid gap-8 md:grid-cols-3">
             {[
               {
-                icon: Search,
                 step: "1",
+                image: "/brand/step-1.jpeg",
+                alt: "Client browsing textured-hair stylists on her phone",
                 title: "Find your stylist",
                 desc: "Browse braiders, loc techs, and natural-hair pros across the DMV. Filter by style, location, and availability.",
               },
               {
-                icon: Calendar,
                 step: "2",
+                image: "/brand/step-2.jpeg",
+                alt: "Stylist booking calendar showing available appointment slots",
                 title: "Book your seat",
                 desc: "Pick your service, choose a time, lock it in. No DMs. No back-and-forth. Confirmed instantly.",
               },
               {
-                icon: CheckCircle,
                 step: "3",
+                image: "/brand/step-3.jpeg",
+                alt: "Client with freshly styled textured hair feeling confident",
                 title: "Get crowned",
                 desc: "Show up, sit back, leave feeling like royalty. Pay online or in the chair — tip your stylist right from the app.",
               },
             ].map((item) => (
-              <div key={item.title} className="text-center">
-                <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
-                  <item.icon className="h-7 w-7 text-primary" />
-                  <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+              <div key={item.title} className="overflow-hidden rounded-2xl border border-border bg-card">
+                <div className="relative aspect-[4/5] w-full overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={item.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover"
+                  />
+                  <span className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground shadow-lg">
                     {item.step}
                   </span>
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-foreground">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
+                </div>
               </div>
             ))}
           </div>
