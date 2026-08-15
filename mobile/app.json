@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "Krowned",
+    "slug": "krowned",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "krowned",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.krowned.mobile",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Krowned uses your location to find nearby stylists."
+      }
+    },
+    "android": {
+      "package": "app.krowned.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#0C0B0A",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": ["ACCESS_FINE_LOCATION"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-location"
+    ]
+  }
+}
