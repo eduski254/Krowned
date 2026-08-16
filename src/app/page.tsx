@@ -291,16 +291,19 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Image — right */}
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[5px]">
-            <Image
-              src="/brand/cta-client.jpeg"
-              alt="Client getting her textured hair styled at a Krowned salon"
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              loading="lazy"
-              className="object-cover"
-            />
+          {/* Image — right with offset golden border */}
+          <div className="relative">
+            <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-[5px] border-2 border-[#D9B36C]/40 sm:translate-x-4 sm:translate-y-4" />
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[5px]">
+              <Image
+                src="/brand/cta-client.jpeg"
+                alt="Client getting her textured hair styled at a Krowned salon"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                loading="lazy"
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -308,16 +311,19 @@ export default async function HomePage() {
       {/* CTA2 — Stylist Section */}
       <section className="w-full bg-[#F5EFE3] dark:bg-[#11100E]">
         <div className="grid items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
-          {/* Image — left (on desktop, stacks below text on mobile via order) */}
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[5px] order-2 lg:order-1">
-            <Image
-              src="/brand/cta-stylist.jpeg"
-              alt="Stylist managing her bookings on a tablet at a Krowned salon"
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              loading="lazy"
-              className="object-cover"
-            />
+          {/* Image — left with offset golden border (on desktop, stacks below text on mobile via order) */}
+          <div className="relative order-2 lg:order-1">
+            <div className="absolute inset-0 -translate-x-3 translate-y-3 rounded-[5px] border-2 border-[#D9B36C]/40 sm:-translate-x-4 sm:translate-y-4" />
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[5px]">
+              <Image
+                src="/brand/cta-stylist.jpeg"
+                alt="Stylist managing her bookings on a tablet at a Krowned salon"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                loading="lazy"
+                className="object-cover"
+              />
+            </div>
           </div>
 
           {/* Text — right */}
