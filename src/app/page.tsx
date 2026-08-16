@@ -15,6 +15,11 @@ import {
   Users,
   MapPin,
   BadgeCheck,
+  Check,
+  X,
+  Zap,
+  Crown,
+  Building2,
 } from "lucide-react";
 import { TestimonialsCarousel } from "@/components/public/testimonials-carousel";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
@@ -697,26 +702,6 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
-          {/* Directory preview */}
-          <div className="mx-auto mt-12 max-w-5xl overflow-hidden rounded-xl border border-border shadow-lg">
-            <div className="flex items-center gap-2 bg-muted/60 px-4 py-2.5">
-              <span className="h-3 w-3 rounded-full bg-red-400/70" />
-              <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
-              <span className="h-3 w-3 rounded-full bg-green-400/70" />
-              <span className="ml-3 flex-1 rounded-md bg-background/60 px-3 py-1 text-xs text-muted-foreground">
-                krowned.app/explore
-              </span>
-            </div>
-            <Image
-              src="/brand/directory-preview.webp"
-              alt="Krowned stylist directory — browse business cards with cover photos, ratings, and an interactive map of stylists across the DMV"
-              width={1280}
-              height={800}
-              loading="lazy"
-              className="w-full"
-            />
-          </div>
-
           <div className="mt-10 text-center">
             <Link
               href="/explore"
@@ -728,68 +713,101 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA band — for stylists */}
-      <section className="relative w-full overflow-hidden px-5 py-16 text-white sm:px-8 sm:py-20 lg:px-12">
-        <Image
-          src="/brand/bg-hero.webp"
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative z-10">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold sm:text-3xl">
-              You braid, loc, or style textured hair?
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-white/90">
-              Stop losing bookings in your DMs. Get a real calendar, take
-              deposits, cut no-shows, and get paid — free to start.
-            </p>
-          </div>
+      {/* Pricing */}
+      <section id="pricing" className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
+            Simple, transparent pricing
+          </h2>
+          <p className="mt-2 text-center text-muted-foreground">
+            14-day free trial on all paid plans. No credit card required.
+          </p>
 
-          {/* Dashboard preview */}
-          <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-xl border border-white/10 shadow-2xl">
-            <div className="flex items-center gap-2 bg-black/40 px-4 py-2.5 backdrop-blur-sm">
-              <span className="h-3 w-3 rounded-full bg-red-400/70" />
-              <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
-              <span className="h-3 w-3 rounded-full bg-green-400/70" />
-              <span className="ml-3 flex-1 rounded-md bg-white/10 px-3 py-1 text-xs text-white/60">
-                krowned.app/dashboard
-              </span>
-            </div>
-            <Image
-              src="/brand/dashboard-preview.webp"
-              alt="Krowned business dashboard — track earnings, manage bookings, and see monthly revenue charts"
-              width={1024}
-              height={640}
-              loading="lazy"
-              className="w-full"
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <HomePlanCard
+              name="Free"
+              price={0}
+              period="forever"
+              description="Get discovered"
+              features={[
+                { text: "Directory listing", included: true },
+                { text: "Basic profile", included: true },
+                { text: "Discoverable in search", included: true },
+                { text: "Booking engine", included: false },
+                { text: "Online payments", included: false },
+                { text: "Staff management", included: false },
+              ]}
+              cta="Get started"
+              ctaHref="/signup?type=professional"
+              variant="default"
+            />
+
+            <HomePlanCard
+              name="Starter"
+              price={15}
+              period="/seat/mo"
+              description="For solo stylists"
+              icon={<Zap className="h-5 w-5" />}
+              features={[
+                { text: "Everything in Free", included: true },
+                { text: "Full booking engine", included: true },
+                { text: "Online payments + tips", included: true },
+                { text: "Shareable booking link", included: true },
+                { text: "1 staff seat", included: true },
+                { text: "Up to 5 services", included: true },
+              ]}
+              cta="Start free trial"
+              ctaHref="/signup?type=professional"
+              variant="default"
+            />
+
+            <HomePlanCard
+              name="Pro"
+              price={25}
+              period="/seat/mo"
+              description="For growing teams"
+              icon={<Crown className="h-5 w-5" />}
+              badge="Most popular"
+              features={[
+                { text: "Everything in Starter", included: true },
+                { text: "Up to 10 staff seats", included: true },
+                { text: "Unlimited services", included: true },
+                { text: "In-app messaging", included: true },
+                { text: "Analytics & earnings", included: true },
+                { text: "Priority support", included: true },
+              ]}
+              cta="Start free trial"
+              ctaHref="/signup?type=professional"
+              variant="primary"
+            />
+
+            <HomePlanCard
+              name="Enterprise"
+              price={49}
+              period="/seat/mo"
+              description="For large studios"
+              icon={<Building2 className="h-5 w-5" />}
+              features={[
+                { text: "Everything in Pro", included: true },
+                { text: "Unlimited staff seats", included: true },
+                { text: "Featured placement", included: true },
+                { text: "Dedicated support", included: true },
+                { text: "Custom branding", included: true },
+                { text: "Advanced analytics", included: true },
+              ]}
+              cta="Start free trial"
+              ctaHref="/signup?type=professional"
+              variant="default"
             />
           </div>
 
-          <div className="mt-8 text-center">
-            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-              <Link
-                href="/for-stylists"
-                className="inline-block rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
-              >
-                List your studio — it&apos;s free
-              </Link>
-              <Link
-                href="/how-it-works"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-white/90 underline underline-offset-4 hover:text-white"
-              >
-                See how it works <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-            <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-white/60 sm:text-sm">
-              <span>14-day free trial</span>
-              <span>No credit card required</span>
-              <span>Cancel anytime</span>
-            </div>
+          <div className="mt-10 text-center">
+            <Link
+              href="/for-stylists"
+              className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+            >
+              Compare all features <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>
@@ -982,6 +1000,93 @@ export default async function HomePage() {
       </section>
 
       <Footer />
+    </div>
+  );
+}
+
+// ── HomePlanCard ─────────────────────────────────────────────────
+
+function HomePlanCard({
+  name,
+  price,
+  period,
+  description,
+  icon,
+  badge,
+  features,
+  cta,
+  ctaHref,
+  variant,
+}: {
+  name: string;
+  price: number;
+  period: string;
+  description: string;
+  icon?: React.ReactNode;
+  badge?: string;
+  features: { text: string; included: boolean }[];
+  cta: string;
+  ctaHref: string;
+  variant: "default" | "primary";
+}) {
+  const isPrimary = variant === "primary";
+
+  return (
+    <div
+      className={`relative flex flex-col rounded-xl p-6 ${
+        isPrimary
+          ? "border-2 border-primary bg-card shadow-lg"
+          : "border border-border bg-card"
+      }`}
+    >
+      {badge && (
+        <span className="absolute -top-3 left-6 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground">
+          {badge}
+        </span>
+      )}
+
+      <div className="flex items-center gap-2">
+        {icon && <span className="text-primary">{icon}</span>}
+        <h3 className="text-lg font-bold text-foreground">{name}</h3>
+      </div>
+
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+
+      <p className="mt-4">
+        <span className="text-3xl font-extrabold text-foreground">
+          ${price}
+        </span>
+        <span className="text-sm text-muted-foreground"> {period}</span>
+      </p>
+
+      <ul className="mt-6 flex-1 space-y-2.5">
+        {features.map((f) => (
+          <li key={f.text} className="flex items-start gap-2 text-sm">
+            {f.included ? (
+              <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-success" />
+            ) : (
+              <X className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground/40" />
+            )}
+            <span className={f.included ? "text-foreground" : "text-muted-foreground line-through"}>
+              {f.text}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <Link
+        href={ctaHref}
+        className={`relative mt-6 block overflow-hidden rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors ${
+          isPrimary
+            ? "bg-primary text-primary-foreground hover:bg-primary/90"
+            : "border border-border text-foreground hover:bg-muted"
+        }`}
+      >
+        {isPrimary && (
+          <span className="pointer-events-none absolute inset-0 -translate-x-full animate-[glare_3s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+        )}
+        {cta}
+      </Link>
     </div>
   );
 }
