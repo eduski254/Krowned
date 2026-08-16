@@ -37,29 +37,29 @@ export async function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/75 backdrop-blur-sm pt-[env(safe-area-inset-top)]">
       <div className="flex items-center px-4 py-3 sm:px-8 md:px-10 lg:px-[clamp(28px,4.2vw,60px)]">
-        {/* Left: logo + nav */}
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/brand/logo-white.png"
-              alt="Krowned"
-              width={120}
-              height={32}
-              className="h-7 w-auto hidden dark:block"
-              priority
-            />
-            <Image
-              src="/brand/logo-black.png"
-              alt="Krowned"
-              width={120}
-              height={32}
-              className="h-7 w-auto block dark:hidden"
-              priority
-            />
-          </Link>
+        {/* Left: logo */}
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/brand/logo-white.png"
+            alt="Krowned"
+            width={120}
+            height={32}
+            className="h-7 w-auto hidden dark:block"
+            priority
+          />
+          <Image
+            src="/brand/logo-black.png"
+            alt="Krowned"
+            width={120}
+            height={32}
+            className="h-7 w-auto block dark:hidden"
+            priority
+          />
+        </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden items-center gap-6 md:flex">
+        {/* Right: nav + actions */}
+        <div className="ml-auto hidden items-center gap-6 md:flex">
+          <nav className="flex items-center gap-6">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -70,10 +70,7 @@ export async function PublicHeader() {
               </Link>
             ))}
           </nav>
-        </div>
-
-        {/* Desktop right section */}
-        <div className="ml-auto hidden items-center gap-3 md:flex">
+          <div className="h-5 w-px bg-border" />
           <ThemeToggle />
           {user ? (
             <>
