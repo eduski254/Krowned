@@ -3,6 +3,7 @@ import { getEffectiveUserId } from "@/lib/effective-user";
 import { redirect } from "next/navigation";
 import { BusinessProfileForm } from "./business-profile-form";
 import { BusinessImages } from "./business-images";
+import { BadgesEditor } from "./badges-editor";
 
 export default async function BusinessProfilePage() {
   const effectiveUserId = await getEffectiveUserId();
@@ -48,6 +49,19 @@ export default async function BusinessProfilePage() {
               logoUrl={business.logo_url}
               coverUrl={business.cover_url}
               gallery={gallery}
+            />
+          </div>
+        )}
+
+        {business && (
+          <div className="rounded-xl border border-border bg-card p-6">
+            <h2 className="mb-1 text-lg font-semibold text-foreground">Badges</h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Let clients know what makes your business special. Select up to 6.
+            </p>
+            <BadgesEditor
+              businessId={business.id}
+              currentBadges={(business.badges as string[]) ?? []}
             />
           </div>
         )}

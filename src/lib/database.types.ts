@@ -366,6 +366,7 @@ export type Database = {
         Row: {
           address: string | null
           amenities: Json | null
+          badges: string[] | null
           booking_link_token: string | null
           charges_enabled: boolean
           city: string | null
@@ -410,6 +411,7 @@ export type Database = {
         Insert: {
           address?: string | null
           amenities?: Json | null
+          badges?: string[] | null
           booking_link_token?: string | null
           charges_enabled?: boolean
           city?: string | null
@@ -454,6 +456,7 @@ export type Database = {
         Update: {
           address?: string | null
           amenities?: Json | null
+          badges?: string[] | null
           booking_link_token?: string | null
           charges_enabled?: boolean
           city?: string | null

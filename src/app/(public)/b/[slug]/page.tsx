@@ -14,6 +14,7 @@ import { PhotoGallery } from "./photo-gallery";
 import { ReviewPhotos } from "./review-photos";
 import { JsonLd, localBusinessSchema, breadcrumbSchema } from "@/lib/schema";
 import { ClaimListingButton } from "@/components/public/claim-listing-button";
+import { getBadgesByIds } from "@/lib/badges";
 
 const BusinessMiniMap = lazy(() =>
   import("./business-mini-map").then((m) => ({ default: m.BusinessMiniMap })),
@@ -262,6 +263,21 @@ export default async function BusinessProfilePage({
       {/* Description */}
       {business.description && (
         <p className="mt-6 text-foreground">{business.description}</p>
+      )}
+
+      {/* Badges */}
+      {Array.isArray(business.badges) && business.badges.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {getBadgesByIds(business.badges as string[]).map((badge) => (
+            <span
+              key={badge.id}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/50 px-3 py-1 text-sm text-foreground"
+            >
+              <span>{badge.emoji}</span>
+              {badge.label}
+            </span>
+          ))}
+        </div>
       )}
 
       {/* Photo Gallery */}
