@@ -733,7 +733,7 @@ export function ExploreClient({
             >
               <ExploreMap
                 businesses={mappable}
-                highlightedId={highlightedId}
+                highlightedId={pinnedId}
                 onPinClick={handlePinClick}
                 onBoundsChanged={() => {}}
                 onSelectBiz={setPreviewBiz}
