@@ -60,16 +60,14 @@ export function BusinessPreview({
   biz: ExploreBusiness;
   onClose: () => void;
 }) {
-  const [extra, setExtra] = useState<BusinessExtra | null>(
-    detailsCache.get(biz.slug) ?? null,
-  );
-  const [loading, setLoading] = useState(!detailsCache.has(biz.slug));
+  const cached = detailsCache.get(biz.slug);
+  const [extra, setExtra] = useState<BusinessExtra | null>(cached ?? null);
+  const [loading, setLoading] = useState(!cached);
 
   useEffect(() => {
     if (detailsCache.has(biz.slug)) return;
 
     let cancelled = false;
-    setLoading(true);
     fetch(`/api/businesses/${biz.slug}`)
       .then((r) => r.json())
       .then((data) => {

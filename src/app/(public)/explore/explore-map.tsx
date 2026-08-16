@@ -23,18 +23,11 @@ export function ExploreMap({
   businesses,
   highlightedId,
   onPinClick,
-  onBoundsChanged,
   onSelectBiz,
 }: {
   businesses: ExploreBusiness[];
   highlightedId: string | null;
   onPinClick: (id: string) => void;
-  onBoundsChanged: (bounds: {
-    north: number;
-    south: number;
-    east: number;
-    west: number;
-  }) => void;
   onSelectBiz?: (biz: ExploreBusiness) => void;
 }) {
   if (!API_KEY) return null;
@@ -56,7 +49,6 @@ export function ExploreMap({
           businesses={businesses}
           highlightedId={highlightedId}
           onPinClick={onPinClick}
-          onBoundsChanged={onBoundsChanged}
           onSelectBiz={onSelectBiz}
         />
       </Map>
@@ -68,24 +60,17 @@ function MapContent({
   businesses,
   highlightedId,
   onPinClick,
-  onBoundsChanged,
   onSelectBiz,
 }: {
   businesses: ExploreBusiness[];
   highlightedId: string | null;
   onPinClick: (id: string) => void;
-  onBoundsChanged: (bounds: {
-    north: number;
-    south: number;
-    east: number;
-    west: number;
-  }) => void;
   onSelectBiz?: (biz: ExploreBusiness) => void;
 }) {
   const map = useMap();
   const clustererRef = useRef<MarkerClusterer | null>(null);
   const markersRef = useRef<globalThis.Map<string, Marker> | null>(null);
-  if (!markersRef.current) markersRef.current = new globalThis.Map();
+  if (markersRef.current == null) markersRef.current = new globalThis.Map();
   const [selectedBiz, setSelectedBiz] = useState<ExploreBusiness | null>(null);
 
   // Initialize clusterer
@@ -115,6 +100,7 @@ function MapContent({
       bounds.extend({ lat: biz.latitude!, lng: biz.longitude! });
     }
     map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- bizIds is derived from businesses
   }, [map, bizIds]);
 
   // Update clusterer when markers change
