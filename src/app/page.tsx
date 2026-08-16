@@ -506,8 +506,8 @@ export default async function HomePage() {
                         </span>
                       )}
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-foreground transition-colors group-hover:text-primary line-clamp-1">
+                    <div className="p-3">
+                      <h3 className="text-sm font-bold text-foreground transition-colors group-hover:text-primary line-clamp-1" style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" }}>
                         {biz.name}
                       </h3>
                       {cat?.name && (
@@ -515,7 +515,7 @@ export default async function HomePage() {
                           {cat.name}
                         </p>
                       )}
-                      <p className="mt-1 text-xs text-muted-foreground/70 flex items-center gap-1">
+                      <p className="mt-0.5 text-[11px] text-muted-foreground/70 flex items-center gap-1">
                         <MapPin className="h-3 w-3" />
                         {biz.city}
                       </p>
