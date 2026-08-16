@@ -228,14 +228,10 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Trust bar — pinned to bottom */}
-          <div className="mb-3 ml-3 flex items-center gap-3 sm:ml-6 sm:mb-6 lg:ml-8 lg:mb-8">
-            <span className="text-[10px] text-[#F2E7D3]/70 sm:text-[11px]">ID-verified</span>
-            <span className="text-[10px] text-[#F2E7D3]/70 sm:text-[11px]">·</span>
-            <span className="text-[10px] text-[#F2E7D3]/70 sm:text-[11px]">Secure payments</span>
-            <span className="text-[10px] text-[#F2E7D3]/70 sm:text-[11px]">·</span>
-            <span className="text-[10px] text-[#F2E7D3]/70 sm:text-[11px]">Instant confirm</span>
-          </div>
+          {/* Trust bar — pinned to bottom, aligned with hero content */}
+          <p className="mb-4 px-4 text-[9px] text-[#F2E7D3]/50 sm:mb-6 sm:px-8 sm:text-[10px] md:px-10 lg:mb-8 lg:px-[clamp(28px,4.2vw,60px)]">
+            ID-verified · Secure payments · Instant confirm
+          </p>
         </div>
       </section>
 
