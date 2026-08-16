@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { optimizeImage } from "@/lib/optimize-image";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -29,15 +30,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Image must be under 10 MB" }, { status: 400 });
   }
 
-  const ext = file.name.split(".").pop() ?? "jpg";
-  const path = `blog/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-
   const admin = createAdminClient();
-  const buffer = Buffer.from(await file.arrayBuffer());
+  const raw = Buffer.from(await file.arrayBuffer());
+  const optimized = await optimizeImage(raw, "blog");
+  const path = `blog/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${optimized.ext}`;
 
   const { error } = await admin.storage
     .from("business-images")
-    .upload(path, buffer, { contentType: file.type, upsert: false });
+    .upload(path, optimized.buffer, { contentType: optimized.contentType, upsert: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

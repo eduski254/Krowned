@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { optimizeImage } from "@/lib/optimize-image";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -46,13 +47,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not authorized" }, { status: 403 });
   }
 
-  const ext = file.name.split(".").pop() ?? "jpg";
+  const raw = Buffer.from(await file.arrayBuffer());
 
   if (imageType === "logo") {
-    const path = `${businessId}/logo.${ext}`;
+    const optimized = await optimizeImage(raw, "logo");
+    const path = `${businessId}/logo.${optimized.ext}`;
     const { error: uploadError } = await supabase.storage
       .from("business-images")
-      .upload(path, file, { upsert: true, contentType: file.type });
+      .upload(path, optimized.buffer, { upsert: true, contentType: optimized.contentType });
 
     if (uploadError) {
       return NextResponse.json({ error: uploadError.message }, { status: 500 });
@@ -74,12 +76,13 @@ export async function POST(request: Request) {
   }
 
   if (imageType === "gallery") {
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const optimized = await optimizeImage(raw, "cover");
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${optimized.ext}`;
     const path = `${businessId}/gallery/${filename}`;
 
     const { error: uploadError } = await supabase.storage
       .from("business-images")
-      .upload(path, file, { contentType: file.type });
+      .upload(path, optimized.buffer, { contentType: optimized.contentType });
 
     if (uploadError) {
       return NextResponse.json({ error: uploadError.message }, { status: 500 });

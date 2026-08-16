@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
+import { optimizeImage } from "@/lib/optimize-image";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -61,13 +62,14 @@ export async function POST(request: Request) {
     );
   }
 
-  const ext = file.name.split(".").pop() ?? "jpg";
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const raw = Buffer.from(await file.arrayBuffer());
+  const optimized = await optimizeImage(raw, "review");
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${optimized.ext}`;
   const path = `${reviewId}/${filename}`;
 
   const { error: uploadError } = await admin.storage
     .from("review-images")
-    .upload(path, file, { contentType: file.type });
+    .upload(path, optimized.buffer, { contentType: optimized.contentType });
 
   if (uploadError) {
     return NextResponse.json({ error: uploadError.message }, { status: 500 });

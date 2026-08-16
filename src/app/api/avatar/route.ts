@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { optimizeImage } from "@/lib/optimize-image";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -35,13 +36,14 @@ export async function POST(request: Request) {
     );
   }
 
-  const ext = file.name.split(".").pop() ?? "jpg";
-  const path = `${user.id}/avatar.${ext}`;
+  const raw = Buffer.from(await file.arrayBuffer());
+  const optimized = await optimizeImage(raw, "avatar");
+  const path = `${user.id}/avatar.${optimized.ext}`;
 
   // Upload (upsert to replace existing)
   const { error: uploadError } = await supabase.storage
     .from("avatars")
-    .upload(path, file, { upsert: true, contentType: file.type });
+    .upload(path, optimized.buffer, { upsert: true, contentType: optimized.contentType });
 
   if (uploadError) {
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
