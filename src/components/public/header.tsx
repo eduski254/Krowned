@@ -36,28 +36,30 @@ export async function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm pt-[env(safe-area-inset-top)]">
-      <div className="flex items-center justify-between px-4 py-3 sm:px-8 md:px-10 lg:px-[clamp(28px,4.2vw,60px)]">
-        <Link href="/" className="flex items-center">
-          <Image
-            src="/brand/logo-white.png"
-            alt="Krowned"
-            width={120}
-            height={32}
-            className="h-7 w-auto hidden dark:block"
-            priority
-          />
-          <Image
-            src="/brand/logo-black.png"
-            alt="Krowned"
-            width={120}
-            height={32}
-            className="h-7 w-auto block dark:hidden"
-            priority
-          />
-        </Link>
+      <div className="flex items-center px-4 py-3 sm:px-8 md:px-10 lg:px-[clamp(28px,4.2vw,60px)]">
+        {/* Left: logo + nav */}
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/brand/logo-white.png"
+              alt="Krowned"
+              width={120}
+              height={32}
+              className="h-7 w-auto hidden dark:block"
+              priority
+            />
+            <Image
+              src="/brand/logo-black.png"
+              alt="Krowned"
+              width={120}
+              height={32}
+              className="h-7 w-auto block dark:hidden"
+              priority
+            />
+          </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-6 md:flex">
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-6 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -67,10 +69,11 @@ export async function PublicHeader() {
               {link.label}
             </Link>
           ))}
-        </nav>
+          </nav>
+        </div>
 
         {/* Desktop right section */}
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="ml-auto hidden items-center gap-3 md:flex">
           <ThemeToggle />
           {user ? (
             <>
@@ -121,7 +124,7 @@ export async function PublicHeader() {
         </div>
 
         {/* Mobile: theme toggle + hamburger */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="ml-auto flex items-center gap-2 md:hidden">
           <ThemeToggle />
           <PublicMobileNav isLoggedIn={!!user} userName={fullName} />
         </div>
