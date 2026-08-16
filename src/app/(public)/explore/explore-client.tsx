@@ -753,8 +753,7 @@ export function ExploreClient({
       {/* Zillow-style business preview overlay */}
       {previewBiz && (
         <BusinessPreview
-          slug={previewBiz.slug}
-          imageUrl={previewBiz.imageUrl}
+          biz={previewBiz}
           onClose={() => setPreviewBiz(null)}
         />
       )}

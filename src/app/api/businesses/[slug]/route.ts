@@ -72,7 +72,8 @@ export async function GET(
     };
   });
 
-  return NextResponse.json({
+  return NextResponse.json(
+    {
     id: business.id,
     name: business.name,
     slug: business.slug,
@@ -104,5 +105,11 @@ export async function GET(
         avatarUrl: client?.avatar_url ?? null,
       };
     }),
-  });
+  },
+    {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+      },
+    },
+  );
 }

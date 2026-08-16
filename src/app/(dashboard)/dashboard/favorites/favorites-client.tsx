@@ -21,10 +21,7 @@ export function FavoritesClient({
 }: {
   favorites: FavoriteBusiness[];
 }) {
-  const [preview, setPreview] = useState<{
-    slug: string;
-    imageUrl: string | null;
-  } | null>(null);
+  const [preview, setPreview] = useState<FavoriteBusiness | null>(null);
 
   if (favorites.length === 0) {
     return (
@@ -51,9 +48,7 @@ export function FavoritesClient({
           <button
             key={biz.id}
             type="button"
-            onClick={() =>
-              setPreview({ slug: biz.slug, imageUrl: biz.cover_url })
-            }
+            onClick={() => setPreview(biz)}
             className="group rounded-xl border border-border bg-card p-4 text-left transition-shadow hover:shadow-md"
           >
             <div className="flex items-center gap-3">
@@ -83,8 +78,26 @@ export function FavoritesClient({
 
       {preview && (
         <BusinessPreview
-          slug={preview.slug}
-          imageUrl={preview.imageUrl}
+          biz={{
+            id: preview.id,
+            name: preview.name,
+            slug: preview.slug,
+            description: null,
+            logo_url: preview.logo_url,
+            cover_url: preview.cover_url,
+            imageUrl: preview.cover_url,
+            city: preview.city,
+            country: preview.country,
+            is_featured: false,
+            latitude: null,
+            longitude: null,
+            categoryName: null,
+            categorySlug: null,
+            avgRating: null,
+            reviewCount: 0,
+            isFavorited: true,
+            badges: [],
+          }}
           onClose={() => setPreview(null)}
         />
       )}

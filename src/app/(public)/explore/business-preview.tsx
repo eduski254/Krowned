@@ -15,24 +15,14 @@ import {
 } from "lucide-react";
 import { StarRating } from "@/components/star-rating";
 import { SocialLinksBar } from "@/components/social-icons";
+import type { ExploreBusiness } from "@/lib/explore/actions";
 
-type BusinessDetail = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  logo_url: string | null;
-  cover_url: string | null;
-  city: string | null;
-  country: string | null;
+type BusinessExtra = {
   address: string | null;
   phone: string | null;
   email: string | null;
   social_links: Record<string, string> | null;
   booking_link_token: string | null;
-  categoryName: string | null;
-  avgRating: number | null;
-  reviewCount: number;
   bookable: boolean;
   services: Array<{
     id: string;
@@ -60,26 +50,34 @@ type BusinessDetail = {
   }>;
 };
 
+// Simple in-memory cache so re-opening the same business is instant
+const detailsCache = new Map<string, BusinessExtra>();
+
 export function BusinessPreview({
-  slug,
-  imageUrl,
+  biz,
   onClose,
 }: {
-  slug: string;
-  imageUrl: string | null;
+  biz: ExploreBusiness;
   onClose: () => void;
 }) {
-  const [biz, setBiz] = useState<BusinessDetail | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [extra, setExtra] = useState<BusinessExtra | null>(
+    detailsCache.get(biz.slug) ?? null,
+  );
+  const [loading, setLoading] = useState(!detailsCache.has(biz.slug));
 
   useEffect(() => {
+    if (detailsCache.has(biz.slug)) return;
+
     let cancelled = false;
     setLoading(true);
-    fetch(`/api/businesses/${slug}`)
+    fetch(`/api/businesses/${biz.slug}`)
       .then((r) => r.json())
       .then((data) => {
-        if (!cancelled) {
-          setBiz(data.error ? null : data);
+        if (!cancelled && !data.error) {
+          detailsCache.set(biz.slug, data);
+          setExtra(data);
+          setLoading(false);
+        } else if (!cancelled) {
           setLoading(false);
         }
       })
@@ -89,7 +87,7 @@ export function BusinessPreview({
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [biz.slug]);
 
   // Close on Escape
   useEffect(() => {
@@ -115,6 +113,8 @@ export function BusinessPreview({
     [onClose],
   );
 
+  const imageUrl = biz.imageUrl || biz.cover_url;
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-end bg-black/60 animate-fade-in"
@@ -133,283 +133,284 @@ export function BusinessPreview({
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto scrollbar-hide">
-          {loading ? (
-            <div className="flex h-64 items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          {/* Cover image — always shown immediately */}
+          <div className="relative aspect-[2/1] w-full overflow-hidden bg-muted">
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={biz.name}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-primary/10 text-5xl font-bold text-primary">
+                {biz.name.charAt(0)}
+              </div>
+            )}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-5 pb-4 pt-10">
+              <h2 className="text-xl font-bold text-white sm:text-2xl">
+                {biz.name}
+              </h2>
+              <p className="text-sm text-white/80">
+                {[biz.categoryName, biz.city].filter(Boolean).join(" · ")}
+              </p>
             </div>
-          ) : !biz ? (
-            <div className="flex h-64 items-center justify-center">
-              <p className="text-muted-foreground">Business not found.</p>
+          </div>
+
+          {/* Quick info bar — shown immediately from explore data */}
+          <div className="flex items-center justify-between border-b border-border px-5 py-3">
+            <StarRating value={biz.avgRating} count={biz.reviewCount} />
+            <div className="flex items-center gap-2">
+              {extra?.bookable && extra.booking_link_token && (
+                <Link
+                  href={`/book/${extra.booking_link_token}?source=marketplace`}
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  Book Now
+                </Link>
+              )}
+              <Link
+                href={`/b/${biz.slug}`}
+                className="flex items-center gap-1 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                Full Profile
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Details section — loading state only here */}
+          {loading ? (
+            <div className="flex h-40 items-center justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : !extra ? (
+            <div className="px-5 py-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                Could not load details.{" "}
+                <Link href={`/b/${biz.slug}`} className="text-primary hover:underline">
+                  View full profile
+                </Link>
+              </p>
             </div>
           ) : (
-            <>
-              {/* Cover image */}
-              <div className="relative aspect-[2/1] w-full overflow-hidden bg-muted">
-                {imageUrl || biz.cover_url ? (
-                  <Image
-                    src={(imageUrl || biz.cover_url)!}
-                    alt={biz.name}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-primary/10 text-5xl font-bold text-primary">
-                    {biz.name.charAt(0)}
-                  </div>
-                )}
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-5 pb-4 pt-10">
-                  <h2 className="text-xl font-bold text-white sm:text-2xl">
-                    {biz.name}
-                  </h2>
-                  <p className="text-sm text-white/80">
-                    {[biz.categoryName, biz.city].filter(Boolean).join(" · ")}
-                  </p>
-                </div>
-              </div>
+            <div className="space-y-6 px-5 py-5">
+              {/* Description */}
+              {biz.description && (
+                <p className="text-sm text-foreground leading-relaxed">
+                  {biz.description}
+                </p>
+              )}
 
-              {/* Quick info bar */}
-              <div className="flex items-center justify-between border-b border-border px-5 py-3">
-                <StarRating
-                  value={biz.avgRating}
-                  count={biz.reviewCount}
-                />
-                <div className="flex items-center gap-2">
-                  {biz.bookable && biz.booking_link_token && (
-                    <Link
-                      href={`/book/${biz.booking_link_token}?source=marketplace`}
-                      className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
-                    >
-                      Book Now
-                    </Link>
-                  )}
-                  <Link
-                    href={`/b/${biz.slug}`}
-                    className="flex items-center gap-1 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
-                  >
-                    Full Profile
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-              </div>
-
-              <div className="space-y-6 px-5 py-5">
-                {/* Description */}
-                {biz.description && (
-                  <p className="text-sm text-foreground leading-relaxed">
-                    {biz.description}
-                  </p>
-                )}
-
-                {/* Services */}
-                {biz.services.length > 0 && (
-                  <section>
-                    <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                      Services
-                    </h3>
-                    <div className="space-y-2">
-                      {biz.services.map((s) => (
-                        <div
-                          key={s.id}
-                          className="flex items-center justify-between rounded-lg border border-border bg-background p-3"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-foreground">
-                              {s.name}
-                            </p>
-                            <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                              <span className="flex items-center gap-0.5">
-                                <Clock className="h-3 w-3" />
-                                {s.duration_minutes}min
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm font-semibold text-foreground">
-                              {(s.price_amount / 100).toLocaleString()}{" "}
-                              <span className="text-xs text-muted-foreground">
-                                {s.currency?.toUpperCase()}
-                              </span>
-                            </span>
-                            {biz.bookable && biz.booking_link_token && (
-                              <Link
-                                href={`/book/${biz.booking_link_token}?source=marketplace&service=${s.id}`}
-                                className="rounded-md border border-primary px-3 py-1 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-                              >
-                                Book
-                              </Link>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                {/* Staff */}
-                {biz.staff.length > 0 && (
-                  <section>
-                    <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                      Team
-                    </h3>
-                    <div className="flex flex-wrap gap-3">
-                      {biz.staff.map((s) => (
-                        <div
-                          key={s.id}
-                          className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2"
-                        >
-                          {s.avatar_url ? (
-                            <Image
-                              src={s.avatar_url}
-                              alt=""
-                              width={32}
-                              height={32}
-                              className="h-8 w-8 rounded-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                              {(s.display_name ?? "?").charAt(0)}
-                            </div>
-                          )}
-                          <div>
-                            <p className="text-sm font-medium text-foreground">
-                              {s.display_name}
-                            </p>
-                            {s.title && (
-                              <p className="text-xs text-muted-foreground">
-                                {s.title}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                {/* Contact & Hours — side by side */}
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {/* Contact */}
-                  <section className="rounded-lg border border-border bg-background p-4">
-                    <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                      Contact
-                    </h3>
-                    <div className="space-y-1.5 text-sm">
-                      {biz.address && (
-                        <div className="flex items-start gap-2 text-muted-foreground">
-                          <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                          <span>
-                            {biz.address}
-                            {biz.city && `, ${biz.city}`}
-                          </span>
-                        </div>
-                      )}
-                      {biz.phone && (
-                        <a href={`tel:${biz.phone}`} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
-                          <Phone className="h-3.5 w-3.5 shrink-0" />
-                          <span>{biz.phone}</span>
-                        </a>
-                      )}
-                      {biz.email && (
-                        <a href={`mailto:${biz.email}`} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
-                          <Mail className="h-3.5 w-3.5 shrink-0" />
-                          <span>{biz.email}</span>
-                        </a>
-                      )}
-                      {biz.social_links && Object.values(biz.social_links).some(Boolean) && (
-                        <SocialLinksBar socialLinks={biz.social_links} className="mt-1" />
-                      )}
-                    </div>
-                  </section>
-
-                  {/* Hours */}
-                  <section className="rounded-lg border border-border bg-background p-4">
-                    <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                      Hours
-                    </h3>
-                    <div className="space-y-0.5">
-                      {biz.hours.map((h) => (
-                        <div
-                          key={h.day}
-                          className="flex justify-between text-sm"
-                        >
-                          <span className="text-muted-foreground">
-                            {h.day}
-                          </span>
-                          <span
-                            className={
-                              h.isOpen
-                                ? "text-foreground"
-                                : "text-muted-foreground"
-                            }
-                          >
-                            {h.hours}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                </div>
-
-                {/* Reviews */}
-                {biz.reviews.length > 0 && (
-                  <section>
-                    <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                      Reviews
-                    </h3>
-                    <div className="space-y-3">
-                      {biz.reviews.map((r) => (
-                        <div
-                          key={r.id}
-                          className="rounded-lg border border-border bg-background p-3"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              {r.avatarUrl ? (
-                                <Image
-                                  src={r.avatarUrl}
-                                  alt=""
-                                  width={28}
-                                  height={28}
-                                  className="h-7 w-7 rounded-full object-cover"
-                                />
-                              ) : (
-                                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                                  {r.reviewerName.charAt(0)}
-                                </div>
-                              )}
-                              <span className="text-sm font-medium text-foreground">
-                                {r.reviewerName}
-                              </span>
-                            </div>
-                            <div className="flex gap-0.5">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-3 w-3 ${
-                                    i < r.rating
-                                      ? "fill-warning text-warning"
-                                      : "text-muted-foreground/30"
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          {r.comment && (
-                            <p className="mt-1.5 text-sm text-foreground">
-                              {r.comment}
-                            </p>
-                          )}
-                          <p className="mt-1 text-xs text-muted-foreground">
-                            {new Date(r.created_at).toLocaleDateString()}
+              {/* Services */}
+              {extra.services.length > 0 && (
+                <section>
+                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Services
+                  </h3>
+                  <div className="space-y-2">
+                    {extra.services.map((s) => (
+                      <div
+                        key={s.id}
+                        className="flex items-center justify-between rounded-lg border border-border bg-background p-3"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground">
+                            {s.name}
                           </p>
+                          <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-0.5">
+                              <Clock className="h-3 w-3" />
+                              {s.duration_minutes}min
+                            </span>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-semibold text-foreground">
+                            {(s.price_amount / 100).toLocaleString()}{" "}
+                            <span className="text-xs text-muted-foreground">
+                              {s.currency?.toUpperCase()}
+                            </span>
+                          </span>
+                          {extra.bookable && extra.booking_link_token && (
+                            <Link
+                              href={`/book/${extra.booking_link_token}?source=marketplace&service=${s.id}`}
+                              className="rounded-md border border-primary px-3 py-1 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                            >
+                              Book
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Staff */}
+              {extra.staff.length > 0 && (
+                <section>
+                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Team
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    {extra.staff.map((s) => (
+                      <div
+                        key={s.id}
+                        className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2"
+                      >
+                        {s.avatar_url ? (
+                          <Image
+                            src={s.avatar_url}
+                            alt=""
+                            width={32}
+                            height={32}
+                            className="h-8 w-8 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                            {(s.display_name ?? "?").charAt(0)}
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-foreground">
+                            {s.display_name}
+                          </p>
+                          {s.title && (
+                            <p className="text-xs text-muted-foreground">
+                              {s.title}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Contact & Hours — side by side */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                {/* Contact */}
+                <section className="rounded-lg border border-border bg-background p-4">
+                  <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Contact
+                  </h3>
+                  <div className="space-y-1.5 text-sm">
+                    {extra.address && (
+                      <div className="flex items-start gap-2 text-muted-foreground">
+                        <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                        <span>
+                          {extra.address}
+                          {biz.city && `, ${biz.city}`}
+                        </span>
+                      </div>
+                    )}
+                    {extra.phone && (
+                      <a href={`tel:${extra.phone}`} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+                        <Phone className="h-3.5 w-3.5 shrink-0" />
+                        <span>{extra.phone}</span>
+                      </a>
+                    )}
+                    {extra.email && (
+                      <a href={`mailto:${extra.email}`} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                        <span>{extra.email}</span>
+                      </a>
+                    )}
+                    {extra.social_links && Object.values(extra.social_links).some(Boolean) && (
+                      <SocialLinksBar socialLinks={extra.social_links} className="mt-1" />
+                    )}
+                  </div>
+                </section>
+
+                {/* Hours */}
+                <section className="rounded-lg border border-border bg-background p-4">
+                  <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Hours
+                  </h3>
+                  <div className="space-y-0.5">
+                    {extra.hours.map((h) => (
+                      <div
+                        key={h.day}
+                        className="flex justify-between text-sm"
+                      >
+                        <span className="text-muted-foreground">
+                          {h.day}
+                        </span>
+                        <span
+                          className={
+                            h.isOpen
+                              ? "text-foreground"
+                              : "text-muted-foreground"
+                          }
+                        >
+                          {h.hours}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
               </div>
-            </>
+
+              {/* Reviews */}
+              {extra.reviews.length > 0 && (
+                <section>
+                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Reviews
+                  </h3>
+                  <div className="space-y-3">
+                    {extra.reviews.map((r) => (
+                      <div
+                        key={r.id}
+                        className="rounded-lg border border-border bg-background p-3"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            {r.avatarUrl ? (
+                              <Image
+                                src={r.avatarUrl}
+                                alt=""
+                                width={28}
+                                height={28}
+                                className="h-7 w-7 rounded-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                                {r.reviewerName.charAt(0)}
+                              </div>
+                            )}
+                            <span className="text-sm font-medium text-foreground">
+                              {r.reviewerName}
+                            </span>
+                          </div>
+                          <div className="flex gap-0.5">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${
+                                  i < r.rating
+                                    ? "fill-warning text-warning"
+                                    : "text-muted-foreground/30"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        {r.comment && (
+                          <p className="mt-1.5 text-sm text-foreground">
+                            {r.comment}
+                          </p>
+                        )}
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {new Date(r.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
           )}
         </div>
       </div>
