@@ -169,7 +169,7 @@ for (const biz of businesses) {
     city: city,
     country: 'US',
     cover_url: coverUrl,
-    description: `${biz.name} is a locs specialist salon in the DMV area. This listing has not been claimed yet.`,
+    description: `${biz.name} is a locs specialist salon in the DMV area.`,
     is_published: true,
     verification_status: 'verified',
     claimed: false,
