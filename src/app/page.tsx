@@ -383,6 +383,60 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* How to get started — for stylists */}
+      <section className="w-full border-b border-border bg-muted/30 px-5 py-16 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
+            Get booked in 4 simple steps
+          </h2>
+          <p className="mt-2 text-center text-muted-foreground">
+            From sign-up to your first booking — it takes minutes, not days.
+          </p>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                step: "1",
+                title: "Sign up free",
+                desc: "Create your professional account. No credit card, no commitment — just your name and email.",
+              },
+              {
+                step: "2",
+                title: "Add your services & staff",
+                desc: "List what you offer, set your prices, and add your team. Solo? You're your own staff.",
+              },
+              {
+                step: "3",
+                title: "Get your booking link",
+                desc: "Your personalized booking page is live instantly. Clients can browse, pick a time, and pay.",
+              },
+              {
+                step: "4",
+                title: "Share & start earning",
+                desc: "Drop your link in your bio, DMs, or Google. Bookings come in — you focus on the craft.",
+              },
+            ].map((item) => (
+              <div key={item.step} className="relative rounded-xl border border-border bg-card p-6">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+                  {item.step}
+                </span>
+                <h3 className="mt-4 font-semibold text-foreground">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link
+              href="/signup?type=professional"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Start for free <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Featured in [City] */}
       {featuredInCity.length > 0 && (
         <section className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
