@@ -671,6 +671,7 @@ export function ExploreClient({
                   biz={biz}
                   isLoggedIn={isLoggedIn}
                   isHighlighted={highlightedId === biz.id}
+                  isOpen={isCurrentlyOpen(businessHours[biz.id])}
                   onHover={handleCardHover}
                   onSelect={setPreviewBiz}
                   viewMode={viewMode}
@@ -760,7 +761,27 @@ export function ExploreClient({
   );
 }
 
+/* ── Helpers ────────────────────────────────────────────────────── */
+
+function isCurrentlyOpen(
+  hours: Array<{ day_of_week: number; open_time: string; close_time: string }> | undefined,
+): boolean | null {
+  if (!hours || hours.length === 0) return null; // unknown
+  const now = new Date();
+  const dow = now.getDay(); // 0=Sun
+  const todayHours = hours.filter((h) => h.day_of_week === dow);
+  if (todayHours.length === 0) return false;
+  const hhmm = now.getHours() * 100 + now.getMinutes();
+  return todayHours.some((h) => {
+    const open = parseInt(h.open_time.replace(":", ""), 10);
+    const close = parseInt(h.close_time.replace(":", ""), 10);
+    return hhmm >= open && hhmm < close;
+  });
+}
+
 /* ── Business Card ──────────────────────────────────────────────── */
+
+const CARD_FONT = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
 
 const BusinessCard = forwardRef<
   HTMLElement,
@@ -768,40 +789,22 @@ const BusinessCard = forwardRef<
     biz: ExploreBusiness;
     isLoggedIn: boolean;
     isHighlighted: boolean;
+    isOpen: boolean | null;
     onHover: (id: string | null) => void;
     onSelect: (biz: ExploreBusiness) => void;
     viewMode: "list" | "grid";
   }
 >(function BusinessCard(
-  { biz, isLoggedIn, isHighlighted, onHover, onSelect, viewMode },
+  { biz, isLoggedIn, isHighlighted, isOpen, onHover, onSelect, viewMode },
   ref,
 ) {
-  const hasCords =
-    biz.latitude != null &&
-    biz.longitude != null &&
-    (biz.latitude !== 0 || biz.longitude !== 0);
   const imageUrl = biz.imageUrl;
 
-  const badges = (
-    <>
-      {biz.is_featured && (
-        <span className="rounded-full bg-primary/90 px-2 py-0.5 text-xs font-medium text-primary-foreground shadow-sm">
-          Featured
-        </span>
-      )}
-      {!hasCords && (
-        <span className="rounded-full bg-accent/90 px-2 py-0.5 text-xs font-medium text-accent-foreground shadow-sm">
-          Mobile
-        </span>
-      )}
-    </>
-  );
-
-  const letterAvatar = (
-    <div className="flex h-full w-full items-center justify-center bg-primary/10 text-3xl font-bold text-primary">
-      {biz.name.charAt(0)}
-    </div>
-  );
+  const openLabel = isOpen === true
+    ? <span className="text-[11px] font-medium text-green-600">Open</span>
+    : isOpen === false
+      ? <span className="text-[11px] font-medium text-red-500">Closed</span>
+      : null;
 
   if (viewMode === "grid") {
     return (
@@ -830,9 +833,17 @@ const BusinessCard = forwardRef<
               className="object-cover"
             />
           ) : (
-            letterAvatar
+            <div className="flex h-full w-full items-center justify-center bg-primary/10 text-3xl font-bold text-primary">
+              {biz.name.charAt(0)}
+            </div>
           )}
-          <div className="absolute left-2 top-2 flex gap-1.5">{badges}</div>
+          <div className="absolute left-2 top-2 flex gap-1.5">
+            {biz.is_featured && (
+              <span className="rounded bg-primary/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary-foreground shadow-sm">
+                Featured
+              </span>
+            )}
+          </div>
           <div className="absolute right-2 top-2" onClick={(e) => e.stopPropagation()}>
             <FavoriteButton
               businessId={biz.id}
@@ -842,27 +853,24 @@ const BusinessCard = forwardRef<
             />
           </div>
         </div>
-        <div className="p-4">
-          <h3 className="truncate font-semibold text-foreground transition-colors group-hover:text-primary">
-            {biz.name}
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            {biz.categoryName ?? ""}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {[biz.city, biz.country].filter(Boolean).join(", ")}
+        <div className="p-3">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="truncate text-sm font-bold text-foreground" style={{ fontFamily: CARD_FONT }}>
+              {biz.name}
+            </h3>
+            {openLabel}
+          </div>
+          <div className="mt-0.5 flex items-center gap-1">
+            <StarRating value={biz.avgRating} count={biz.reviewCount} size="xs" />
+          </div>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">
+            {[biz.categoryName, biz.city].filter(Boolean).join(" · ")}
           </p>
           {biz.description && (
-            <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground/80">
               {biz.description}
             </p>
           )}
-          <div className="mt-3 flex items-center justify-between">
-            <StarRating value={biz.avgRating} count={biz.reviewCount} />
-            <span className="text-sm font-medium text-primary transition-transform group-hover:translate-x-0.5">
-              View &rarr;
-            </span>
-          </div>
         </div>
       </div>
     );
@@ -901,7 +909,7 @@ const BusinessCard = forwardRef<
       {/* Info */}
       <div className="flex min-w-0 flex-1 flex-col justify-center">
         <div className="flex items-center gap-1.5">
-          <h3 className="truncate text-[13px] font-bold text-foreground" style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" }}>
+          <h3 className="truncate text-[13px] font-bold text-foreground" style={{ fontFamily: CARD_FONT }}>
             {biz.name}
           </h3>
           {biz.is_featured && (
@@ -909,11 +917,12 @@ const BusinessCard = forwardRef<
               Ad
             </span>
           )}
+          {openLabel && <span className="shrink-0">{openLabel}</span>}
         </div>
         <div className="mt-0.5 flex items-center gap-1">
           <StarRating value={biz.avgRating} count={biz.reviewCount} size="xs" />
         </div>
-        <p className="mt-0.5 text-[11px] text-muted-foreground">
+        <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
           {[biz.categoryName, biz.city].filter(Boolean).join(" · ")}
         </p>
         {biz.description && (
