@@ -36,7 +36,7 @@ export async function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm pt-[env(safe-area-inset-top)]">
-      <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-between px-4 py-3 sm:px-8 md:px-10 lg:px-[clamp(28px,4.2vw,60px)]">
         <Link href="/" className="flex items-center">
           <Image
             src="/brand/logo-white.png"
