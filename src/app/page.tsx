@@ -31,7 +31,7 @@ import { RotatingService } from "@/components/public/rotating-service";
 /** Revalidate homepage every hour (ISR) */
 export const revalidate = 3600;
 
-const HERO_BG_IMAGE = "/brand/hero-salon.png";
+const HERO_BG_IMAGE = "/brand/krowned-home-page-bg.jpeg";
 
 import type { Metadata } from "next";
 
