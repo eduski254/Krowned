@@ -135,40 +135,20 @@ function MapContent({
           }}
         >
           {/* Location pin icon */}
-          <div
-            className={`transition-transform duration-200 ${
-              highlightedId === biz.id ? "scale-125" : "hover:scale-110"
-            }`}
+          <svg
+            width="22"
+            height="30"
+            viewBox="0 0 22 30"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}
           >
-            <svg
-              width="32"
-              height="40"
-              viewBox="0 0 32 40"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="drop-shadow-md"
-            >
-              {/* Pin body */}
-              <path
-                d="M16 0C7.163 0 0 7.163 0 16c0 10 14.4 23.1 15 23.7.3.2.7.3 1 .3s.7-.1 1-.3c.6-.6 15-13.7 15-23.7C32 7.163 24.837 0 16 0z"
-                fill={highlightedId === biz.id ? "#000000" : "#1A1816"}
-              />
-              {/* White inner circle */}
-              <circle cx="16" cy="15" r="7" fill="white" />
-              {/* Letter */}
-              <text
-                x="16"
-                y="19"
-                textAnchor="middle"
-                fontSize="10"
-                fontWeight="700"
-                fill={highlightedId === biz.id ? "#000000" : "#1A1816"}
-                fontFamily="system-ui, sans-serif"
-              >
-                {biz.name.charAt(0)}
-              </text>
-            </svg>
-          </div>
+            <path
+              d="M11 0C4.925 0 0 4.925 0 11c0 7.5 10 18.1 10.5 18.6.14.12.32.18.5.18s.36-.06.5-.18C12 29.1 22 18.5 22 11 22 4.925 17.075 0 11 0z"
+              fill={highlightedId === biz.id ? "#000000" : "#1A1816"}
+            />
+            <circle cx="11" cy="11" r="4" fill="white" />
+          </svg>
         </AdvancedMarker>
       ))}
 
@@ -179,7 +159,7 @@ function MapContent({
             lng: selectedBiz.longitude!,
           }}
           onCloseClick={() => setSelectedBiz(null)}
-          pixelOffset={[0, -44]}
+          pixelOffset={[0, -32]}
         >
           <div
             role="button"
