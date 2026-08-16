@@ -180,9 +180,7 @@ export function ExploreClient({
   const [selectedBadges, setSelectedBadges] = useState<Set<string>>(new Set());
 
   // UI state
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [pinnedId, setPinnedId] = useState<string | null>(null);
-  const highlightedId = hoveredId ?? pinnedId;
   const [mobileMapOpen, setMobileMapOpen] = useState(false);
   const [mapVisible, setMapVisible] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
@@ -293,9 +291,6 @@ export function ExploreClient({
     }
   }, []);
 
-  const handleCardHover = useCallback((id: string | null) => {
-    setHoveredId(id);
-  }, []);
 
   const activeFilterCount =
     (q ? 1 : 0) +
@@ -670,9 +665,8 @@ export function ExploreClient({
                   key={biz.id}
                   biz={biz}
                   isLoggedIn={isLoggedIn}
-                  isHighlighted={highlightedId === biz.id}
+                  isHighlighted={pinnedId === biz.id}
                   isOpen={isCurrentlyOpen(businessHours[biz.id])}
-                  onHover={handleCardHover}
                   onSelect={setPreviewBiz}
                   viewMode={viewMode}
                   ref={(el) => {
@@ -790,12 +784,11 @@ const BusinessCard = forwardRef<
     isLoggedIn: boolean;
     isHighlighted: boolean;
     isOpen: boolean | null;
-    onHover: (id: string | null) => void;
     onSelect: (biz: ExploreBusiness) => void;
     viewMode: "list" | "grid";
   }
 >(function BusinessCard(
-  { biz, isLoggedIn, isHighlighted, isOpen, onHover, onSelect, viewMode },
+  { biz, isLoggedIn, isHighlighted, isOpen, onSelect, viewMode },
   ref,
 ) {
   const imageUrl = biz.imageUrl;
@@ -814,8 +807,6 @@ const BusinessCard = forwardRef<
         tabIndex={0}
         onClick={() => onSelect(biz)}
         onKeyDown={(e) => { if (e.key === "Enter") onSelect(biz); }}
-        onMouseEnter={() => onHover(biz.id)}
-        onMouseLeave={() => onHover(null)}
         className={`group relative block cursor-pointer overflow-hidden rounded-xl border bg-card shadow-md transition-shadow duration-150 hover:shadow-lg ${
           isHighlighted
             ? "border-primary ring-2 ring-primary/20"
@@ -883,8 +874,6 @@ const BusinessCard = forwardRef<
       tabIndex={0}
       onClick={() => onSelect(biz)}
       onKeyDown={(e) => { if (e.key === "Enter") onSelect(biz); }}
-      onMouseEnter={() => onHover(biz.id)}
-      onMouseLeave={() => onHover(null)}
       className={`group flex cursor-pointer gap-3 border-b border-border px-3 py-3 transition-colors hover:bg-muted/50 ${
         isHighlighted ? "bg-primary/5" : ""
       }`}
