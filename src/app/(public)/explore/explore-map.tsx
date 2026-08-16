@@ -136,16 +136,18 @@ function MapContent({
         >
           {/* Location pin icon */}
           <svg
-            width="22"
-            height="30"
-            viewBox="0 0 22 30"
+            width="26"
+            height="34"
+            viewBox="-2 -2 26 34"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}
+            style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.25))" }}
           >
             <path
               d="M11 0C4.925 0 0 4.925 0 11c0 7.5 10 18.1 10.5 18.6.14.12.32.18.5.18s.36-.06.5-.18C12 29.1 22 18.5 22 11 22 4.925 17.075 0 11 0z"
               fill={highlightedId === biz.id ? "#000000" : "#1A1816"}
+              stroke="white"
+              strokeWidth="1.5"
             />
             <circle cx="11" cy="11" r="4" fill="white" />
           </svg>
