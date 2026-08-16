@@ -665,7 +665,7 @@ export function ExploreClient({
                   : "space-y-4"
               }
             >
-              {filtered.map((biz, i) => (
+              {filtered.map((biz) => (
                 <BusinessCard
                   key={biz.id}
                   biz={biz}
@@ -674,7 +674,6 @@ export function ExploreClient({
                   onHover={handleCardHover}
                   onSelect={setPreviewBiz}
                   viewMode={viewMode}
-                  index={i}
                   ref={(el) => {
                     if (el) cardRefs.current.set(biz.id, el);
                     else cardRefs.current.delete(biz.id);
@@ -774,10 +773,9 @@ const BusinessCard = forwardRef<
     onHover: (id: string | null) => void;
     onSelect: (biz: ExploreBusiness) => void;
     viewMode: "list" | "grid";
-    index: number;
   }
 >(function BusinessCard(
-  { biz, isLoggedIn, isHighlighted, onHover, onSelect, viewMode, index },
+  { biz, isLoggedIn, isHighlighted, onHover, onSelect, viewMode },
   ref,
 ) {
   const hasCords =
@@ -785,7 +783,6 @@ const BusinessCard = forwardRef<
     biz.longitude != null &&
     (biz.latitude !== 0 || biz.longitude !== 0);
   const imageUrl = biz.imageUrl;
-  const delay = Math.min(index * 30, 200);
 
   const badges = (
     <>
@@ -818,8 +815,7 @@ const BusinessCard = forwardRef<
         onKeyDown={(e) => { if (e.key === "Enter") onSelect(biz); }}
         onMouseEnter={() => onHover(biz.id)}
         onMouseLeave={() => onHover(null)}
-        style={{ animationDelay: `${delay}ms`, boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }}
-        className={`group relative block cursor-pointer overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 active:scale-[0.98] ${
+        className={`group relative block cursor-pointer overflow-hidden rounded-xl border bg-card shadow-md transition-shadow duration-150 hover:shadow-lg ${
           isHighlighted
             ? "border-primary ring-2 ring-primary/20"
             : "border-border"
@@ -833,7 +829,7 @@ const BusinessCard = forwardRef<
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               loading="lazy"
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
+              className="object-cover"
             />
           ) : (
             letterAvatar
@@ -883,8 +879,7 @@ const BusinessCard = forwardRef<
       onKeyDown={(e) => { if (e.key === "Enter") onSelect(biz); }}
       onMouseEnter={() => onHover(biz.id)}
       onMouseLeave={() => onHover(null)}
-      style={{ animationDelay: `${delay}ms`, boxShadow: "rgba(0, 0, 0, 0.15) 0px 8px 20px 0px" }}
-      className={`group relative flex cursor-pointer overflow-hidden rounded-xl border bg-card transition-all duration-200 animate-card-in hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 active:scale-[0.99] ${
+      className={`group relative flex cursor-pointer overflow-hidden rounded-xl border bg-card shadow-md transition-shadow duration-150 hover:shadow-lg ${
         isHighlighted
           ? "border-primary ring-2 ring-primary/20"
           : "border-border"
@@ -898,7 +893,7 @@ const BusinessCard = forwardRef<
             fill
             sizes="160px"
             loading="lazy"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="object-cover"
           />
         ) : (
           letterAvatar

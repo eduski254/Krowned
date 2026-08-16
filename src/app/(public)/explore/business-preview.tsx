@@ -117,7 +117,7 @@ export function BusinessPreview({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-end bg-black/60 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-start justify-end bg-black/60 animate-fade-in"
       onClick={handleBackdropClick}
     >
       {/* Slide-in panel */}
