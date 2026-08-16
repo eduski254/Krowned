@@ -32,6 +32,7 @@ export type ExploreBusiness = {
   reviewCount: number;
   isFavorited: boolean;
   serviceNames?: string[];
+  badges: string[];
 };
 
 
@@ -45,7 +46,7 @@ export async function searchByBounds(input: z.infer<typeof boundsSchema>) {
   let query = supabase
     .from("businesses")
     .select(
-      "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, latitude, longitude, primary_category_id, service_categories(name, slug)",
+      "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, latitude, longitude, primary_category_id, badges, service_categories(name, slug)",
     )
     .eq("is_published", true)
     .eq("verification_status", "verified")
@@ -122,6 +123,7 @@ export async function searchByBounds(input: z.infer<typeof boundsSchema>) {
       avgRating: stats ? stats.sum / stats.count : null,
       reviewCount: stats?.count ?? 0,
       isFavorited: favSet.has(biz.id),
+      badges: Array.isArray(biz.badges) ? (biz.badges as string[]) : [],
     };
   });
 

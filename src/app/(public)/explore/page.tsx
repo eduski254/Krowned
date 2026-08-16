@@ -56,7 +56,7 @@ export default async function ExplorePage({
       supabase
         .from("businesses")
         .select(
-          "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, latitude, longitude, primary_category_id, service_categories(name, slug)",
+          "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, latitude, longitude, primary_category_id, badges, service_categories(name, slug)",
         )
         .eq("is_published", true)
         .eq("verification_status", "verified")
@@ -170,6 +170,7 @@ export default async function ExplorePage({
       reviewCount: stats?.count ?? 0,
       isFavorited: favSet.has(biz.id),
       serviceNames: bizServiceNames.get(biz.id) ?? [],
+      badges: Array.isArray(biz.badges) ? (biz.badges as string[]) : [],
     };
   });
 

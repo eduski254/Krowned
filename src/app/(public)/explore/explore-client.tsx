@@ -21,6 +21,7 @@ import {
   LayoutGrid,
   X,
   Calendar,
+  SlidersHorizontal,
 } from "lucide-react";
 import { FavoriteButton } from "@/components/favorite-button";
 import { StarRating } from "@/components/star-rating";
@@ -36,6 +37,7 @@ import {
   isOpenAt,
   type TimeOfDay,
 } from "@/components/search/when-filter";
+import { BADGES, BADGE_CATEGORIES, type BadgeCategory } from "@/lib/badges";
 
 const ExploreMap = lazy(() =>
   import("./explore-map").then((m) => ({ default: m.ExploreMap })),
@@ -58,6 +60,7 @@ function filterAndRank(
   whenDate: string | null,
   whenTime: TimeOfDay,
   businessHours: BusinessHours,
+  selectedBadges: Set<string>,
 ): ExploreBusiness[] {
   const qLower = q.toLowerCase().trim();
   const cityLower = city.toLowerCase().trim();
@@ -87,6 +90,17 @@ function filterAndRank(
       const hours = businessHours[biz.id] ?? [];
       if (!isOpenAt(hours, whenDate, whenTime)) {
         passes = false;
+      }
+    }
+
+    // Badges — hard filter (must have ALL selected badges)
+    if (selectedBadges.size > 0) {
+      const bizBadges = new Set(biz.badges ?? []);
+      for (const badge of selectedBadges) {
+        if (!bizBadges.has(badge)) {
+          passes = false;
+          break;
+        }
       }
     }
 
@@ -122,7 +136,7 @@ function filterAndRank(
   });
 
   let results: typeof scored;
-  if (qLower || categorySlug || cityLower || whenDate || whenTime !== "anytime") {
+  if (qLower || categorySlug || cityLower || whenDate || whenTime !== "anytime" || selectedBadges.size > 0) {
     results = scored.filter((s) => s.passes);
   } else {
     results = scored;
@@ -163,6 +177,7 @@ export function ExploreClient({
   const [whenTime, setWhenTime] = useState<TimeOfDay>(
     (["morning", "afternoon", "evening"].includes(initialFilters.time) ? initialFilters.time : "anytime") as TimeOfDay,
   );
+  const [selectedBadges, setSelectedBadges] = useState<Set<string>>(new Set());
 
   // UI state
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -177,12 +192,14 @@ export function ExploreClient({
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [showWhenDropdown, setShowWhenDropdown] = useState(false);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
 
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
   const listPanelRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const locationRef = useRef<HTMLDivElement>(null);
   const whenRef = useRef<HTMLDivElement>(null);
+  const moreFiltersRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -196,6 +213,9 @@ export function ExploreClient({
       if (whenRef.current && !whenRef.current.contains(e.target as Node)) {
         setShowWhenDropdown(false);
       }
+      if (moreFiltersRef.current && !moreFiltersRef.current.contains(e.target as Node)) {
+        setShowMoreFilters(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -203,8 +223,8 @@ export function ExploreClient({
 
   // Client-side filter + rank
   const filtered = useMemo(
-    () => filterAndRank(allBusinesses, q, city, category, whenDate, whenTime, businessHours),
-    [allBusinesses, q, city, category, whenDate, whenTime, businessHours],
+    () => filterAndRank(allBusinesses, q, city, category, whenDate, whenTime, businessHours, selectedBadges),
+    [allBusinesses, q, city, category, whenDate, whenTime, businessHours, selectedBadges],
   );
 
   const mappable = useMemo(
@@ -281,7 +301,8 @@ export function ExploreClient({
     (q ? 1 : 0) +
     (city ? 1 : 0) +
     (category ? 1 : 0) +
-    (whenDate || whenTime !== "anytime" ? 1 : 0);
+    (whenDate || whenTime !== "anytime" ? 1 : 0) +
+    (selectedBadges.size > 0 ? 1 : 0);
 
   const clearFilters = () => {
     setQ("");
@@ -291,6 +312,16 @@ export function ExploreClient({
     setCategory("");
     setWhenDate(null);
     setWhenTime("anytime");
+    setSelectedBadges(new Set());
+  };
+
+  const toggleBadge = (badgeId: string) => {
+    setSelectedBadges((prev) => {
+      const next = new Set(prev);
+      if (next.has(badgeId)) next.delete(badgeId);
+      else next.add(badgeId);
+      return next;
+    });
   };
 
   const whenLabel = formatWhenLabel(whenDate, whenTime);
@@ -438,6 +469,91 @@ export function ExploreClient({
                   setShowWhenDropdown(false);
                 }}
               />
+            )}
+          </div>
+
+          {/* More Filters (badges) */}
+          <div ref={moreFiltersRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setShowMoreFilters(!showMoreFilters)}
+              className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-all ${
+                selectedBadges.size > 0
+                  ? "border-primary bg-primary/5 font-medium text-primary"
+                  : "border-input bg-background text-muted-foreground hover:text-foreground"
+              } focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none`}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              <span className="whitespace-nowrap">
+                More Filters{selectedBadges.size > 0 ? ` (${selectedBadges.size})` : ""}
+              </span>
+              {selectedBadges.size > 0 && (
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedBadges(new Set());
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.stopPropagation();
+                      setSelectedBadges(new Set());
+                    }
+                  }}
+                  className="rounded-full p-0.5 text-primary/60 hover:text-primary transition-colors cursor-pointer"
+                >
+                  <X className="h-3 w-3" />
+                </span>
+              )}
+            </button>
+            {showMoreFilters && (
+              <div className="absolute right-0 top-full z-30 mt-2 w-80 sm:w-96 rounded-xl border border-border bg-card p-4 shadow-xl animate-fade-in max-h-[70vh] overflow-y-auto">
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-foreground">Filter by badges</h3>
+                  {selectedBadges.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedBadges(new Set())}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Clear all
+                    </button>
+                  )}
+                </div>
+                {(Object.entries(BADGE_CATEGORIES) as [BadgeCategory, string][]).map(
+                  ([category, label]) => {
+                    const categoryBadges = BADGES.filter((b) => b.category === category);
+                    return (
+                      <div key={category} className="mb-3 last:mb-0">
+                        <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                          {label}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {categoryBadges.map((badge) => {
+                            const isActive = selectedBadges.has(badge.id);
+                            return (
+                              <button
+                                key={badge.id}
+                                type="button"
+                                onClick={() => toggleBadge(badge.id)}
+                                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                                  isActive
+                                    ? "border-primary bg-primary/10 text-primary font-medium"
+                                    : "border-border bg-background text-foreground hover:border-primary/50 hover:bg-primary/5"
+                                }`}
+                              >
+                                <span>{badge.emoji}</span>
+                                {badge.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  },
+                )}
+              </div>
             )}
           </div>
 
