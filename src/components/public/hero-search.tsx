@@ -125,7 +125,7 @@ export function HeroSearch({
     return (
       <div className="relative w-full max-w-[600px]">
         {/* Search card — dark with gold accents */}
-        <div className="relative z-10 overflow-visible rounded-2xl border border-[#D9B36C]/25 bg-[#1C1A17]/70 p-1.5 shadow-[0_24px_50px_rgba(0,0,0,0.35)] sm:rounded-[20px] sm:p-2.5">
+        <div className="relative z-10 overflow-visible rounded-[5px] border border-[#D9B36C]/25 bg-[#1C1A17]/70 p-1.5 shadow-[0_24px_50px_rgba(0,0,0,0.35)] sm:p-2.5">
           {/* Service field — full width */}
           <div ref={searchRef} className="relative">
             <div className="group flex items-center gap-2.5 px-3 py-2.5 sm:gap-3 sm:px-[18px] sm:py-3.5">
@@ -259,8 +259,9 @@ export function HeroSearch({
           <button
             type="button"
             onClick={handleSubmit}
-            className="mt-1.5 flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(150deg,rgba(228,199,131,0.25)_0%,rgba(228,199,131,0.15)_50%,rgba(198,161,91,0.25)_100%)] border border-[#E4C783]/30 px-3 py-3 text-[13px] font-semibold text-white backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),inset_0_-1px_0_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(228,199,131,0.08),0_4px_16px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-[linear-gradient(150deg,rgba(228,199,131,0.35)_0%,rgba(228,199,131,0.25)_50%,rgba(198,161,91,0.35)_100%)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),inset_0_-1px_0_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(228,199,131,0.15),0_8px_24px_rgba(0,0,0,0.3)] hover:-translate-y-px active:scale-[0.98] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15),0_0_0_1px_rgba(228,199,131,0.08)] sm:mt-2 sm:gap-2.5 sm:rounded-[14px] sm:px-4 sm:py-4 sm:text-base"
+            className="group/btn relative mt-1.5 flex w-full items-center justify-center gap-2 overflow-hidden rounded-[5px] bg-[linear-gradient(150deg,rgba(228,199,131,0.25)_0%,rgba(228,199,131,0.15)_50%,rgba(198,161,91,0.25)_100%)] border border-[#E4C783]/30 px-3 py-3 text-[13px] font-semibold text-white backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),inset_0_-1px_0_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(228,199,131,0.08),0_4px_16px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-[linear-gradient(150deg,rgba(228,199,131,0.35)_0%,rgba(228,199,131,0.25)_50%,rgba(198,161,91,0.35)_100%)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),inset_0_-1px_0_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(228,199,131,0.15),0_8px_24px_rgba(0,0,0,0.3)] hover:-translate-y-px active:scale-[0.98] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15),0_0_0_1px_rgba(228,199,131,0.08)] sm:mt-2 sm:gap-2.5 sm:px-4 sm:py-4 sm:text-base"
           >
+            <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent" style={{ animation: "glare 3s ease-in-out infinite" }} />
             <Search className="h-[17px] w-[17px] sm:h-[18px] sm:w-[18px]" />
             Search stylists
           </button>
@@ -277,7 +278,7 @@ export function HeroSearch({
                 setQInput(term);
                 handleSubmitWithQuery(term);
               }}
-              className="shrink-0 rounded-full border border-[#D9B36C]/40 bg-transparent px-3 py-1 text-[11px] text-[#F2E7D3] transition-all hover:bg-[#D9B36C]/12 hover:border-[#D9B36C] active:scale-95 sm:px-4 sm:py-1.5 sm:text-[13px]"
+              className="shrink-0 rounded-[5px] border border-[#D9B36C]/40 bg-transparent px-3 py-1 text-[11px] text-[#F2E7D3] transition-all hover:bg-[#D9B36C]/12 hover:border-[#D9B36C] active:scale-95 sm:px-4 sm:py-1.5 sm:text-[13px]"
             >
               {term}
             </button>
@@ -290,10 +291,10 @@ export function HeroSearch({
   return (
     <div className="relative mx-auto w-full max-w-3xl px-2 sm:px-0">
       {/* Single-row search bar — glassmorphism */}
-      <div className="relative z-10 flex flex-col gap-1.5 overflow-visible rounded-2xl border border-white/20 bg-white/10 p-1.5 shadow-2xl backdrop-blur-lg sm:flex-row sm:items-center sm:gap-0 sm:rounded-full sm:p-1.5">
+      <div className="relative z-10 flex flex-col gap-1.5 overflow-visible rounded-[5px] border border-white/20 bg-white/10 p-1.5 shadow-2xl backdrop-blur-lg sm:flex-row sm:items-center sm:gap-0 sm:p-1.5">
         {/* Search field */}
         <div ref={searchRef} className="relative flex-1 min-w-0">
-          <div className="group flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all focus-within:bg-white/10 sm:rounded-full sm:px-4">
+          <div className="group flex items-center gap-2 rounded-[5px] px-3 py-2.5 transition-all focus-within:bg-white/10 sm:px-4">
             <Search className="h-4 w-4 shrink-0 text-white/60 transition-colors group-focus-within:text-white" />
             <input
               type="text"
@@ -337,7 +338,7 @@ export function HeroSearch({
 
         {/* Location field */}
         <div ref={locationRef} className="relative sm:w-40 md:w-44">
-          <div className="group flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all focus-within:bg-white/10 sm:rounded-full sm:px-4">
+          <div className="group flex items-center gap-2 rounded-[5px] px-3 py-2.5 transition-all focus-within:bg-white/10 sm:px-4">
             <MapPin className="h-4 w-4 shrink-0 text-white/60 transition-colors group-focus-within:text-white" />
             <input
               type="text"
@@ -374,7 +375,7 @@ export function HeroSearch({
           <button
             type="button"
             onClick={() => setShowWhen(!showWhen)}
-            className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-all sm:rounded-full sm:px-4 ${
+            className={`flex w-full items-center gap-2 rounded-[5px] px-3 py-2.5 text-left text-sm transition-all sm:px-4 ${
               whenLabel
                 ? "bg-white/15 font-medium text-white"
                 : "text-white/60 hover:text-white hover:bg-white/10"
@@ -428,7 +429,7 @@ export function HeroSearch({
         <button
           type="button"
           onClick={handleSubmit}
-          className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white/20 border border-white/30 px-4 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition-all hover:bg-white/30 hover:shadow-xl active:scale-[0.98] sm:rounded-full sm:px-5 sm:py-2.5"
+          className="flex shrink-0 items-center justify-center gap-2 rounded-[5px] bg-white/20 border border-white/30 px-4 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition-all hover:bg-white/30 hover:shadow-xl active:scale-[0.98] sm:px-5 sm:py-2.5"
         >
           <Search className="h-4 w-4" />
           <span className="sm:hidden">Search</span>
@@ -446,7 +447,7 @@ export function HeroSearch({
               setQInput(term);
               handleSubmitWithQuery(term);
             }}
-            className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white active:scale-95"
+            className="rounded-[5px] border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white active:scale-95"
           >
             {term}
           </button>

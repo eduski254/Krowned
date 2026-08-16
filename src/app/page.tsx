@@ -292,7 +292,7 @@ export default async function HomePage() {
           </div>
 
           {/* Image — right */}
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl lg:rounded-3xl">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[5px]">
             <Image
               src="/brand/cta-client.jpeg"
               alt="Client getting her textured hair styled at a Krowned salon"
@@ -309,7 +309,7 @@ export default async function HomePage() {
       <section className="w-full bg-[#F5EFE3] dark:bg-[#11100E]">
         <div className="grid items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
           {/* Image — left (on desktop, stacks below text on mobile via order) */}
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl lg:rounded-3xl order-2 lg:order-1">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[5px] order-2 lg:order-1">
             <Image
               src="/brand/cta-stylist.jpeg"
               alt="Stylist managing her bookings on a tablet at a Krowned salon"
@@ -726,7 +726,7 @@ export default async function HomePage() {
                 desc: "Show up, sit back, leave feeling like royalty. Pay online or in the chair — tip your stylist right from the app.",
               },
             ].map((item) => (
-              <div key={item.title} className="overflow-hidden rounded-2xl border border-border bg-card">
+              <div key={item.title} className="overflow-hidden rounded-[5px] border border-border bg-card">
                 <div className="relative aspect-[4/5] w-full overflow-hidden">
                   <Image
                     src={item.image}
@@ -1010,7 +1010,7 @@ export default async function HomePage() {
 
       {/* Final CTA — for clients */}
       <section className="w-full px-5 py-16 text-center sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-4xl rounded-2xl border border-border bg-card p-8 sm:p-12">
+        <div className="mx-auto max-w-4xl rounded-[5px] border border-border bg-card p-8 sm:p-12">
           <Sparkles className="mx-auto h-10 w-10 text-primary" />
           <h2 className="mt-4 text-2xl font-bold text-foreground sm:text-3xl">
             Ready to get crowned?
