@@ -175,10 +175,10 @@ export default async function HomePage() {
     <div className="flex min-h-full flex-col">
       <JsonLd data={organizationSchema()} />
       <JsonLd data={webSiteSchema()} />
-      <PublicHeader transparent />
+      <PublicHeader />
 
       {/* Hero — Full-bleed BG with left fade */}
-      <section className="relative min-h-[100svh] overflow-hidden bg-[#0C0B0A]">
+      <section className="relative min-h-[100svh] overflow-hidden bg-[#0C0B0A] sm:min-h-[calc(100svh-57px)]">
         {/* Background image — spans entire hero */}
         <Image
           src={HERO_BG_IMAGE}
@@ -198,7 +198,7 @@ export default async function HomePage() {
         <div className="pointer-events-none absolute inset-0 hidden lg:block bg-gradient-to-t from-[#0C0B0A]/60 via-transparent to-transparent" />
 
         {/* Content */}
-        <div className="relative z-10 flex min-h-[100svh] flex-col">
+        <div className="relative z-10 flex min-h-[100svh] flex-col sm:min-h-[calc(100svh-57px)]">
           <div className="flex flex-1 flex-col justify-center px-4 pb-6 pt-20 sm:px-8 sm:py-16 md:px-10 lg:max-w-[55%] lg:px-[clamp(28px,4.2vw,60px)] lg:py-[clamp(32px,3.6vw,56px)]">
             <div className="mx-auto max-w-[600px] lg:mx-0">
               {/* Eyebrow */}
