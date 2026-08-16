@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { headers } from "next/headers";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
 import { PublicMobileNav } from "./mobile-nav";
@@ -14,6 +15,9 @@ const NAV_LINKS = [
 ];
 
 export async function PublicHeader() {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? headersList.get("x-invoke-path") ?? "";
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -60,15 +64,18 @@ export async function PublicHeader() {
         {/* Right: nav + actions */}
         <div className="ml-auto hidden items-center gap-6 md:flex">
           <nav className="flex items-center gap-6">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground dark:text-white"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-sm font-medium transition-colors ${isActive ? "text-foreground underline underline-offset-4 decoration-2 decoration-primary" : "text-muted-foreground hover:text-foreground dark:text-white"}`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
           <div className="h-5 w-px bg-border" />
           <ThemeToggle />

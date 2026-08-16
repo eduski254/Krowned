@@ -47,6 +47,9 @@ function isPublicPath(pathname: string) {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Pass pathname to server components via request header
+  request.headers.set("x-pathname", pathname);
+
   // Create a response we can mutate
   let response = NextResponse.next({
     request: { headers: request.headers },
