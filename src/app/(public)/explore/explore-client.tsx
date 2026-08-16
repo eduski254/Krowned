@@ -185,7 +185,7 @@ export function ExploreClient({
   const highlightedId = hoveredId ?? pinnedId;
   const [mobileMapOpen, setMobileMapOpen] = useState(false);
   const [mapVisible, setMapVisible] = useState(true);
-  const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [previewBiz, setPreviewBiz] = useState<ExploreBusiness | null>(null);
 
   // Dropdown visibility
@@ -578,12 +578,12 @@ export function ExploreClient({
           ref={listPanelRef}
           style={mapVisible ? { boxShadow: "4px 0 16px rgba(0, 0, 0, 0.1)" } : undefined}
           className={`relative z-10 flex-1 overflow-y-auto ${
-            mapVisible ? "lg:w-1/2 lg:flex-none" : "w-full"
+            mapVisible ? "lg:w-[30%] lg:flex-none" : "w-full"
           } ${mobileMapOpen ? "hidden lg:block" : ""}`}
         >
-          <div className="sticky top-0 z-10 flex items-center justify-between bg-background/95 backdrop-blur-sm px-4 py-3 sm:px-6 border-b border-border">
+          <div className="sticky top-0 z-10 flex items-center justify-between bg-background/95 backdrop-blur-sm px-3 py-2.5 sm:px-4 border-b border-border">
             <div>
-              <h2 className="text-sm font-semibold text-foreground">
+              <h2 className="text-xs font-semibold text-foreground">
                 {(() => {
                   const catName = category ? categories.find((c) => c.slug === category)?.name : null;
                   const parts: string[] = [];
@@ -656,13 +656,13 @@ export function ExploreClient({
             </div>
           </div>
 
-          <div className="p-4 sm:p-6">
+          <div className={viewMode === "grid" ? "p-4 sm:p-6" : ""}>
           {filtered.length > 0 ? (
             <div
               className={
                 viewMode === "grid"
                   ? `grid grid-cols-1 gap-4 sm:grid-cols-2 ${!mapVisible ? "lg:grid-cols-3 xl:grid-cols-4" : ""}`
-                  : "space-y-4"
+                  : "divide-y-0"
               }
             >
               {filtered.map((biz) => (
@@ -709,7 +709,7 @@ export function ExploreClient({
             className={`${
               mobileMapOpen
                 ? "absolute inset-0 z-20"
-                : "hidden lg:block lg:w-1/2"
+                : "hidden lg:block lg:w-[70%]"
             }`}
           >
             {mobileMapOpen && (
@@ -741,7 +741,7 @@ export function ExploreClient({
         )}
 
         {!hasMapKey && mapVisible && (
-          <div className="hidden items-center justify-center border-l border-border bg-muted lg:flex lg:w-1/2">
+          <div className="hidden items-center justify-center border-l border-border bg-muted lg:flex lg:w-[70%]">
             <p className="text-sm text-muted-foreground">
               Map unavailable — API key not configured.
             </p>
@@ -877,65 +877,59 @@ const BusinessCard = forwardRef<
       onKeyDown={(e) => { if (e.key === "Enter") onSelect(biz); }}
       onMouseEnter={() => onHover(biz.id)}
       onMouseLeave={() => onHover(null)}
-      className={`group relative flex cursor-pointer overflow-hidden rounded-xl border bg-card shadow-md transition-shadow duration-150 hover:shadow-lg ${
-        isHighlighted
-          ? "border-primary ring-2 ring-primary/20"
-          : "border-border"
+      className={`group flex cursor-pointer gap-3 border-b border-border px-3 py-3 transition-colors hover:bg-muted/50 ${
+        isHighlighted ? "bg-primary/5" : ""
       }`}
     >
-      <div className="relative hidden w-40 shrink-0 overflow-hidden bg-muted sm:block">
+      {/* Thumbnail */}
+      <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-lg bg-muted">
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={biz.name}
             fill
-            sizes="160px"
+            sizes="72px"
             loading="lazy"
             className="object-cover"
           />
         ) : (
-          letterAvatar
+          <div className="flex h-full w-full items-center justify-center bg-primary/10 text-lg font-bold text-primary">
+            {biz.name.charAt(0)}
+          </div>
         )}
-        <div className="absolute left-1.5 top-1.5 flex flex-col gap-1">
-          {badges}
-        </div>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col p-4">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <h3 className="truncate font-semibold text-foreground transition-colors group-hover:text-primary">
-                {biz.name}
-              </h3>
-              <div className="flex gap-1.5 sm:hidden">{badges}</div>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {biz.categoryName ?? ""}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {[biz.city, biz.country].filter(Boolean).join(", ")}
-            </p>
-          </div>
-          <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
-            <FavoriteButton
-              businessId={biz.id}
-              initialFavorited={biz.isFavorited}
-              isLoggedIn={isLoggedIn}
-              size="sm"
-            />
-          </div>
+      {/* Info */}
+      <div className="flex min-w-0 flex-1 flex-col justify-center">
+        <div className="flex items-center gap-1.5">
+          <h3 className="truncate text-[13px] font-bold text-foreground" style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" }}>
+            {biz.name}
+          </h3>
+          {biz.is_featured && (
+            <span className="shrink-0 rounded bg-primary/90 px-1 py-px text-[9px] font-semibold uppercase leading-tight text-primary-foreground">
+              Ad
+            </span>
+          )}
         </div>
+        <div className="mt-0.5 flex items-center gap-1">
+          <StarRating value={biz.avgRating} count={biz.reviewCount} size="xs" />
+        </div>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          {[biz.categoryName, biz.city].filter(Boolean).join(" · ")}
+        </p>
         {biz.description && (
-          <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+          <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground/80">
             {biz.description}
           </p>
         )}
-        <div className="mt-auto flex items-center justify-between pt-3">
-          <StarRating value={biz.avgRating} count={biz.reviewCount} />
-          <span className="text-sm font-medium text-primary transition-transform group-hover:translate-x-0.5">
-            View &rarr;
-          </span>
-        </div>
+      </div>
+      {/* Favorite */}
+      <div className="shrink-0 self-center" onClick={(e) => e.stopPropagation()}>
+        <FavoriteButton
+          businessId={biz.id}
+          initialFavorited={biz.isFavorited}
+          isLoggedIn={isLoggedIn}
+          size="sm"
+        />
       </div>
     </div>
   );
