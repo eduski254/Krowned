@@ -9,7 +9,7 @@ export default async function AdminClaimsPage() {
   const { data: claims } = await admin
     .from("listing_claims")
     .select(
-      "id, full_name, email, phone, proof_notes, status, created_at, business_id, claimant_id, businesses(name, slug), profiles!listing_claims_claimant_id_fkey(full_name, email)",
+      "id, full_name, email, phone, proof_notes, proof_image_url, status, created_at, business_id, claimant_id, businesses(name, slug), profiles!listing_claims_claimant_id_fkey(full_name, email)",
     )
     .order("created_at", { ascending: false });
 

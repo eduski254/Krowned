@@ -9,6 +9,7 @@ const claimSchema = z.object({
   email: z.string().email(),
   phone: z.string().optional(),
   proofNotes: z.string().max(1000).optional(),
+  proofImageUrl: z.string().url().optional().nullable(),
 });
 
 export async function POST(request: Request) {
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { businessId, fullName, email, phone, proofNotes } = parsed.data;
+  const { businessId, fullName, email, phone, proofNotes, proofImageUrl } = parsed.data;
   const admin = createAdminClient();
 
   // Verify business exists and is unclaimed
@@ -81,6 +82,7 @@ export async function POST(request: Request) {
       email,
       phone: phone || null,
       proof_notes: proofNotes || null,
+      proof_image_url: proofImageUrl || null,
     })
     .select()
     .single();

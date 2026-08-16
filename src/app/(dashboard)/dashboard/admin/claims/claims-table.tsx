@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle, XCircle, Clock, ExternalLink } from "lucide-react";
+import { CheckCircle, XCircle, Clock, ExternalLink, FileText } from "lucide-react";
 
 type Claim = {
   id: string;
@@ -9,6 +9,7 @@ type Claim = {
   email: string;
   phone: string | null;
   proof_notes: string | null;
+  proof_image_url: string | null;
   status: string;
   created_at: string;
   business_id: string;
@@ -106,12 +107,35 @@ export function ClaimsTable({ claims: initial }: { claims: Claim[] }) {
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 </p>
-                {claim.proof_notes && (
+                {(claim.proof_image_url || claim.proof_notes) && (
                   <div className="mt-2 rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
                     <p className="text-xs font-medium text-foreground mb-1">
-                      Proof/Notes:
+                      Proof:
                     </p>
-                    {claim.proof_notes}
+                    {claim.proof_image_url && (
+                      <a
+                        href={claim.proof_image_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mb-2 inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                      >
+                        {claim.proof_image_url.endsWith(".pdf") ? (
+                          <>
+                            <FileText className="h-4 w-4" />
+                            View PDF document
+                          </>
+                        ) : (
+                          <img
+                            src={claim.proof_image_url}
+                            alt="Proof document"
+                            className="max-h-40 rounded-lg border border-border"
+                          />
+                        )}
+                      </a>
+                    )}
+                    {claim.proof_notes && (
+                      <p className="mt-1">{claim.proof_notes}</p>
+                    )}
                   </div>
                 )}
                 <p className="mt-2 text-xs text-muted-foreground">

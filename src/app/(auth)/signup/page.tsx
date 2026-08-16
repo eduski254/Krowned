@@ -14,6 +14,7 @@ export default function SignupPage() {
   const prefillEmail = searchParams.get("email") ?? "";
   const prefillName = searchParams.get("name") ?? "";
   const isInvite = !!prefillEmail; // email prefilled = coming from staff invite
+  const isClaim = !!searchParams.get("claim");
   const [state, action, pending] = useActionState<AuthState, FormData>(
     signup,
     null,
@@ -24,9 +25,20 @@ export default function SignupPage() {
 
   return (
     <>
+      {isClaim && (
+        <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
+          <p className="text-sm font-medium text-foreground">
+            Create an account to claim your business
+          </p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            After signing up, you&apos;ll be taken to the claim form to verify your ownership.
+          </p>
+        </div>
+      )}
+
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-foreground">
-          {isInvite ? "Set up your account" : "Create your account"}
+          {isInvite ? "Set up your account" : isClaim ? "Create your professional account" : "Create your account"}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
           {isInvite ? (
@@ -34,7 +46,10 @@ export default function SignupPage() {
           ) : (
             <>
               Already have an account?{" "}
-              <Link href="/login" className="text-primary hover:underline">
+              <Link
+                href={isClaim ? `/login?redirect=${encodeURIComponent(searchParams.get("redirect") ?? "/")}` : "/login"}
+                className="text-primary hover:underline"
+              >
                 Log in
               </Link>
             </>

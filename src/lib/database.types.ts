@@ -895,6 +895,7 @@ export type Database = {
           full_name: string
           id: string
           phone: string | null
+          proof_image_url: string | null
           proof_notes: string | null
           reviewed_at: string | null
           reviewed_by: string | null
@@ -909,6 +910,7 @@ export type Database = {
           full_name: string
           id?: string
           phone?: string | null
+          proof_image_url?: string | null
           proof_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
@@ -923,6 +925,7 @@ export type Database = {
           full_name?: string
           id?: string
           phone?: string | null
+          proof_image_url?: string | null
           proof_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
