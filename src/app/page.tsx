@@ -229,16 +229,12 @@ export default async function HomePage() {
           </div>
 
           {/* Trust bar — pinned to bottom */}
-          <div className="mx-3 mb-3 flex items-center justify-center gap-3 rounded-xl border border-[#D9B36C]/25 bg-[#0C0B0A]/60 px-3 py-2 backdrop-blur-md sm:mx-6 sm:mb-6 sm:gap-5 sm:rounded-2xl sm:px-5 sm:py-3 lg:mx-8 lg:mb-8 lg:gap-6 lg:py-4 max-sm:flex-nowrap max-sm:justify-start max-sm:overflow-x-auto max-sm:scrollbar-hide">
-            <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-[#F2E7D3]/85 sm:gap-2 sm:text-[13px]">
-              <BadgeCheck className="h-3 w-3 text-[#E4C783] sm:h-4 sm:w-4" /> ID-verified
-            </span>
-            <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-[#F2E7D3]/85 sm:gap-2 sm:text-[13px]">
-              <Shield className="h-3 w-3 text-[#E4C783] sm:h-4 sm:w-4" /> Secure payments
-            </span>
-            <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-[#F2E7D3]/85 sm:gap-2 sm:text-[13px]">
-              <Clock className="h-3 w-3 text-[#E4C783] sm:h-4 sm:w-4" /> Instant confirm
-            </span>
+          <div className="mb-3 ml-3 flex items-center gap-3 sm:ml-6 sm:mb-6 lg:ml-8 lg:mb-8">
+            <span className="text-[10px] text-[#F2E7D3]/70 sm:text-[11px]">ID-verified</span>
+            <span className="text-[10px] text-[#F2E7D3]/70 sm:text-[11px]">·</span>
+            <span className="text-[10px] text-[#F2E7D3]/70 sm:text-[11px]">Secure payments</span>
+            <span className="text-[10px] text-[#F2E7D3]/70 sm:text-[11px]">·</span>
+            <span className="text-[10px] text-[#F2E7D3]/70 sm:text-[11px]">Instant confirm</span>
           </div>
         </div>
       </section>
