@@ -72,6 +72,7 @@ function MapContent({
   const markersRef = useRef<globalThis.Map<string, Marker> | null>(null);
   if (markersRef.current == null) markersRef.current = new globalThis.Map();
   const [selectedBiz, setSelectedBiz] = useState<ExploreBusiness | null>(null);
+  const [bouncingId, setBouncingId] = useState<string | null>(null);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Initialize clusterer
@@ -133,16 +134,17 @@ function MapContent({
           onClick={() => {
             setSelectedBiz(biz);
             onPinClick(biz.id);
-            // Quick zoom pulse effect
+            // Bounce the pin + pan to it
+            setBouncingId(biz.id);
+            setTimeout(() => setBouncingId(null), 600);
             if (map) {
-              const current = map.getZoom() ?? 14;
               map.panTo({ lat: biz.latitude!, lng: biz.longitude! });
-              map.setZoom(current + 1.5);
-              setTimeout(() => map.setZoom(current + 0.5), 350);
             }
           }}
         >
           <div
+            className={bouncingId === biz.id ? "animate-pin-bounce" : ""}
+            style={{ transformOrigin: "bottom center" }}
             onMouseEnter={() => {
               clearTimeout(hoverTimeout.current);
               setSelectedBiz(biz);
