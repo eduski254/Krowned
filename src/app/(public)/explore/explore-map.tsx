@@ -178,45 +178,23 @@ function MapContent({
                 setSelectedBiz(null);
               }
             }}
-            className="block max-w-[240px] cursor-pointer overflow-hidden rounded-lg bg-card"
+            className="block max-w-[220px] cursor-pointer overflow-hidden rounded-lg bg-card px-3 py-2.5"
           >
-            {/* Cover image */}
-            {selectedBiz.imageUrl ? (
-              <div className="h-24 w-full overflow-hidden">
-                <img
-                  src={selectedBiz.imageUrl}
-                  alt={selectedBiz.name}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="flex h-20 w-full items-center justify-center bg-secondary text-2xl font-bold text-primary">
-                {selectedBiz.name.charAt(0)}
-              </div>
-            )}
-            <div className="p-2.5">
-              <p className="font-semibold text-sm text-foreground">
-                {selectedBiz.name}
-              </p>
-              {selectedBiz.categoryName && (
-                <p className="text-xs text-muted-foreground">
-                  {selectedBiz.categoryName}
-                </p>
-              )}
-              {selectedBiz.city && (
-                <p className="text-xs text-muted-foreground/70">{selectedBiz.city}</p>
-              )}
-              <div className="mt-1.5 flex items-center justify-between">
-                <StarRating
-                  value={selectedBiz.avgRating}
-                  count={selectedBiz.reviewCount}
-                  size="xs"
-                />
-                <span className="text-xs font-semibold text-primary">
-                  View &rarr;
-                </span>
-              </div>
+            <p className="text-[13px] font-bold text-foreground" style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
+              {selectedBiz.name}
+            </p>
+            <div className="mt-0.5">
+              <StarRating
+                value={selectedBiz.avgRating}
+                count={selectedBiz.reviewCount}
+                size="xs"
+              />
             </div>
+            {selectedBiz.categoryName && (
+              <p className="mt-0.5 text-[11px] text-muted-foreground">
+                {[selectedBiz.categoryName, selectedBiz.city].filter(Boolean).join(" · ")}
+              </p>
+            )}
           </div>
         </InfoWindow>
       )}

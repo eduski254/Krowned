@@ -283,11 +283,10 @@ export function ExploreClient({
     const el = cardRefs.current.get(id);
     const panel = listPanelRef.current;
     if (el && panel) {
-      // Scroll within the list panel only — don't touch the page scroll
       const panelRect = panel.getBoundingClientRect();
       const elRect = el.getBoundingClientRect();
       const offset = elRect.top - panelRect.top - panelRect.height / 2 + elRect.height / 2;
-      panel.scrollBy({ top: offset, behavior: "smooth" });
+      panel.scrollBy({ top: offset, behavior: "instant" });
     }
   }, []);
 
