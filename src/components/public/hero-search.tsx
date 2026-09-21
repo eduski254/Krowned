@@ -125,11 +125,11 @@ export function HeroSearch({
     return (
       <div className="relative w-full max-w-[600px]">
         {/* Search card — dark with gold accents */}
-        <div className="relative z-10 overflow-visible rounded-[5px] border border-[#D9B36C]/25 bg-[#1C1A17]/70 p-1.5 shadow-[0_24px_50px_rgba(0,0,0,0.35)] sm:p-2.5">
+        <div className="relative z-10 overflow-visible rounded-[5px] border border-[#D9B36C]/30 bg-white/80 p-1.5 shadow-[0_24px_50px_rgba(0,0,0,0.1)] backdrop-blur-md sm:p-2.5">
           {/* Service field — full width */}
           <div ref={searchRef} className="relative">
             <div className="group flex items-center gap-2.5 px-3 py-2.5 sm:gap-3 sm:px-[18px] sm:py-3.5">
-              <Search className="h-4 w-4 shrink-0 text-[#E4C783] sm:h-[19px] sm:w-[19px]" />
+              <Search className="h-4 w-4 shrink-0 text-[#B8860B] sm:h-[19px] sm:w-[19px]" />
               <input
                 type="text"
                 value={qInput}
@@ -140,13 +140,13 @@ export function HeroSearch({
                 onFocus={() => qInput.length > 0 && setShowSearch(true)}
                 onKeyDown={handleSearchKeyDown}
                 placeholder="Knotless braids, retwist, silk press…"
-                className="w-full min-w-0 bg-transparent text-[13px] text-[#F2E7D3] placeholder:text-[#F2E7D3]/55 outline-none sm:text-[15px]"
+                className="w-full min-w-0 bg-transparent text-[13px] text-[#1A1612] placeholder:text-[#1A1612]/45 outline-none sm:text-[15px]"
               />
               {qInput && (
                 <button
                   type="button"
                   onClick={() => { setQInput(""); setShowSearch(false); }}
-                  className="shrink-0 rounded-full p-0.5 text-[#F2E7D3]/50 hover:text-[#F2E7D3] transition-colors"
+                  className="shrink-0 rounded-full p-0.5 text-[#1A1612]/50 hover:text-[#1A1612] transition-colors"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -165,13 +165,13 @@ export function HeroSearch({
           </div>
 
           {/* Horizontal divider */}
-          <div className="mx-3.5 h-px bg-[#E4C783]/15" />
+          <div className="mx-3.5 h-px bg-[#1A1612]/10" />
 
           {/* Location + Date row */}
           <div className="flex flex-col sm:flex-row">
             <div ref={locationRef} className="relative flex-1 min-w-0">
               <div className="group flex items-center gap-2.5 px-3 py-2.5 sm:gap-3 sm:px-[18px] sm:py-3.5">
-                <MapPin className="h-4 w-4 shrink-0 text-[#E4C783] sm:h-[19px] sm:w-[19px]" />
+                <MapPin className="h-4 w-4 shrink-0 text-[#B8860B] sm:h-[19px] sm:w-[19px]" />
                 <input
                   type="text"
                   value={cityInput}
@@ -179,13 +179,13 @@ export function HeroSearch({
                   onFocus={() => setShowLocation(true)}
                   onKeyDown={handleCityKeyDown}
                   placeholder="DMV, city or area"
-                  className="w-full min-w-0 bg-transparent text-[13px] text-[#F2E7D3] placeholder:text-[#F2E7D3]/55 outline-none sm:text-[15px]"
+                  className="w-full min-w-0 bg-transparent text-[13px] text-[#1A1612] placeholder:text-[#1A1612]/45 outline-none sm:text-[15px]"
                 />
                 {cityInput && (
                   <button
                     type="button"
                     onClick={() => { setCityInput(""); setShowLocation(false); }}
-                    className="shrink-0 rounded-full p-0.5 text-[#F2E7D3]/50 hover:text-[#F2E7D3] transition-colors"
+                    className="shrink-0 rounded-full p-0.5 text-[#1A1612]/50 hover:text-[#1A1612] transition-colors"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -197,8 +197,8 @@ export function HeroSearch({
             </div>
 
             {/* Vertical divider (desktop) / Horizontal divider (mobile) */}
-            <div className="mx-3.5 h-px bg-[#E4C783]/15 sm:hidden" />
-            <div className="hidden sm:block w-px my-2.5 bg-[#E4C783]/15" />
+            <div className="mx-3.5 h-px bg-[#1A1612]/10 sm:hidden" />
+            <div className="hidden sm:block w-px my-2.5 bg-[#1A1612]/10" />
 
             <div ref={whenRef} className="relative flex-1 min-w-0">
               <button
@@ -206,11 +206,11 @@ export function HeroSearch({
                 onClick={() => setShowWhen(!showWhen)}
                 className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-[13px] transition-all sm:gap-3 sm:px-[18px] sm:py-3.5 sm:text-[15px] ${
                   whenLabel
-                    ? "font-medium text-[#F2E7D3]"
-                    : "text-[#F2E7D3]/55 hover:text-[#F2E7D3]"
+                    ? "font-medium text-[#1A1612]"
+                    : "text-[#1A1612]/45 hover:text-[#1A1612]"
                 }`}
               >
-                <Calendar className="h-4 w-4 shrink-0 text-[#E4C783] sm:h-[19px] sm:w-[19px]" />
+                <Calendar className="h-4 w-4 shrink-0 text-[#B8860B] sm:h-[19px] sm:w-[19px]" />
                 <span className="flex-1 truncate">
                   {whenLabel ?? "Any date"}
                 </span>
@@ -232,7 +232,7 @@ export function HeroSearch({
                         setShowWhen(false);
                       }
                     }}
-                    className="shrink-0 rounded-full p-0.5 text-[#F2E7D3]/50 hover:text-[#F2E7D3] transition-colors cursor-pointer"
+                    className="shrink-0 rounded-full p-0.5 text-[#1A1612]/50 hover:text-[#1A1612] transition-colors cursor-pointer"
                   >
                     <X className="h-3 w-3" />
                   </span>
@@ -259,9 +259,9 @@ export function HeroSearch({
           <button
             type="button"
             onClick={handleSubmit}
-            className="group/btn relative mt-1.5 flex w-full items-center justify-center gap-2 overflow-hidden rounded-[5px] bg-[linear-gradient(150deg,rgba(228,199,131,0.25)_0%,rgba(228,199,131,0.15)_50%,rgba(198,161,91,0.25)_100%)] border border-[#E4C783]/30 px-3 py-3 text-[13px] font-semibold text-white backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),inset_0_-1px_0_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(228,199,131,0.08),0_4px_16px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-[linear-gradient(150deg,rgba(228,199,131,0.35)_0%,rgba(228,199,131,0.25)_50%,rgba(198,161,91,0.35)_100%)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),inset_0_-1px_0_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(228,199,131,0.15),0_8px_24px_rgba(0,0,0,0.3)] hover:-translate-y-px active:scale-[0.98] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15),0_0_0_1px_rgba(228,199,131,0.08)] sm:mt-2 sm:gap-2.5 sm:px-4 sm:py-4 sm:text-base"
+            className="group/btn relative mt-1.5 flex w-full items-center justify-center gap-2 overflow-hidden rounded-[5px] bg-[#1A1612] px-3 py-3 text-[13px] font-semibold text-[#F5EDE0] shadow-[0_4px_16px_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-[#2A2520] hover:shadow-[0_8px_24px_rgba(0,0,0,0.2)] hover:-translate-y-px active:scale-[0.98] sm:mt-2 sm:gap-2.5 sm:px-4 sm:py-4 sm:text-base"
           >
-            <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent" style={{ animation: "glare 3s ease-in-out infinite" }} />
+            <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent" style={{ animation: "glare 3s ease-in-out infinite" }} />
             <Search className="h-[17px] w-[17px] sm:h-[18px] sm:w-[18px]" />
             Search stylists
           </button>
@@ -269,7 +269,7 @@ export function HeroSearch({
 
         {/* Popular chips */}
         <div className="relative z-0 mt-4 flex flex-wrap items-center gap-2 sm:mt-6 sm:gap-2.5 sm:flex-wrap max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:scrollbar-hide max-sm:pb-1">
-          <span className="shrink-0 text-[11px] text-[#F2E7D3]/55 sm:text-[13px]">Popular</span>
+          <span className="shrink-0 text-[11px] text-[#1A1612]/50 sm:text-[13px]">Popular</span>
           {["Knotless braids", "Locs", "Silk press", "Sew-in", "Retwist"].map((term) => (
             <button
               key={term}
@@ -278,7 +278,7 @@ export function HeroSearch({
                 setQInput(term);
                 handleSubmitWithQuery(term);
               }}
-              className="shrink-0 rounded-[5px] border border-[#D9B36C]/40 bg-transparent px-3 py-1 text-[11px] text-[#F2E7D3] transition-all hover:bg-[#D9B36C]/12 hover:border-[#D9B36C] active:scale-95 sm:px-4 sm:py-1.5 sm:text-[13px]"
+              className="shrink-0 rounded-[5px] border border-[#1A1612]/20 bg-white/50 px-3 py-1 text-[11px] text-[#1A1612] transition-all hover:bg-white/80 hover:border-[#1A1612]/40 active:scale-95 sm:px-4 sm:py-1.5 sm:text-[13px]"
             >
               {term}
             </button>
