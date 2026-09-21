@@ -45,6 +45,7 @@ export default async function StylesPage() {
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-16 text-center">
         <Image src="/brand/bg-texture.webp" alt="" fill sizes="100vw" className="object-cover" />
+        <div className="absolute inset-0 bg-white/50" />
         <div className="relative z-10">
           <h1 className="text-3xl font-bold sm:text-4xl text-[#1A1612]">Styles</h1>
           <p className="mt-4 text-lg text-[#1A1612]/70">

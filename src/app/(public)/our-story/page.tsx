@@ -14,6 +14,7 @@ export default function OurStoryPage() {
       {/* Hero — full bleed */}
       <section className="relative flex min-h-[60vh] items-end overflow-hidden sm:min-h-[70vh]">
         <Image src="/brand/bg-texture.webp" alt="" fill sizes="100vw" className="object-cover" />
+        <div className="absolute inset-0 bg-white/50" />
         <div className="relative z-10 px-6 pb-12 sm:px-12 sm:pb-16 lg:px-20">
           <h1 className="max-w-lg font-heading text-3xl font-bold text-[#1A1612] sm:text-4xl lg:text-5xl">
             You were always royalty.

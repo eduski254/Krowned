@@ -207,6 +207,7 @@ export default async function StyleDetailPage({
           sizes="100vw"
           className="object-cover"
         />
+        <div className="absolute inset-0 bg-white/50" />
         <div className="relative z-10">
           {Icon && (
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#1A1612]/10">

@@ -195,6 +195,7 @@ export default async function CityExplorePage({
           sizes="100vw"
           className="object-cover"
         />
+        <div className="absolute inset-0 bg-white/50" />
         <div className="relative z-10">
           <div className="mx-auto mb-3 flex items-center justify-center gap-2 text-sm text-[#1A1612]/60">
             <MapPin className="h-4 w-4" />

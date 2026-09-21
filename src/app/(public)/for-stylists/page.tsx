@@ -20,6 +20,7 @@ export default function ForStylistsPage() {
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-20 text-center">
         <Image src="/brand/bg-texture.webp" alt="" fill sizes="100vw" className="object-cover" />
+        <div className="absolute inset-0 bg-white/50" />
         <div className="relative z-10">
           <h1 className="text-3xl font-bold font-heading sm:text-4xl lg:text-5xl text-[#1A1612]">
             You&apos;re a master of your craft.
@@ -30,13 +31,13 @@ export default function ForStylistsPage() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link
               href="/signup?type=professional"
-              className="rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
+              className="rounded-lg bg-[#1A1612] px-8 py-3 text-sm font-semibold text-white hover:bg-[#2A2520]"
             >
               List your studio
             </Link>
             <Link
               href="#pricing"
-              className="rounded-lg border border-white/30 px-8 py-3 text-sm font-semibold text-white hover:bg-white/10"
+              className="rounded-lg border border-[#1A1612]/30 bg-white/60 px-8 py-3 text-sm font-semibold text-[#1A1612] hover:bg-white/80"
             >
               View pricing
             </Link>
@@ -185,12 +186,13 @@ export default function ForStylistsPage() {
       {/* Final CTA */}
       <section className="relative overflow-hidden px-4 py-16 text-center">
         <Image src="/brand/bg-texture.webp" alt="" fill sizes="100vw" className="object-cover" />
+        <div className="absolute inset-0 bg-white/50" />
         <div className="relative z-10">
           <h2 className="text-2xl font-bold font-heading text-[#1A1612]">Your craft deserves a front door.</h2>
           <p className="mt-2 text-[#1A1612]/70">14-day free trial. No credit card.</p>
           <Link
             href="/signup?type=professional"
-            className="mt-6 inline-block rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"
+            className="mt-6 inline-block rounded-lg bg-[#1A1612] px-8 py-3 text-sm font-semibold text-white hover:bg-[#2A2520]"
           >
             List your studio
           </Link>
