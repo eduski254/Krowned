@@ -87,19 +87,6 @@ export default async function StylesPage() {
         </div>
       </section>
 
-      {/* Inspiration band — parallax */}
-      <section
-        className="relative h-[50vh] sm:h-[60vh] overflow-hidden bg-fixed bg-center bg-cover"
-        style={{ backgroundImage: "url('/brand/styles-woman.webp')", backgroundAttachment: "fixed", backgroundPosition: "center top" }}
-      >
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="relative z-10 flex h-full items-center justify-center text-center px-4">
-          <p className="font-heading text-2xl font-bold text-white drop-shadow-lg sm:text-3xl lg:text-4xl">
-            Your crown. Your rules.
-          </p>
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="border-t border-border px-4 py-16 text-center">
         <h2 className="text-2xl font-bold text-foreground">Not sure what you want?</h2>
