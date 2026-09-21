@@ -31,7 +31,7 @@ import { RotatingService } from "@/components/public/rotating-service";
 /** Revalidate homepage every hour (ISR) */
 export const revalidate = 3600;
 
-const HERO_BG_IMAGE = "/brand/hero-gemini.jpeg";
+const HERO_BG_IMAGE = "/brand/krowned-hero-2.webp";
 
 import type { Metadata } from "next";
 
@@ -178,7 +178,7 @@ export default async function HomePage() {
       <PublicHeader />
 
       {/* Hero — Full-bleed BG with left fade */}
-      <section className="relative min-h-[100svh] overflow-hidden bg-[#0C0B0A] sm:min-h-[calc(100svh-57px)]">
+      <section className="relative min-h-[100svh] overflow-hidden bg-[#F5EDE0] sm:min-h-[calc(100svh-57px)]">
         {/* Background image — spans entire hero */}
         <Image
           src={HERO_BG_IMAGE}
@@ -191,29 +191,29 @@ export default async function HomePage() {
 
         {/* Gradient overlays */}
         {/* Mobile/Tablet: heavier overlay so text is always readable */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0C0B0A]/80 via-[#0C0B0A]/50 to-[#0C0B0A] lg:hidden" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#F5EDE0]/85 via-[#F5EDE0]/60 to-[#F5EDE0] lg:hidden" />
         {/* Desktop: solid left → transparent right blend */}
-        <div className="pointer-events-none absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,#0C0B0A_0%,#0C0B0A_30%,rgba(12,11,10,0.85)_42%,rgba(12,11,10,0.4)_58%,transparent_75%)]" />
+        <div className="pointer-events-none absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,#F5EDE0_0%,#F5EDE0_30%,rgba(245,237,224,0.88)_42%,rgba(245,237,224,0.4)_58%,transparent_75%)]" />
         {/* Subtle bottom fade on desktop too */}
-        <div className="pointer-events-none absolute inset-0 hidden lg:block bg-gradient-to-t from-[#0C0B0A]/60 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 hidden lg:block bg-gradient-to-t from-[#F5EDE0]/50 via-transparent to-transparent" />
 
         {/* Content */}
         <div className="relative z-10 flex min-h-[100svh] flex-col sm:min-h-[calc(100svh-57px)]">
           <div className="flex flex-1 flex-col justify-center px-4 pb-6 pt-20 sm:px-8 sm:py-16 md:px-10 lg:max-w-[55%] lg:px-[clamp(28px,4.2vw,60px)] lg:py-[clamp(32px,3.6vw,56px)]">
             <div className="mx-auto max-w-[600px] lg:mx-0">
               {/* Eyebrow */}
-              <span className="mb-5 inline-flex items-center text-[10px] font-medium uppercase tracking-[0.22em] text-[#D9B36C] sm:mb-8 sm:text-sm lg:mb-9">
+              <span className="mb-5 inline-flex items-center text-[10px] font-medium uppercase tracking-[0.22em] text-[#B8860B] sm:mb-8 sm:text-sm lg:mb-9">
                 DMV textured-hair pros
               </span>
 
-              <div className="font-heading text-[clamp(28px,7vw,42px)] font-extrabold leading-[1.4] tracking-tight text-[#FBF6EC] sm:text-[clamp(40px,6vw,56px)] lg:text-[clamp(48px,5vw,76px)]" role="heading" aria-level={1}>
+              <div className="font-heading text-[clamp(28px,7vw,42px)] font-extrabold leading-[1.4] tracking-tight text-[#1A1612] sm:text-[clamp(40px,6vw,56px)] lg:text-[clamp(48px,5vw,76px)]" role="heading" aria-level={1}>
                 <span className="block">Book your next</span>
                 <span className="block h-[1.3em] overflow-hidden whitespace-nowrap text-[0.65em] sm:text-[0.8em] lg:text-[0.85em]">
-                  <RotatingService className="text-[#E4C783]" />
+                  <RotatingService className="text-[#B8860B]" />
                 </span>
               </div>
 
-              <p className="mt-4 max-w-[520px] text-[13px] font-light leading-relaxed text-[#F2E7D3]/60 sm:mt-6 sm:text-[15px] lg:mt-7 lg:text-[clamp(15px,1.2vw,17px)]">
+              <p className="mt-4 max-w-[520px] text-[13px] font-light leading-relaxed text-[#1A1612]/60 sm:mt-6 sm:text-[15px] lg:mt-7 lg:text-[clamp(15px,1.2vw,17px)]">
                 Every stylist specializes in textured hair. Find yours, see real
                 openings, and book in seconds — no DMs, no ghosting.
               </p>
@@ -229,7 +229,7 @@ export default async function HomePage() {
           </div>
 
           {/* Trust bar — pinned to bottom, aligned with hero content */}
-          <p className="mb-4 px-4 text-[9px] text-[#F2E7D3]/50 sm:mb-6 sm:px-8 sm:text-[10px] md:px-10 lg:mb-8 lg:px-[clamp(28px,4.2vw,60px)]">
+          <p className="mb-4 px-4 text-[9px] text-[#1A1612]/40 sm:mb-6 sm:px-8 sm:text-[10px] md:px-10 lg:mb-8 lg:px-[clamp(28px,4.2vw,60px)]">
             ID-verified · Secure payments · Instant confirm
           </p>
         </div>
@@ -296,7 +296,7 @@ export default async function HomePage() {
             <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-[5px] border-2 border-[#D9B36C]/40 sm:translate-x-4 sm:translate-y-4" />
             <div className="relative aspect-[4/3] overflow-hidden rounded-[5px]">
               <Image
-                src="/brand/cta-client.jpeg"
+                src="/brand/section-2.webp"
                 alt="Client getting her textured hair styled at a Krowned salon"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -316,7 +316,7 @@ export default async function HomePage() {
             <div className="absolute inset-0 -translate-x-3 translate-y-3 rounded-[5px] border-2 border-[#D9B36C]/40 sm:-translate-x-4 sm:translate-y-4" />
             <div className="relative aspect-[4/3] overflow-hidden rounded-[5px]">
               <Image
-                src="/brand/cta-stylist.jpeg"
+                src="/brand/section-1.webp"
                 alt="Stylist managing her bookings on a tablet at a Krowned salon"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
