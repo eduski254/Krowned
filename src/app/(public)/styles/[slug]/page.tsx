@@ -199,26 +199,24 @@ export default async function StyleDetailPage({
       />
 
       {/* Hero */}
-      <section className="relative overflow-hidden px-4 py-16 text-center text-white">
+      <section className="relative overflow-hidden px-4 py-16 text-center">
         <Image
-          src="/brand/bg-hero.webp"
+          src="/brand/bg-texture.webp"
           alt=""
           fill
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
-        <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10">
           {Icon && (
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
-              <Icon className="h-7 w-7 text-white" />
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#1A1612]/10">
+              <Icon className="h-7 w-7 text-[#1A1612]" />
             </div>
           )}
-          <h1 className="text-3xl font-bold sm:text-4xl">
+          <h1 className="text-3xl font-bold sm:text-4xl text-[#1A1612]">
             {seo?.h1 || cat.name}
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-white/90 sm:text-lg">
+          <p className="mx-auto mt-4 max-w-2xl text-base text-[#1A1612]/70 sm:text-lg">
             {seo?.intro ||
               `Find verified ${cat.name.toLowerCase()} stylists in the DMV.`}
           </p>

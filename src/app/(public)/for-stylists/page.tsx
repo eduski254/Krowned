@@ -18,15 +18,13 @@ export default function ForStylistsPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden px-4 py-20 text-center text-white">
-        <Image src="/brand/bg-hero.webp" alt="" fill sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
-        <div className="absolute inset-0 bg-black/20" />
+      <section className="relative overflow-hidden px-4 py-20 text-center">
+        <Image src="/brand/bg-texture.webp" alt="" fill sizes="100vw" className="object-cover" />
         <div className="relative z-10">
-          <h1 className="text-3xl font-bold font-heading sm:text-4xl lg:text-5xl">
+          <h1 className="text-3xl font-bold font-heading sm:text-4xl lg:text-5xl text-[#1A1612]">
             You&apos;re a master of your craft.
           </h1>
-          <p className="mt-4 text-lg text-white/90 max-w-xl mx-auto">
+          <p className="mt-4 text-lg text-[#1A1612]/70 max-w-xl mx-auto">
             You shouldn&apos;t also have to be a receptionist. Krowned handles the bookings so you can focus on the art.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -185,13 +183,11 @@ export default function ForStylistsPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="relative overflow-hidden px-4 py-16 text-center text-white">
-        <Image src="/brand/bg-hero.webp" alt="" fill sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
-        <div className="absolute inset-0 bg-black/20" />
+      <section className="relative overflow-hidden px-4 py-16 text-center">
+        <Image src="/brand/bg-texture.webp" alt="" fill sizes="100vw" className="object-cover" />
         <div className="relative z-10">
-          <h2 className="text-2xl font-bold font-heading">Your craft deserves a front door.</h2>
-          <p className="mt-2 text-white/90">14-day free trial. No credit card.</p>
+          <h2 className="text-2xl font-bold font-heading text-[#1A1612]">Your craft deserves a front door.</h2>
+          <p className="mt-2 text-[#1A1612]/70">14-day free trial. No credit card.</p>
           <Link
             href="/signup?type=professional"
             className="mt-6 inline-block rounded-lg bg-background px-8 py-3 text-sm font-semibold text-foreground hover:bg-background/90"

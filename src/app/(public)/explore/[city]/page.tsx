@@ -187,25 +187,23 @@ export default async function CityExplorePage({
       />
 
       {/* Hero */}
-      <section className="relative overflow-hidden px-4 py-16 text-center text-white">
+      <section className="relative overflow-hidden px-4 py-16 text-center">
         <Image
-          src="/brand/bg-hero.webp"
+          src="/brand/bg-texture.webp"
           alt=""
           fill
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
-        <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10">
-          <div className="mx-auto mb-3 flex items-center justify-center gap-2 text-sm text-white/70">
+          <div className="mx-auto mb-3 flex items-center justify-center gap-2 text-sm text-[#1A1612]/60">
             <MapPin className="h-4 w-4" />
             {page.region}
           </div>
-          <h1 className="text-3xl font-bold sm:text-4xl">
+          <h1 className="text-3xl font-bold sm:text-4xl text-[#1A1612]">
             Textured-Hair Stylists in {page.name}
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-white/90 sm:text-lg">
+          <p className="mx-auto mt-4 max-w-2xl text-base text-[#1A1612]/70 sm:text-lg">
             {page.intro}
           </p>
         </div>

@@ -58,13 +58,11 @@ export default function FAQPage() {
       <JsonLd data={faqPageSchema(FAQS)} />
 
       {/* Hero */}
-      <section className="relative overflow-hidden px-4 py-16 text-center text-white">
-        <Image src="/brand/bg-hero.webp" alt="" fill sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-hero opacity-60" />
-        <div className="absolute inset-0 bg-black/20" />
+      <section className="relative overflow-hidden px-4 py-16 text-center">
+        <Image src="/brand/bg-texture.webp" alt="" fill sizes="100vw" className="object-cover" />
         <div className="relative z-10">
-          <h1 className="text-3xl font-bold sm:text-4xl">What to Expect</h1>
-          <p className="mt-4 text-lg text-white/90">
+          <h1 className="text-3xl font-bold sm:text-4xl text-[#1A1612]">What to Expect</h1>
+          <p className="mt-4 text-lg text-[#1A1612]/70">
             Straight answers. No fine print.
           </p>
         </div>
