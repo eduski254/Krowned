@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { z } from "zod";
+import { sendEmail } from "@/lib/email/resend";
+import { newClaimRequestEmail } from "@/lib/email/templates";
 
 const claimSchema = z.object({
   businessId: z.string().uuid(),
@@ -37,7 +39,7 @@ export async function POST(request: Request) {
   // Verify business exists and is unclaimed
   const { data: business } = await admin
     .from("businesses")
-    .select("id, claimed")
+    .select("id, name, claimed")
     .eq("id", businessId)
     .single();
 
@@ -89,6 +91,29 @@ export async function POST(request: Request) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Notify super admins via email
+  const { data: admins } = await admin
+    .from("profiles")
+    .select("id, full_name")
+    .eq("platform_role", "super_admin");
+
+  if (admins) {
+    for (const adm of admins) {
+      const { data: { user: admUser } } = await admin.auth.admin.getUserById(adm.id);
+      if (admUser?.email) {
+        const notification = newClaimRequestEmail({
+          adminName: adm.full_name ?? "Admin",
+          claimantName: fullName,
+          claimantEmail: email,
+          businessName: business.name,
+          businessId,
+          proofNotes: proofNotes ?? undefined,
+        });
+        sendEmail({ to: admUser.email, ...notification }).catch(() => {});
+      }
+    }
   }
 
   return NextResponse.json({ claim }, { status: 201 });

@@ -33,6 +33,7 @@ const publicPaths = [
   "/checkin",
   "/account-deleted",
   "/unsubscribe",
+  "/claim",
 ];
 
 function isPublicPath(pathname: string) {

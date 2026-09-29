@@ -457,7 +457,66 @@ export function accountDeletionEmail(data: {
   return build(subject, html);
 }
 
-// ── 13. Booking Reminder (24h before, to client) ────────────────────
+// ── 13. Claim Your Business ──────────────────────────────────────────
+
+export function claimBusinessEmail(data: {
+  businessName: string;
+  profileUrl: string;
+  claimUrl: string;
+}): EmailOutput {
+  const subject = `Clients are searching for ${data.businessName} — claim your free page`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">Your business is already on Krowned</h2>
+    <p>Hi there,</p>
+    <p>We built a profile for <strong>${data.businessName}</strong> on Krowned, the DMV's new booking marketplace for salons, barbershops, and beauty pros.</p>
+    <p>Your page is live and discoverable by clients right now:</p>
+
+    <div style="margin:16px 0;padding:16px;background:#f9fafb;border-radius:8px;border:1px solid #e8e8ed;">
+      <p style="margin:0;font-size:14px;"><strong>${data.businessName}</strong></p>
+      <p style="margin:4px 0 0;"><a href="${data.profileUrl}" style="color:#D9B36C;text-decoration:underline;font-size:14px;">${data.profileUrl}</a></p>
+    </div>
+
+    <p><strong>Claim it free</strong> to take control of your listing, update your info, and unlock online booking with a 14-day free trial — no credit card needed.</p>
+
+    ${emailButton("Claim Your Business", data.claimUrl)}
+
+    <p style="font-size:13px;color:#6b7280;">This takes about 30 seconds. If this isn't your business or you'd like it removed, just reply to this email.</p>`,
+    `${data.businessName} is live on Krowned — claim it free`,
+  );
+  return build(subject, html);
+}
+
+// ── 14. New Claim Request (to admin) ────────────────────────────────
+
+export function newClaimRequestEmail(data: {
+  adminName: string;
+  claimantName: string;
+  claimantEmail: string;
+  businessName: string;
+  businessId: string;
+  proofNotes?: string;
+}): EmailOutput {
+  const subject = `New claim request: ${data.businessName}`;
+  const html = emailLayout(
+    `<h2 style="margin:0 0 16px;font-size:22px;">New claim request</h2>
+    <p>Hi ${data.adminName}, someone wants to claim a business listing.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:16px 0;border:1px solid #e8e8ed;border-radius:8px;overflow:hidden;">
+      <tr><td style="padding:16px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
+          ${emailDetailRow("Business", `<strong>${data.businessName}</strong>`)}
+          ${emailDetailRow("Claimant", data.claimantName)}
+          ${emailDetailRow("Email", data.claimantEmail)}
+          ${data.proofNotes ? emailDetailRow("Proof / Notes", data.proofNotes) : ""}
+        </table>
+      </td></tr>
+    </table>
+    ${emailButton("Review Claims", `${SITE_URL}/dashboard/admin/claims`)}`,
+    `${data.claimantName} wants to claim ${data.businessName}`,
+  );
+  return build(subject, html);
+}
+
+// ── 15. Booking Reminder (24h before, to client) ────────────────────
 
 export function bookingReminderEmail(data: {
   clientName: string;
