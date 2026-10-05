@@ -1,11 +1,12 @@
 -- SEO blog posts targeting trending search terms
 -- 5 posts: knotless braids packs, boho knotless, miracle knots, braid sizes, loc retwist
 
-INSERT INTO blog_posts (title, slug, excerpt, body, tags, meta_title, meta_description, status, author_name, published_at)
+INSERT INTO blog_posts (author_id, title, slug, excerpt, body, tags, meta_title, meta_description, status, author_name, published_at)
 VALUES
 
 -- 1. How Many Packs of Hair for Knotless Braids?
 (
+  '68d10b49-4824-4952-9e48-c4a9aca55677',
   'How Many Packs of Hair for Knotless Braids? A Size-by-Size Guide',
   'how-many-packs-knotless-braids',
   'A practical guide to how much braiding hair you need for knotless braids, broken down by braid size and desired length.',
@@ -87,6 +88,7 @@ VALUES
 
 -- 2. Boho Knotless Braids: What to Know Before You Book
 (
+  '68d10b49-4824-4952-9e48-c4a9aca55677',
   'Boho Knotless Braids: What to Know Before You Book',
   'boho-knotless-braids-guide',
   'Everything you need to know about boho knotless braids — what they are, how long they last, maintenance tips, and how to find a braider in the DMV.',
@@ -143,6 +145,7 @@ VALUES
 
 -- 3. Miracle Knots vs. Knotless Braids
 (
+  '68d10b49-4824-4952-9e48-c4a9aca55677',
   'Miracle Knots vs. Knotless Braids: What Is the Difference?',
   'miracle-knots-vs-knotless-braids',
   'Miracle knots are a newer braiding technique gaining popularity fast. Here is how they compare to standard knotless braids and what to expect.',
@@ -193,6 +196,7 @@ VALUES
 
 -- 4. Knotless Braid Sizes Explained: Extra Small to Jumbo
 (
+  '68d10b49-4824-4952-9e48-c4a9aca55677',
   'Knotless Braid Sizes Explained: Extra Small to Jumbo',
   'knotless-braid-sizes-explained',
   'A visual and practical guide to knotless braid sizes — from extra small to jumbo — covering install time, hair packs needed, and which size to choose.',
@@ -281,6 +285,7 @@ VALUES
 
 -- 5. Loc Retwist Guide
 (
+  '68d10b49-4824-4952-9e48-c4a9aca55677',
   'Loc Retwist Guide: How Often, What It Costs, and Finding a Loctician in the DMV',
   'loc-retwist-guide-dmv',
   'Everything you need to know about loc retwists — how often to get one, what to expect, products to use, and finding a loctician in DC, MD, and VA.',
