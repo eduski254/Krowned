@@ -4,11 +4,12 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { ArrowRight } from "lucide-react";
+import { getStylesForCategory } from "@/lib/styles-data";
 
 export const metadata: Metadata = {
-  title: "Styles — Braids, Locs, Silk Press, Weaves & More",
+  title: "Black Hairstyles — Braids, Locs, Silk Press & More",
   description:
-    "Browse textured-hair styles: knotless braids, locs, silk press, sew-ins, fades, and color. Find inspiration and book a stylist in the DMV.",
+    "Browse textured-hair styles: knotless braids, boho knotless, box braids, loc retwist, silk press, sew-ins, and more. Find a stylist near you in the DMV and book instantly.",
   openGraph: {
     title: "Textured Hair Styles — Braids, Locs, Silk Press & More",
     description:
@@ -45,10 +46,10 @@ export default async function StylesPage() {
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-16 text-center">
         <Image src="/brand/bg-texture.webp" alt="" fill sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-white/50" />
+        <div className="absolute inset-0 bg-white/50 dark:bg-background/70" />
         <div className="relative z-10">
-          <h1 className="text-3xl font-bold sm:text-4xl text-[#1A1612]">Styles</h1>
-          <p className="mt-4 text-lg text-[#1A1612]/70">
+          <h1 className="text-3xl font-bold font-heading sm:text-4xl text-foreground">Styles</h1>
+          <p className="mt-4 text-lg text-muted-foreground">
             Whatever your texture needs. Find it, book it.
           </p>
         </div>
@@ -60,28 +61,40 @@ export default async function StylesPage() {
           {cats.map((cat) => {
             const Icon = cat.icon ? CATEGORY_ICONS[cat.icon] : null;
             const desc = STYLE_DESCRIPTIONS[cat.slug] ?? "";
+            const subStyles = getStylesForCategory(cat.slug);
 
             return (
-              <Link
-                key={cat.id}
-                href={`/styles/${cat.slug}`}
-                className="group flex flex-col rounded-xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg"
-              >
-                {Icon && (
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
-                    <Icon className="h-6 w-6 text-primary" />
+              <div key={cat.id} className="flex flex-col rounded-xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg">
+                <Link href={`/styles/${cat.slug}`} className="group flex flex-col">
+                  {Icon && (
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
+                      <Icon className="h-6 w-6 text-primary" />
+                    </div>
+                  )}
+                  <h2 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                    {cat.name}
+                  </h2>
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                    {desc}
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                    Find stylists <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </Link>
+                {subStyles.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-1.5 border-t border-border pt-4">
+                    {subStyles.map((s) => (
+                      <Link
+                        key={s.slug}
+                        href={`/styles/${cat.slug}/${s.slug}`}
+                        className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                      >
+                        {s.h1.replace(" in the DMV", "")}
+                      </Link>
+                    ))}
                   </div>
                 )}
-                <h2 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
-                  {cat.name}
-                </h2>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                  {desc}
-                </p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                  Find stylists <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                </span>
-              </Link>
+              </div>
             );
           })}
         </div>

@@ -4,152 +4,75 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MapPin } from "lucide-react";
-import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { resolveCardImage } from "@/lib/explore/utils";
-import { JsonLd, breadcrumbSchema } from "@/lib/schema";
+import {
+  JsonLd,
+  breadcrumbSchema,
+  faqPageSchema,
+} from "@/lib/schema";
 import { StarRating } from "@/components/star-rating";
-import { getStylesForCategory } from "@/lib/styles-data";
+import { CATEGORY_ICONS } from "@/lib/category-icons";
+import {
+  getAllStyleParams,
+  getStylePage,
+  getStylesForCategory,
+} from "@/lib/styles-data";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
 
-const STYLE_SEO: Record<
-  string,
-  { h1: string; intro: string; keywords: string[] }
-> = {
-  "braids-protective": {
-    h1: "Braids & Protective Styles",
-    intro:
-      "Knotless braids, box braids, feed-ins, cornrows, Fulani braids, goddess locs, and more. Browse verified braiders across the DMV who specialize in protective styles that last weeks and keep your hair healthy.",
-    keywords: [
-      "Knotless Braids",
-      "Box Braids",
-      "Feed-in Braids",
-      "Cornrows",
-      "Fulani Braids",
-      "Goddess Locs",
-      "Passion Twists",
-      "Tribal Braids",
-    ],
-  },
-  locs: {
-    h1: "Locs & Loc Maintenance",
-    intro:
-      "Starter locs, retwists, interlocks, loc repairs, faux locs, and loc styling. Find experienced locticians in DC, Maryland, and Northern Virginia who understand every stage of the loc journey.",
-    keywords: [
-      "Starter Locs",
-      "Retwist",
-      "Interlocks",
-      "Loc Repair",
-      "Faux Locs",
-      "Loc Styling",
-      "Butterfly Locs",
-      "Soft Locs",
-    ],
-  },
-  "natural-silk-press": {
-    h1: "Natural Hair & Silk Press",
-    intro:
-      "Wash-and-go, twist-outs, rod sets, silk press, blowouts, and natural hair treatments. Connect with stylists who celebrate and understand natural texture — from 3A waves to 4C coils.",
-    keywords: [
-      "Silk Press",
-      "Wash and Go",
-      "Twist Out",
-      "Rod Set",
-      "Blowout",
-      "Natural Hair Treatment",
-      "Deep Conditioning",
-      "Trim & Shape",
-    ],
-  },
-  "weaves-extensions": {
-    h1: "Weaves & Extensions",
-    intro:
-      "Sew-ins, closures, frontals, tape-ins, clip-ins, and wig installs. Find extension specialists in the DMV who deliver seamless, natural-looking results every time.",
-    keywords: [
-      "Sew-in Weave",
-      "Lace Closure",
-      "Lace Frontal",
-      "Tape-in Extensions",
-      "Clip-in Extensions",
-      "Wig Install",
-      "Quick Weave",
-      "Ponytail",
-    ],
-  },
-  "barbering-cuts": {
-    h1: "Barbering & Cuts",
-    intro:
-      "Fades, tapers, line-ups, beard trims, razor parts, and precision cuts for all textures. Find barbers across DC, Maryland, and Virginia who keep your cut sharp every time.",
-    keywords: [
-      "Fade",
-      "Taper",
-      "Line-up",
-      "Beard Trim",
-      "Razor Part",
-      "Buzz Cut",
-      "Mohawk",
-      "Design Cut",
-    ],
-  },
-  color: {
-    h1: "Color & Highlights",
-    intro:
-      "Full color, highlights, balayage on natural hair, loc color, bleach and tone, and vivid fashion colors. Find colorists in the DMV who know how to protect textured hair while delivering bold or subtle results.",
-    keywords: [
-      "Highlights",
-      "Full Color",
-      "Balayage",
-      "Loc Color",
-      "Bleach & Tone",
-      "Vivid Color",
-      "Color Correction",
-      "Gloss Treatment",
-    ],
-  },
+const CITY_PAGES: Record<string, { name: string; region: string }> = {
+  "washington-dc": { name: "Washington, DC", region: "DC" },
+  "silver-spring-md": { name: "Silver Spring", region: "MD" },
+  "bowie-md": { name: "Bowie", region: "MD" },
+  "hyattsville-md": { name: "Hyattsville", region: "MD" },
+  "largo-md": { name: "Largo", region: "MD" },
+  "bethesda-md": { name: "Bethesda", region: "MD" },
+  "alexandria-va": { name: "Alexandria", region: "VA" },
+  "arlington-va": { name: "Arlington", region: "VA" },
+  "fairfax-va": { name: "Fairfax", region: "VA" },
 };
+
+export function generateStaticParams() {
+  return getAllStyleParams();
+}
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; style: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const supabase = await createClient();
-  const { data: cat } = await supabase
-    .from("service_categories")
-    .select("name")
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (!cat) return { title: "Style Not Found" };
-
-  const seo = STYLE_SEO[slug];
-  const title = seo?.h1 || cat.name;
+  const { slug, style: styleSlug } = await params;
+  const stylePage = getStylePage(styleSlug);
+  if (!stylePage || stylePage.categorySlug !== slug) {
+    return { title: "Style Not Found" };
+  }
 
   return {
-    title: `${title} — Stylists in the DMV`,
-    description:
-      seo?.intro?.slice(0, 155) ||
-      `Find and book ${cat.name.toLowerCase()} stylists in DC, Maryland, and Northern Virginia on Krowned.`,
+    title: stylePage.metaTitle,
+    description: stylePage.intro.slice(0, 155),
     alternates: {
-      canonical: `${SITE_URL}/styles/${slug}`,
+      canonical: `${SITE_URL}/styles/${slug}/${styleSlug}`,
     },
     openGraph: {
-      title: `${title} — Book on Krowned`,
-      description: `Browse verified ${cat.name.toLowerCase()} specialists in the DMV.`,
-      url: `${SITE_URL}/styles/${slug}`,
+      title: stylePage.metaTitle,
+      description: stylePage.intro.slice(0, 155),
+      url: `${SITE_URL}/styles/${slug}/${styleSlug}`,
     },
   };
 }
 
-export default async function StyleDetailPage({
+export default async function StyleSubPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; style: string }>;
 }) {
-  const { slug } = await params;
+  const { slug, style: styleSlug } = await params;
+  const stylePage = getStylePage(styleSlug);
+  if (!stylePage || stylePage.categorySlug !== slug) notFound();
+
   const supabase = await createClient();
 
+  // Get parent category
   const { data: cat } = await supabase
     .from("service_categories")
     .select("id, name, slug, icon")
@@ -158,7 +81,7 @@ export default async function StyleDetailPage({
 
   if (!cat) notFound();
 
-  // Fetch businesses in this category with reviews
+  // Fetch businesses in this category + reviews
   const [bizRes, reviewRes] = await Promise.all([
     supabase
       .from("businesses")
@@ -169,7 +92,7 @@ export default async function StyleDetailPage({
       .eq("verification_status", "verified")
       .eq("primary_category_id", cat.id)
       .order("is_featured", { ascending: false })
-      .limit(50),
+      .limit(60),
     supabase
       .from("reviews")
       .select("business_id, rating")
@@ -190,18 +113,28 @@ export default async function StyleDetailPage({
     }
   }
 
-  const seo = STYLE_SEO[slug];
+  // Sibling styles in same category (for internal linking)
+  const siblings = getStylesForCategory(slug).filter(
+    (s) => s.slug !== styleSlug,
+  );
+
   const Icon = cat.icon ? CATEGORY_ICONS[cat.icon] : null;
 
   return (
     <div>
+      {/* JSON-LD */}
       <JsonLd
         data={breadcrumbSchema([
           { name: "Home", url: SITE_URL },
           { name: "Styles", url: `${SITE_URL}/styles` },
           { name: cat.name, url: `${SITE_URL}/styles/${cat.slug}` },
+          {
+            name: stylePage.h1.replace(" in the DMV", ""),
+            url: `${SITE_URL}/styles/${slug}/${styleSlug}`,
+          },
         ])}
       />
+      <JsonLd data={faqPageSchema(stylePage.faqs)} />
 
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-16 text-center">
@@ -219,29 +152,41 @@ export default async function StyleDetailPage({
               <Icon className="h-7 w-7 text-foreground" />
             </div>
           )}
+          <p className="mb-2 text-sm font-medium text-muted-foreground">
+            <Link
+              href={`/styles/${cat.slug}`}
+              className="hover:text-primary transition-colors"
+            >
+              {cat.name}
+            </Link>
+          </p>
           <h1 className="text-3xl font-bold font-heading sm:text-4xl text-foreground">
-            {seo?.h1 || cat.name}
+            {stylePage.h1}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            {seo?.intro ||
-              `Find verified ${cat.name.toLowerCase()} stylists in the DMV.`}
+            {stylePage.intro}
           </p>
         </div>
       </section>
 
-      {/* Popular search terms / keywords */}
-      {seo?.keywords && seo.keywords.length > 0 && (
+      {/* Size / length guide */}
+      {stylePage.sizeGuide && stylePage.sizeGuide.length > 0 && (
         <section className="border-b border-border bg-muted/30">
-          <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-            <div className="flex flex-wrap justify-center gap-2">
-              {seo.keywords.map((kw) => (
-                <Link
-                  key={kw}
-                  href={`/explore?q=${encodeURIComponent(kw)}&category=${cat.slug}`}
-                  className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+          <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+            <h2 className="text-xl font-bold text-foreground sm:text-2xl">
+              Size &amp; Length Guide
+            </h2>
+            <div className="mt-6 space-y-4">
+              {stylePage.sizeGuide.map((row) => (
+                <div
+                  key={row.label}
+                  className="rounded-xl border border-border bg-card p-4"
                 >
-                  {kw}
-                </Link>
+                  <h3 className="font-semibold text-foreground">{row.label}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {row.description}
+                  </p>
+                </div>
               ))}
             </div>
           </div>
@@ -251,7 +196,7 @@ export default async function StyleDetailPage({
       {/* Stylist grid */}
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <h2 className="text-xl font-bold text-foreground sm:text-2xl">
-          {cat.name} Stylists
+          {stylePage.h1.replace(" in the DMV", "")} Stylists
           <span className="ml-2 text-base font-normal text-muted-foreground">
             ({businesses.length})
           </span>
@@ -309,8 +254,7 @@ export default async function StyleDetailPage({
         ) : (
           <div className="mt-8 rounded-xl border border-border bg-card p-8 text-center">
             <p className="text-muted-foreground">
-              No {cat.name.toLowerCase()} stylists listed yet. Check back soon
-              or browse all stylists.
+              No stylists listed yet. Check back soon or browse all stylists.
             </p>
             <Link
               href="/explore"
@@ -322,36 +266,76 @@ export default async function StyleDetailPage({
         )}
       </section>
 
-      {/* Sub-style pages */}
-      {(() => {
-        const subStyles = getStylesForCategory(slug);
-        if (subStyles.length === 0) return null;
-        return (
-          <section className="border-t border-border bg-muted/30">
-            <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-              <h2 className="text-lg font-bold text-foreground">
-                Popular {cat.name} styles
-              </h2>
-              <div className="mt-4 flex flex-wrap gap-3">
-                {subStyles.map((s) => (
-                  <Link
-                    key={s.slug}
-                    href={`/styles/${slug}/${s.slug}`}
-                    className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
-                  >
-                    {s.h1.replace(" in the DMV", "")}
-                  </Link>
-                ))}
-              </div>
+      {/* Browse by city */}
+      <section className="border-t border-border bg-muted/30">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+          <h2 className="text-lg font-bold text-foreground">Browse by city</h2>
+          <div className="mt-4 flex flex-wrap gap-3">
+            {Object.entries(CITY_PAGES).map(([citySlug, city]) => (
+              <Link
+                key={citySlug}
+                href={`/explore/${citySlug}`}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+              >
+                <MapPin className="h-3.5 w-3.5" />
+                {city.name}, {city.region}
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQs */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
+          <h2 className="text-xl font-bold text-foreground sm:text-2xl">
+            Frequently Asked Questions
+          </h2>
+          <div className="mt-6 space-y-4">
+            {stylePage.faqs.map((faq) => (
+              <details
+                key={faq.q}
+                className="group rounded-xl border border-border bg-card"
+              >
+                <summary className="cursor-pointer px-5 py-4 font-medium text-foreground hover:text-primary transition-colors">
+                  {faq.q}
+                </summary>
+                <div className="border-t border-border px-5 py-4 text-sm text-muted-foreground">
+                  {faq.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Related styles */}
+      {siblings.length > 0 && (
+        <section className="border-t border-border bg-muted/30">
+          <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+            <h2 className="text-lg font-bold text-foreground">
+              More {cat.name} styles
+            </h2>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {siblings.map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/styles/${s.categorySlug}/${s.slug}`}
+                  className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  {s.h1.replace(" in the DMV", "")}
+                </Link>
+              ))}
             </div>
-          </section>
-        );
-      })()}
+          </div>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="border-t border-border px-4 py-12 text-center">
         <h2 className="text-xl font-bold text-foreground">
-          Ready to book your {cat.name.toLowerCase()} appointment?
+          Ready to book?
         </h2>
         <p className="mt-2 text-muted-foreground">
           See real-time availability and book instantly.
