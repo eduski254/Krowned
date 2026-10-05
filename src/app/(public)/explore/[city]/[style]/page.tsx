@@ -5,74 +5,100 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin, ArrowRight } from "lucide-react";
 import { resolveCardImage } from "@/lib/explore/utils";
-import { JsonLd, breadcrumbSchema } from "@/lib/schema";
+import { JsonLd, breadcrumbSchema, faqPageSchema } from "@/lib/schema";
 import { StarRating } from "@/components/star-rating";
-import { CITY_PAGES, CITY_SLUGS } from "@/lib/cities-data";
-import { STYLE_PAGES } from "@/lib/styles-data";
+import { CITY_PAGES } from "@/lib/cities-data";
+import { getStylePage, STYLE_PAGES } from "@/lib/styles-data";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
 
-/** Used by Next.js to pre-render all city pages at build time */
+/** Minimum listings to generate a page (below this → noindex) */
+const MIN_LISTINGS = 3;
+
+/**
+ * Build static params for every city × style combo.
+ * Pages below the listing threshold will be noindexed at render time.
+ */
 export function generateStaticParams() {
-  return CITY_SLUGS.map((city) => ({ city }));
+  const params: Array<{ city: string; style: string }> = [];
+  for (const citySlug of Object.keys(CITY_PAGES)) {
+    for (const s of STYLE_PAGES) {
+      params.push({ city: citySlug, style: s.slug });
+    }
+  }
+  return params;
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ city: string }>;
+  params: Promise<{ city: string; style: string }>;
 }): Promise<Metadata> {
-  const { city: slug } = await params;
-  const page = CITY_PAGES[slug];
-  if (!page) return { title: "Area Not Found" };
+  const { city: citySlug, style: styleSlug } = await params;
+  const cityPage = CITY_PAGES[citySlug];
+  const stylePage = getStylePage(styleSlug);
+  if (!cityPage || !stylePage) return { title: "Not Found" };
 
-  const title = `Braiders, Loc Techs & Stylists in ${page.name}, ${page.region}`;
+  const styleName = stylePage.h1.replace(" in the DMV", "");
+  const title = `${styleName} in ${cityPage.name}, ${cityPage.region}`;
+  const description = `Find ${styleName.toLowerCase()} stylists in ${cityPage.name}, ${cityPage.region}. Browse verified professionals, check real-time availability, and book on Krowned.`;
+
   return {
     title,
-    description: page.intro.slice(0, 155),
+    description: description.slice(0, 155),
+    alternates: {
+      canonical: `${SITE_URL}/explore/${citySlug}/${styleSlug}`,
+    },
     openGraph: {
-      title,
-      description: `Find and book textured-hair stylists in ${page.name}. Verified professionals, real availability.`,
+      title: `${title} | Krowned`,
+      description: description.slice(0, 155),
+      url: `${SITE_URL}/explore/${citySlug}/${styleSlug}`,
     },
   };
 }
 
-export default async function CityExplorePage({
+export default async function StyleCityPage({
   params,
 }: {
-  params: Promise<{ city: string }>;
+  params: Promise<{ city: string; style: string }>;
 }) {
-  const { city: slug } = await params;
-  const page = CITY_PAGES[slug];
-  if (!page) notFound();
+  const { city: citySlug, style: styleSlug } = await params;
+  const cityPage = CITY_PAGES[citySlug];
+  const stylePage = getStylePage(styleSlug);
+  if (!cityPage || !stylePage) notFound();
 
   const supabase = await createClient();
 
-  // Fetch businesses + reviews
-  const [bizRes, reviewRes, catRes] = await Promise.all([
+  // Get parent category
+  const { data: cat } = await supabase
+    .from("service_categories")
+    .select("id, name, slug")
+    .eq("slug", stylePage.categorySlug)
+    .maybeSingle();
+
+  if (!cat) notFound();
+
+  // Fetch businesses in this city AND category
+  const [bizRes, reviewRes] = await Promise.all([
     supabase
       .from("businesses")
       .select(
-        "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured, primary_category_id, service_categories(name, slug)",
+        "id, name, slug, description, logo_url, cover_url, gallery, city, country, is_featured",
       )
       .eq("is_published", true)
       .eq("verification_status", "verified")
-      .in("city", page.dbMatches)
+      .eq("primary_category_id", cat.id)
+      .in("city", cityPage.dbMatches)
       .order("is_featured", { ascending: false })
-      .limit(100),
+      .limit(60),
     supabase
       .from("reviews")
       .select("business_id, rating")
       .eq("status", "published"),
-    supabase
-      .from("service_categories")
-      .select("id, name, slug")
-      .order("sort_order"),
   ]);
 
   const businesses = bizRes.data ?? [];
   const reviews = reviewRes.data ?? [];
-  const categories = catRes.data ?? [];
 
   const ratingMap = new Map<string, { sum: number; count: number }>();
   for (const r of reviews) {
@@ -85,35 +111,47 @@ export default async function CityExplorePage({
     }
   }
 
-  // Group by category for display
-  const bizByCategory = new Map<string, typeof businesses>();
-  for (const biz of businesses) {
-    const cat = biz.service_categories as unknown as {
-      name: string;
-      slug: string;
-    } | null;
-    const key = cat?.name ?? "Other";
-    if (!bizByCategory.has(key)) bizByCategory.set(key, []);
-    bizByCategory.get(key)!.push(biz);
-  }
+  const styleName = stylePage.h1.replace(" in the DMV", "");
+  const isThin = businesses.length < MIN_LISTINGS;
 
-  // Nearby cities for internal linking
+  // Build an intro specific to this city
+  const cityIntro =
+    businesses.length > 0
+      ? `Browse ${businesses.length} verified ${styleName.toLowerCase()} ${businesses.length === 1 ? "stylist" : "stylists"} in ${cityPage.name}, ${cityPage.region}. Check real-time availability and book your appointment on Krowned.`
+      : `No ${styleName.toLowerCase()} stylists listed in ${cityPage.name} yet. Check back soon or browse nearby cities.`;
+
+  // Nearby cities that have the same style category
   const nearbyCities = Object.entries(CITY_PAGES)
-    .filter(([s]) => s !== slug)
+    .filter(([s]) => s !== citySlug)
     .slice(0, 6);
+
+  // Sibling styles for this city
+  const siblingStyles = STYLE_PAGES.filter((s) => s.slug !== styleSlug);
 
   return (
     <div>
+      {/* noindex thin pages */}
+      {isThin && (
+        <meta name="robots" content="noindex, follow" />
+      )}
+
       <JsonLd
         data={breadcrumbSchema([
           { name: "Home", url: SITE_URL },
           { name: "Explore", url: `${SITE_URL}/explore` },
           {
-            name: `${page.name}, ${page.region}`,
-            url: `${SITE_URL}/explore/${slug}`,
+            name: `${cityPage.name}, ${cityPage.region}`,
+            url: `${SITE_URL}/explore/${citySlug}`,
+          },
+          {
+            name: styleName,
+            url: `${SITE_URL}/explore/${citySlug}/${styleSlug}`,
           },
         ])}
       />
+      {stylePage.faqs.length > 0 && (
+        <JsonLd data={faqPageSchema(stylePage.faqs)} />
+      )}
 
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-16 text-center">
@@ -128,43 +166,29 @@ export default async function CityExplorePage({
         <div className="relative z-10">
           <div className="mx-auto mb-3 flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
-            {page.region}
+            <Link
+              href={`/explore/${citySlug}`}
+              className="hover:text-primary transition-colors"
+            >
+              {cityPage.name}, {cityPage.region}
+            </Link>
           </div>
           <h1 className="text-3xl font-bold font-heading sm:text-4xl text-foreground">
-            Textured-Hair Stylists in {page.name}
+            {styleName} in {cityPage.name}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            {page.intro}
+            {cityIntro}
           </p>
         </div>
       </section>
 
-      {/* Quick category links */}
-      {categories.length > 0 && (
-        <section className="border-b border-border bg-muted/30">
-          <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6">
-            <div className="flex flex-wrap justify-center gap-2">
-              {categories
-                .filter((c) => c.slug !== "new-category")
-                .map((c) => (
-                  <Link
-                    key={c.id}
-                    href={`/explore?category=${c.slug}&city=${encodeURIComponent(page.name)}`}
-                    className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
-                  >
-                    {c.name}
-                  </Link>
-                ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Stylist listings */}
+      {/* Stylist grid */}
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <h2 className="text-xl font-bold text-foreground sm:text-2xl">
-          {businesses.length}{" "}
-          {businesses.length === 1 ? "stylist" : "stylists"} in {page.name}
+          {styleName} Stylists in {cityPage.name}
+          <span className="ml-2 text-base font-normal text-muted-foreground">
+            ({businesses.length})
+          </span>
         </h2>
 
         {businesses.length > 0 ? (
@@ -173,9 +197,6 @@ export default async function CityExplorePage({
               const stats = ratingMap.get(biz.id);
               const avg = stats ? stats.sum / stats.count : null;
               const imageUrl = resolveCardImage(biz);
-              const cat = biz.service_categories as unknown as {
-                name: string;
-              } | null;
               return (
                 <Link
                   key={biz.id}
@@ -202,19 +223,12 @@ export default async function CityExplorePage({
                     <h3 className="font-semibold text-foreground transition-colors group-hover:text-primary">
                       {biz.name}
                     </h3>
-                    <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-                      {cat?.name && (
-                        <span className="rounded-full bg-secondary px-2 py-0.5 text-xs">
-                          {cat.name}
-                        </span>
-                      )}
-                      {biz.city && (
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5" />
-                          {biz.city}
-                        </span>
-                      )}
-                    </div>
+                    {biz.city && (
+                      <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {biz.city}
+                      </p>
+                    )}
                     <div className="mt-2">
                       <StarRating
                         value={avg}
@@ -229,31 +243,31 @@ export default async function CityExplorePage({
         ) : (
           <div className="mt-8 rounded-xl border border-border bg-card p-8 text-center">
             <p className="text-muted-foreground">
-              No stylists listed in {page.name} yet. Check back soon or browse
-              all DMV stylists.
+              No {styleName.toLowerCase()} stylists listed in {cityPage.name}{" "}
+              yet.
             </p>
             <Link
-              href="/explore"
+              href={`/styles/${stylePage.categorySlug}/${styleSlug}`}
               className="mt-4 inline-block rounded-lg bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
             >
-              Browse all stylists
+              Browse all {styleName.toLowerCase()} stylists
             </Link>
           </div>
         )}
       </section>
 
-      {/* Browse by style */}
-      {STYLE_PAGES.length > 0 && (
+      {/* Other styles in this city */}
+      {siblingStyles.length > 0 && (
         <section className="border-t border-border bg-muted/30">
           <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
             <h2 className="text-lg font-bold text-foreground">
-              Browse styles in {page.name}
+              More styles in {cityPage.name}
             </h2>
             <div className="mt-4 flex flex-wrap gap-3">
-              {STYLE_PAGES.map((s) => (
+              {siblingStyles.slice(0, 7).map((s) => (
                 <Link
                   key={s.slug}
-                  href={`/explore/${slug}/${s.slug}`}
+                  href={`/explore/${citySlug}/${s.slug}`}
                   className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
                 >
                   {s.h1.replace(" in the DMV", "")}
@@ -264,22 +278,22 @@ export default async function CityExplorePage({
         </section>
       )}
 
-      {/* Nearby areas */}
+      {/* Nearby cities */}
       {nearbyCities.length > 0 && (
-        <section className="border-t border-border bg-muted/30">
+        <section className="border-t border-border">
           <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
             <h2 className="text-lg font-bold text-foreground">
-              Also serving nearby areas
+              {styleName} in nearby areas
             </h2>
             <div className="mt-4 flex flex-wrap gap-3">
-              {nearbyCities.map(([citySlug, cityPage]) => (
+              {nearbyCities.map(([slug, city]) => (
                 <Link
-                  key={citySlug}
-                  href={`/explore/${citySlug}`}
+                  key={slug}
+                  href={`/explore/${slug}/${styleSlug}`}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
                 >
                   <MapPin className="h-3.5 w-3.5" />
-                  {cityPage.name}, {cityPage.region}
+                  {city.name}, {city.region}
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               ))}
@@ -291,13 +305,13 @@ export default async function CityExplorePage({
       {/* CTA */}
       <section className="border-t border-border px-4 py-12 text-center">
         <h2 className="text-xl font-bold text-foreground">
-          Find your stylist in {page.name}
+          Find your stylist in {cityPage.name}
         </h2>
         <p className="mt-2 text-muted-foreground">
           See real-time availability on the map and book instantly.
         </p>
         <Link
-          href={`/explore?city=${encodeURIComponent(page.name)}`}
+          href={`/explore?city=${encodeURIComponent(cityPage.name)}&category=${cat.slug}`}
           className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
         >
           Open map view <ArrowRight className="h-4 w-4" />
