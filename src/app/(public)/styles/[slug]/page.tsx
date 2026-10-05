@@ -131,9 +131,13 @@ export async function generateMetadata({
     description:
       seo?.intro?.slice(0, 155) ||
       `Find and book ${cat.name.toLowerCase()} stylists in DC, Maryland, and Northern Virginia on Krowned.`,
+    alternates: {
+      canonical: `${SITE_URL}/styles/${slug}`,
+    },
     openGraph: {
       title: `${title} — Book on Krowned`,
       description: `Browse verified ${cat.name.toLowerCase()} specialists in the DMV.`,
+      url: `${SITE_URL}/styles/${slug}`,
     },
   };
 }

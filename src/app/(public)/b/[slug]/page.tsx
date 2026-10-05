@@ -39,6 +39,10 @@ export async function generateMetadata({
 
   if (!biz) return { title: "Stylist Not Found" };
 
+  // noindex known test/demo listings
+  const TEST_SLUGS = new Set(["edwin-nchaga-s-business"]);
+  const isTest = TEST_SLUGS.has(slug);
+
   const title = `${biz.name}${biz.city ? ` — ${biz.city}` : ""} | Krowned`;
   const description =
     biz.description?.slice(0, 155) ||
@@ -47,6 +51,10 @@ export async function generateMetadata({
   return {
     title,
     description,
+    ...(isTest ? { robots: { index: false, follow: false } } : {}),
+    alternates: {
+      canonical: `${SITE_URL}/b/${slug}`,
+    },
     openGraph: {
       title,
       description,

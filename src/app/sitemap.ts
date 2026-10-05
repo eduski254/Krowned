@@ -22,7 +22,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .eq("status", "published"),
   ]);
 
-  const businesses = businessesRes.data ?? [];
+  // Exclude known test/demo listings from sitemap
+  const TEST_SLUGS = new Set(["edwin-nchaga-s-business"]);
+  const businesses = (businessesRes.data ?? []).filter(
+    (b) => !TEST_SLUGS.has(b.slug),
+  );
   const categories = categoriesRes.data ?? [];
   const blogPosts = blogPostsRes.data ?? [];
 

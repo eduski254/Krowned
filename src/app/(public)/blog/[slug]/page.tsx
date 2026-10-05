@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Clock, Calendar } from "lucide-react";
 import { BlogComments } from "./blog-comments";
+import { JsonLd, breadcrumbSchema, blogPostingSchema } from "@/lib/schema";
 import type { Metadata } from "next";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
 
 export async function generateMetadata({
   params,
@@ -24,9 +27,13 @@ export async function generateMetadata({
   return {
     title: post.meta_title || post.title,
     description: post.meta_description || post.excerpt || undefined,
+    alternates: {
+      canonical: `${SITE_URL}/blog/${slug}`,
+    },
     openGraph: {
       title: post.meta_title || post.title,
       description: post.meta_description || post.excerpt || undefined,
+      url: `${SITE_URL}/blog/${slug}`,
       images: post.cover_image_url ? [post.cover_image_url] : undefined,
     },
   };
@@ -101,6 +108,25 @@ export default async function BlogPostPage({
 
   return (
     <article>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", url: SITE_URL },
+          { name: "Blog", url: `${SITE_URL}/blog` },
+          { name: post.title, url: `${SITE_URL}/blog/${slug}` },
+        ])}
+      />
+      <JsonLd
+        data={blogPostingSchema({
+          title: post.title,
+          slug,
+          excerpt: post.excerpt,
+          body: post.body,
+          authorName: authorName,
+          publishedAt: post.published_at,
+          updatedAt: post.updated_at,
+          coverImageUrl: post.cover_image_url,
+        })}
+      />
       {/* Hero cover image */}
       {post.cover_image_url ? (
         <div className="relative w-full">

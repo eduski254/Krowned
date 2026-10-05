@@ -30,9 +30,13 @@ export async function generateMetadata({
   return {
     title,
     description: page.intro.slice(0, 155),
+    alternates: {
+      canonical: `${SITE_URL}/explore/${slug}`,
+    },
     openGraph: {
       title,
       description: `Find and book textured-hair stylists in ${page.name}. Verified professionals, real availability.`,
+      url: `${SITE_URL}/explore/${slug}`,
     },
   };
 }

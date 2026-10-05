@@ -203,6 +203,47 @@ export function faqPageSchema(
   };
 }
 
+/** BlogPosting schema for blog post pages */
+export function blogPostingSchema(post: {
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  body?: string | null;
+  authorName: string;
+  publishedAt?: string | null;
+  updatedAt?: string | null;
+  coverImageUrl?: string | null;
+}) {
+  const schema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    url: `${SITE_URL}/blog/${post.slug}`,
+    publisher: {
+      "@type": "Organization",
+      name: "Krowned",
+      url: SITE_URL,
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/brand/logo-black.png` },
+    },
+    author: { "@type": "Person", name: post.authorName },
+  };
+
+  if (post.excerpt) schema.description = post.excerpt;
+  if (post.coverImageUrl) schema.image = post.coverImageUrl;
+  if (post.publishedAt)
+    schema.datePublished = new Date(post.publishedAt).toISOString().split("T")[0];
+  if (post.updatedAt)
+    schema.dateModified = new Date(post.updatedAt).toISOString().split("T")[0];
+
+  // Word count from body for reading time
+  if (post.body) {
+    const wordCount = post.body.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
+    schema.wordCount = wordCount;
+  }
+
+  return schema;
+}
+
 /** BreadcrumbList schema */
 export function breadcrumbSchema(
   items: Array<{ name: string; url: string }>,
