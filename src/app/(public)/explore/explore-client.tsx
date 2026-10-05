@@ -50,6 +50,18 @@ type BusinessHours = Record<
   Array<{ day_of_week: number; open_time: string; close_time: string }>
 >;
 
+/** Style chips for quick filtering — targets trending search terms */
+const STYLE_CHIPS = [
+  { label: "Knotless Braids", query: "Knotless Braids", category: "braids-protective" },
+  { label: "Boho Knotless", query: "Boho Knotless", category: "braids-protective" },
+  { label: "Box Braids", query: "Box Braids", category: "braids-protective" },
+  { label: "Miracle Knots", query: "Miracle Knots", category: "braids-protective" },
+  { label: "Loc Retwist", query: "Retwist", category: "locs" },
+  { label: "Starter Locs", query: "Starter Locs", category: "locs" },
+  { label: "Silk Press", query: "Silk Press", category: "natural-silk-press" },
+  { label: "Sew-in", query: "Sew-in", category: "weaves-extensions" },
+] as const;
+
 // ── Smart filter + rank ──────────────────────────────────────────
 
 function filterAndRank(
@@ -562,6 +574,36 @@ export function ExploreClient({
               Clear ({activeFilterCount})
             </button>
           )}
+        </div>
+
+        {/* Style quick-filter chips */}
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          {STYLE_CHIPS.map((chip) => {
+            const isActive = q.toLowerCase() === chip.query.toLowerCase();
+            return (
+              <button
+                key={chip.label}
+                type="button"
+                onClick={() => {
+                  if (isActive) {
+                    setQ("");
+                    setQInput("");
+                  } else {
+                    setQ(chip.query);
+                    setQInput(chip.query);
+                    if (chip.category) setCategory(chip.category);
+                  }
+                }}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-card text-foreground hover:border-primary hover:text-primary"
+                }`}
+              >
+                {chip.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 

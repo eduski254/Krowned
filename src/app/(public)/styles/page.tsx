@@ -7,9 +7,9 @@ import { ArrowRight } from "lucide-react";
 import { getStylesForCategory } from "@/lib/styles-data";
 
 export const metadata: Metadata = {
-  title: "Styles — Braids, Locs, Silk Press, Weaves & More",
+  title: "Black Hairstyles — Braids, Locs, Silk Press & More",
   description:
-    "Browse textured-hair styles: knotless braids, locs, silk press, sew-ins, fades, and color. Find inspiration and book a stylist in the DMV.",
+    "Browse textured-hair styles: knotless braids, boho knotless, box braids, loc retwist, silk press, sew-ins, and more. Find a stylist near you in the DMV and book instantly.",
   openGraph: {
     title: "Textured Hair Styles — Braids, Locs, Silk Press & More",
     description:

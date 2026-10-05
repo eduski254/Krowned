@@ -32,9 +32,9 @@ export async function generateMetadata({
   }
 
   return {
-    title: "Find a Stylist — Braiders, Loc Techs & Barbers in the DMV",
+    title: "Hair Braiders & Stylists Near Me in DC, MD & VA",
     description:
-      "Browse and book braiders, loc techs, natural-hair stylists, and barbers in DC, Maryland, and Northern Virginia. Filter by style, location, and availability.",
+      "Find hair braiders near me, loc retwist near me, and textured-hair stylists in DC, Maryland, and Northern Virginia. Filter by style, location, and availability. Book instantly on Krowned.",
   };
 }
 
