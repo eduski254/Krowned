@@ -138,6 +138,7 @@ export async function generateMetadata({
       title: `${title} — Book on Krowned`,
       description: `Browse verified ${cat.name.toLowerCase()} specialists in the DMV.`,
       url: `${SITE_URL}/styles/${slug}`,
+      images: [{ url: `${SITE_URL}/brand/hero-salon.png`, width: 1200, height: 630 }],
     },
   };
 }

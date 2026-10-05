@@ -57,6 +57,7 @@ export async function generateMetadata({
       title: stylePage.metaTitle,
       description: stylePage.intro.slice(0, 155),
       url: `${SITE_URL}/styles/${slug}/${styleSlug}`,
+      images: [{ url: `${SITE_URL}/brand/hero-salon.png`, width: 1200, height: 630 }],
     },
   };
 }

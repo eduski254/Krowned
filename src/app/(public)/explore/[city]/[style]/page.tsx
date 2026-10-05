@@ -53,6 +53,7 @@ export async function generateMetadata({
       title: `${title} | Krowned`,
       description: description.slice(0, 155),
       url: `${SITE_URL}/explore/${citySlug}/${styleSlug}`,
+      images: [{ url: `${SITE_URL}/brand/hero-salon.png`, width: 1200, height: 630 }],
     },
   };
 }

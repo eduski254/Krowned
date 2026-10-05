@@ -27,9 +27,17 @@ export async function generateMetadata({
   if (!page) return { title: "Area Not Found" };
 
   const title = `Braiders, Loc Techs & Stylists in ${page.name}, ${page.region}`;
+
+  // Noindex cities with no listings to avoid thin-content penalties
+  const THIN_CITIES = new Set(["bethesda-md", "fairfax-va"]);
+  const robots = THIN_CITIES.has(slug)
+    ? { index: false, follow: true }
+    : undefined;
+
   return {
     title,
     description: page.intro.slice(0, 155),
+    ...(robots && { robots }),
     alternates: {
       canonical: `${SITE_URL}/explore/${slug}`,
     },
@@ -37,6 +45,7 @@ export async function generateMetadata({
       title,
       description: `Find and book textured-hair stylists in ${page.name}. Verified professionals, real availability.`,
       url: `${SITE_URL}/explore/${slug}`,
+      images: [{ url: `${SITE_URL}/brand/hero-salon.png`, width: 1200, height: 630 }],
     },
   };
 }
