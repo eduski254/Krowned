@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { STYLE_PAGES } from "@/lib/styles-data";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
 
@@ -112,6 +113,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  // Style sub-pages (e.g. /styles/braids-protective/knotless-braids)
+  const styleSubPages: MetadataRoute.Sitemap = STYLE_PAGES.map((s) => ({
+    url: `${SITE_URL}/styles/${s.categorySlug}/${s.slug}`,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
+
   // City landing pages
   const cityPageSlugs = [
     "washington-dc",
@@ -149,6 +157,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticPages,
     ...categoryPages,
+    ...styleSubPages,
     ...cityPages,
     ...businessPages,
     ...blogPages,
