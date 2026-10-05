@@ -93,7 +93,7 @@ export default async function HomePage() {
     supabase.from("services").select("name, business_id").eq("is_active", true),
     supabase
       .from("blog_posts")
-      .select("id, title, slug, excerpt, cover_url, published_at")
+      .select("id, title, slug, excerpt, cover_image_url, published_at")
       .eq("status", "published")
       .order("published_at", { ascending: false })
       .limit(3),
@@ -202,18 +202,18 @@ export default async function HomePage() {
           <div className="flex flex-1 flex-col justify-center px-4 pb-6 pt-20 sm:px-8 sm:py-16 md:px-10 lg:max-w-[55%] lg:px-[clamp(28px,4.2vw,60px)] lg:py-[clamp(32px,3.6vw,56px)]">
             <div className="mx-auto max-w-[600px] lg:mx-0">
               {/* Eyebrow */}
-              <span className="mb-5 inline-flex items-center text-[10px] font-medium uppercase tracking-[0.22em] text-[#B8860B] sm:mb-8 sm:text-sm lg:mb-9">
+              <span className="mb-5 inline-flex items-center text-[10px] font-medium uppercase tracking-[0.22em] text-accent sm:mb-8 sm:text-sm lg:mb-9">
                 DMV textured-hair pros
               </span>
 
-              <div className="font-heading text-[clamp(28px,7vw,42px)] font-extrabold leading-[1.4] tracking-tight text-[#1A1612] sm:text-[clamp(40px,6vw,56px)] lg:text-[clamp(48px,5vw,76px)]" role="heading" aria-level={1}>
+              <div className="font-heading text-[clamp(28px,7vw,42px)] font-extrabold leading-[1.4] tracking-tight text-foreground sm:text-[clamp(40px,6vw,56px)] lg:text-[clamp(48px,5vw,76px)]" role="heading" aria-level={1}>
                 <span className="block">Book your next</span>
                 <span className="block h-[1.3em] overflow-hidden whitespace-nowrap text-[0.65em] sm:text-[0.8em] lg:text-[0.85em]">
-                  <RotatingService className="text-[#B8860B]" />
+                  <RotatingService className="text-accent" />
                 </span>
               </div>
 
-              <p className="mt-4 max-w-[520px] text-[13px] font-light leading-relaxed text-[#1A1612] sm:mt-6 sm:text-[15px] lg:mt-7 lg:text-[clamp(15px,1.2vw,17px)]">
+              <p className="mt-4 max-w-[520px] text-[13px] font-light leading-relaxed text-foreground sm:mt-6 sm:text-[15px] lg:mt-7 lg:text-[clamp(15px,1.2vw,17px)]">
                 Every stylist specializes in textured hair. Find yours, see real
                 openings, and book in seconds — no DMs, no ghosting.
               </p>
@@ -229,21 +229,21 @@ export default async function HomePage() {
           </div>
 
           {/* Trust bar — pinned to bottom, aligned with hero content */}
-          <p className="mb-4 px-4 text-[9px] text-[#1A1612]/40 sm:mb-6 sm:px-8 sm:text-[10px] md:px-10 lg:mb-8 lg:px-[clamp(28px,4.2vw,60px)]">
+          <p className="mb-4 px-4 text-[9px] text-foreground/40 sm:mb-6 sm:px-8 sm:text-[10px] md:px-10 lg:mb-8 lg:px-[clamp(28px,4.2vw,60px)]">
             ID-verified · Secure payments · Instant confirm
           </p>
         </div>
       </section>
 
       {/* CTA1 — Client Section */}
-      <section className="w-full bg-[#FBF6EC] dark:bg-[#141210]">
+      <section className="w-full bg-secondary dark:bg-card">
         <div className="grid items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
           {/* Text — left */}
           <div>
-            <h2 className="font-heading text-2xl font-bold leading-tight tracking-tight text-[#1A1816] dark:text-[#FBF6EC] sm:text-3xl lg:text-[clamp(30px,2.8vw,40px)]">
+            <h2 className="font-heading text-2xl font-bold leading-tight tracking-tight text-foreground sm:text-3xl lg:text-[clamp(30px,2.8vw,40px)]">
               Find your stylist.<br />Book your crown.
             </h2>
-            <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-[#4A4540] dark:text-[#C8BFAD] sm:text-base lg:text-[17px]">
+            <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-muted-foreground sm:text-base lg:text-[17px]">
               Stop scrolling through Instagram and waiting for a reply. Krowned
               helps you discover trusted stylists who specialize in textured
               hair, see their work, check real availability, and book your
@@ -266,14 +266,14 @@ export default async function HomePage() {
                 },
               ].map((item) => (
                 <div key={item.title} className="flex gap-3">
-                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#D9B36C]/20">
-                    <CheckCircle className="h-3.5 w-3.5 text-[#B8943F]" />
+                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand/20">
+                    <CheckCircle className="h-3.5 w-3.5 text-accent" />
                   </div>
                   <div>
-                    <p className="font-semibold text-[#1A1816] dark:text-[#FBF6EC]">
+                    <p className="font-semibold text-foreground">
                       {item.title}
                     </p>
-                    <p className="mt-0.5 text-sm text-[#6B6560] dark:text-[#A89E8E]">
+                    <p className="mt-0.5 text-sm text-muted-foreground">
                       {item.desc}
                     </p>
                   </div>
@@ -293,7 +293,7 @@ export default async function HomePage() {
 
           {/* Image — right with offset golden border */}
           <div className="relative">
-            <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-[5px] border-2 border-[#D9B36C]/40 sm:translate-x-4 sm:translate-y-4" />
+            <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-[5px] border-2 border-brand/40 sm:translate-x-4 sm:translate-y-4" />
             <div className="relative aspect-[4/3] overflow-hidden rounded-[5px]">
               <Image
                 src="/brand/section-2.webp"
@@ -309,11 +309,11 @@ export default async function HomePage() {
       </section>
 
       {/* CTA2 — Stylist Section */}
-      <section className="w-full bg-[#F5EFE3] dark:bg-[#11100E]">
+      <section className="w-full bg-muted dark:bg-background">
         <div className="grid items-center gap-10 px-5 py-20 sm:px-8 md:gap-14 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:py-28">
           {/* Image — left with offset golden border (on desktop, stacks below text on mobile via order) */}
           <div className="relative order-2 lg:order-1">
-            <div className="absolute inset-0 -translate-x-3 translate-y-3 rounded-[5px] border-2 border-[#D9B36C]/40 sm:-translate-x-4 sm:translate-y-4" />
+            <div className="absolute inset-0 -translate-x-3 translate-y-3 rounded-[5px] border-2 border-brand/40 sm:-translate-x-4 sm:translate-y-4" />
             <div className="relative aspect-[4/3] overflow-hidden rounded-[5px]">
               <Image
                 src="/brand/section-1.webp"
@@ -328,10 +328,10 @@ export default async function HomePage() {
 
           {/* Text — right */}
           <div className="order-1 lg:order-2">
-            <h2 className="font-heading text-2xl font-bold leading-tight tracking-tight text-[#1A1816] dark:text-[#FBF6EC] sm:text-3xl lg:text-[clamp(30px,2.8vw,40px)]">
+            <h2 className="font-heading text-2xl font-bold leading-tight tracking-tight text-foreground sm:text-3xl lg:text-[clamp(30px,2.8vw,40px)]">
               Turn your talent into<br />a booked business.
             </h2>
-            <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-[#4A4540] dark:text-[#C8BFAD] sm:text-base lg:text-[17px]">
+            <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-muted-foreground sm:text-base lg:text-[17px]">
               Krowned puts your work in front of people actively looking for
               textured-hair specialists. Showcase your craft, control your
               availability, manage your bookings, and build a reputation clients
@@ -354,14 +354,14 @@ export default async function HomePage() {
                 },
               ].map((item) => (
                 <div key={item.title} className="flex gap-3">
-                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#D9B36C]/20">
-                    <CheckCircle className="h-3.5 w-3.5 text-[#B8943F]" />
+                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand/20">
+                    <CheckCircle className="h-3.5 w-3.5 text-accent" />
                   </div>
                   <div>
-                    <p className="font-semibold text-[#1A1816] dark:text-[#FBF6EC]">
+                    <p className="font-semibold text-foreground">
                       {item.title}
                     </p>
-                    <p className="mt-0.5 text-sm text-[#6B6560] dark:text-[#A89E8E]">
+                    <p className="mt-0.5 text-sm text-muted-foreground">
                       {item.desc}
                     </p>
                   </div>
@@ -483,7 +483,7 @@ export default async function HomePage() {
                       {/* Top-left badges */}
                       <div className="absolute left-2.5 top-2.5 flex flex-col gap-1.5">
                         {biz.is_featured && (
-                          <span className="rounded-full bg-[#D9B36C] px-2.5 py-0.5 text-[11px] font-bold text-[#1A1816] shadow">
+                          <span className="rounded-full bg-brand px-2.5 py-0.5 text-[11px] font-bold text-brand-deep shadow">
                             Featured
                           </span>
                         )}
@@ -498,14 +498,14 @@ export default async function HomePage() {
                         <span className={`absolute right-2.5 top-2.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold shadow ${
                           openStatus
                             ? "bg-emerald-500 text-white"
-                            : "bg-[#1A1816] text-white"
+                            : "bg-brand-deep text-white"
                         }`}>
                           {openStatus ? "Open Now" : "Closed"}
                         </span>
                       )}
                     </div>
                     <div className="p-3">
-                      <h3 className="text-sm font-bold text-foreground transition-colors group-hover:text-primary line-clamp-1" style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" }}>
+                      <h3 className="text-sm font-bold text-foreground transition-colors group-hover:text-primary line-clamp-1">
                         {biz.name}
                       </h3>
                       {cat?.name && (
@@ -1046,10 +1046,10 @@ export default async function HomePage() {
                   href={`/blog/${post.slug}`}
                   className="group overflow-hidden rounded-xl border border-border bg-card transition-all hover:shadow-[0_12px_28px_rgba(0,0,0,0.15)] hover:-translate-y-0.5"
                 >
-                  {post.cover_url && (
+                  {post.cover_image_url && (
                     <div className="relative aspect-[16/9] overflow-hidden bg-muted">
                       <Image
-                        src={post.cover_url}
+                        src={post.cover_image_url}
                         alt={post.title}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
