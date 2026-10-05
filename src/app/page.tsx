@@ -569,6 +569,78 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* Trending Styles */}
+      <section className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
+        <div>
+          <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
+            Trending Styles
+          </h2>
+          <p className="mt-2 text-center text-muted-foreground">
+            The most-searched styles in the DMV right now.
+          </p>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                name: "Knotless Braids",
+                href: "/styles/braids-protective/knotless-braids",
+                desc: "Feed-in braids with no bulky knot at the root.",
+              },
+              {
+                name: "Boho Knotless",
+                href: "/styles/braids-protective/boho-knotless-braids",
+                desc: "Knotless braids with loose, curly ends.",
+              },
+              {
+                name: "Loc Retwist",
+                href: "/styles/locs/loc-retwist",
+                desc: "Keep your locs neat and healthy.",
+              },
+              {
+                name: "Miracle Knots",
+                href: "/styles/braids-protective/miracle-knots",
+                desc: "Invisible-knot braids for a seamless look.",
+              },
+              {
+                name: "Starter Locs",
+                href: "/styles/locs/starter-locs",
+                desc: "Begin your loc journey the right way.",
+              },
+              {
+                name: "Silk Press",
+                href: "/styles/natural-silk-press/silk-press",
+                desc: "Sleek, straight finish on natural hair.",
+              },
+              {
+                name: "Box Braids",
+                href: "/styles/braids-protective/box-braids",
+                desc: "The classic protective style.",
+              },
+              {
+                name: "Sisterlocks",
+                href: "/styles/locs/sisterlocks",
+                desc: "Microlocs for versatile styling.",
+              },
+            ].map((style) => (
+              <Link
+                key={style.href}
+                href={style.href}
+                className="group rounded-xl border border-border bg-card p-5 transition-all hover:shadow-lg hover:-translate-y-0.5"
+              >
+                <h3 className="font-semibold text-foreground transition-colors group-hover:text-primary">
+                  {style.name}
+                </h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {style.desc}
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                  Browse stylists <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Why Krowned */}
       <section className="w-full border-b border-border px-5 py-16 sm:px-8 lg:px-12">
         <div>
