@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { STYLE_PAGES } from "@/lib/styles-data";
 import { CITY_SLUGS, CITY_PAGES } from "@/lib/cities-data";
+import { SERVICE_LANDINGS } from "@/lib/service-landing-data";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
 
@@ -9,24 +10,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const admin = createAdminClient();
 
   // Fetch dynamic data in parallel
-  const [businessesRes, categoriesRes, blogPostsRes] = await Promise.all([
-    admin
-      .from("businesses")
-      .select("slug, updated_at")
-      .eq("is_published", true)
-      .eq("verification_status", "verified"),
-    admin.from("service_categories").select("slug").order("sort_order"),
-    admin
-      .from("blog_posts")
-      .select("slug, updated_at")
-      .eq("status", "published"),
-  ]);
+  const [businessesRes, categoriesRes, blogPostsRes] =
+    await Promise.all([
+      admin
+        .from("businesses")
+        .select("id, slug, updated_at, claimed, description, primary_category_id")
+        .eq("is_published", true)
+        .eq("verification_status", "verified"),
+      admin.from("service_categories").select("slug").order("sort_order"),
+      admin
+        .from("blog_posts")
+        .select("slug, updated_at")
+        .eq("status", "published"),
+    ]);
 
   // Exclude known test/demo listings from sitemap
   const TEST_SLUGS = new Set(["edwin-nchaga-s-business"]);
-  const businesses = (businessesRes.data ?? []).filter(
-    (b) => !TEST_SLUGS.has(b.slug),
-  );
+
+  // Filter out test listings and truly empty pages (no category AND no description)
+  const businesses = (businessesRes.data ?? []).filter((b) => {
+    if (TEST_SLUGS.has(b.slug)) return false;
+    if (!b.claimed && !b.primary_category_id && !b.description) return false;
+    return true;
+  });
+
   const categories = categoriesRes.data ?? [];
   const blogPosts = blogPostsRes.data ?? [];
 
@@ -125,22 +132,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // City landing pages
-  const cityPages: MetadataRoute.Sitemap = CITY_SLUGS.map((slug) => ({
-    url: `${SITE_URL}/explore/${slug}`,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
+  // City landing pages (exclude noindexed thin cities)
+  const THIN_CITIES = new Set(["bethesda-md", "fairfax-va"]);
+  const cityPages: MetadataRoute.Sitemap = CITY_SLUGS
+    .filter((slug) => !THIN_CITIES.has(slug))
+    .map((slug) => ({
+      url: `${SITE_URL}/explore/${slug}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
 
   // Style × city pages — only include combos with ≥3 listings
   const styleCityPages: MetadataRoute.Sitemap = [];
   {
-    // Build a map of category_id → category_slug
-    const catSlugToId = new Map<string, string>();
-    for (const cat of categories) {
-      catSlugToId.set(cat.slug, cat.slug); // we only have slug from the query
-    }
-
     // Fetch business counts per city+category for all published businesses
     const { data: allBiz } = await admin
       .from("businesses")
@@ -173,6 +177,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             url: `${SITE_URL}/explore/${citySlug}/${style.slug}`,
             changeFrequency: "weekly" as const,
             priority: 0.7,
+          });
+        }
+      }
+    }
+
+    // Service-type landing pages (e.g. /locticians/washington-dc)
+    // Only include city combos with ≥3 matching businesses
+    for (const landing of SERVICE_LANDINGS) {
+      for (const citySlug of CITY_SLUGS) {
+        const cityData = CITY_PAGES[citySlug];
+        if (!cityData) continue;
+        let total = 0;
+        for (const dbCity of cityData.dbMatches) {
+          for (const catSlug of landing.categorySlugs) {
+            total += countMap.get(`${dbCity}|${catSlug}`) ?? 0;
+          }
+        }
+        if (total >= 3) {
+          styleCityPages.push({
+            url: `${SITE_URL}/${landing.slug}/${citySlug}`,
+            changeFrequency: "weekly" as const,
+            priority: 0.8,
           });
         }
       }

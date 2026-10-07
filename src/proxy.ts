@@ -34,6 +34,10 @@ const publicPaths = [
   "/account-deleted",
   "/unsubscribe",
   "/claim",
+  "/locticians",
+  "/braiders",
+  "/barbers",
+  "/hair-extensions",
 ];
 
 function isPublicPath(pathname: string) {

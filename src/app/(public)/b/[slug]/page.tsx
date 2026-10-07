@@ -15,6 +15,8 @@ import { ReviewPhotos } from "./review-photos";
 import { JsonLd, localBusinessSchema, breadcrumbSchema } from "@/lib/schema";
 import { ClaimListingButton } from "@/components/public/claim-listing-button";
 import { getBadgesByIds } from "@/lib/badges";
+import { CATEGORY_TYPICAL_SERVICES } from "@/lib/category-services";
+import { resolveCardImage } from "@/lib/explore/utils";
 
 const BusinessMiniMap = lazy(() =>
   import("./business-mini-map").then((m) => ({ default: m.BusinessMiniMap })),
@@ -32,7 +34,7 @@ export async function generateMetadata({
   const supabase = await createClient();
   const { data: biz } = await supabase
     .from("businesses")
-    .select("name, description, cover_url, city, country")
+    .select("id, name, description, cover_url, city, country, claimed, primary_category_id")
     .eq("slug", slug)
     .eq("is_published", true)
     .maybeSingle();
@@ -43,7 +45,16 @@ export async function generateMetadata({
   const TEST_SLUGS = new Set(["edwin-nchaga-s-business"]);
   const isTest = TEST_SLUGS.has(slug);
 
-  const title = `${biz.name}${biz.city ? ` — ${biz.city}` : ""} | Krowned`;
+  // noindex truly empty unclaimed listings: no services, no reviews,
+  // no real description, AND no category (so even enrichment won't help)
+  let isThin = false;
+  if (!isTest && !biz.claimed && !biz.primary_category_id && !biz.description) {
+    isThin = true;
+  }
+
+  const shouldNoindex = isTest || isThin;
+
+  const title = `${biz.name}${biz.city ? ` — ${biz.city}` : ""}`;
   const description =
     biz.description?.slice(0, 155) ||
     `Book ${biz.name} on Krowned — textured-hair specialist in ${biz.city || "the DMV"}.`;
@@ -51,7 +62,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    ...(isTest ? { robots: { index: false, follow: false } } : {}),
+    ...(shouldNoindex ? { robots: { index: false, follow: true } } : {}),
     alternates: {
       canonical: `${SITE_URL}/b/${slug}`,
     },
@@ -74,7 +85,7 @@ export default async function BusinessProfilePage({
 
   const { data: business } = await supabase
     .from("businesses")
-    .select("*, service_categories(name), plans(tier, features)")
+    .select("*, service_categories(name, slug), plans(tier, features)")
     .eq("slug", slug)
     .eq("is_published", true)
     .maybeSingle();
@@ -149,6 +160,31 @@ export default async function BusinessProfilePage({
   }
 
   const categoryName = (business.service_categories as unknown as { name: string } | null)?.name ?? null;
+  // Fetch nearby stylists in the same category for internal linking
+  let nearbyBusinesses: Array<{
+    name: string;
+    slug: string;
+    city: string | null;
+    cover_url: string | null;
+    gallery: unknown;
+    logo_url: string | null;
+  }> = [];
+  if (business.primary_category_id) {
+    const { data: nearby } = await supabase
+      .from("businesses")
+      .select("name, slug, city, cover_url, gallery, logo_url")
+      .eq("is_published", true)
+      .eq("verification_status", "verified")
+      .eq("primary_category_id", business.primary_category_id)
+      .neq("id", business.id)
+      .limit(6);
+    nearbyBusinesses = nearby ?? [];
+  }
+
+  // Build a richer intro for unclaimed listings
+  const isUnclaimed = !business.claimed;
+  const catSlugStr = (business.service_categories as unknown as { slug: string } | null)?.slug ?? null;
+  const typicalServices = catSlugStr ? CATEGORY_TYPICAL_SERVICES[catSlugStr] ?? [] : [];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -243,6 +279,7 @@ export default async function BusinessProfilePage({
           {bookable && (
             <Link
               href={`/book/${business.booking_link_token}?source=marketplace`}
+              rel="nofollow"
               className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
             >
               Book Now
@@ -268,10 +305,19 @@ export default async function BusinessProfilePage({
         </div>
       )}
 
-      {/* Description */}
-      {business.description && (
+      {/* Description / enriched intro */}
+      {business.description ? (
         <p className="mt-6 text-foreground">{business.description}</p>
-      )}
+      ) : isUnclaimed && categoryName && business.city ? (
+        <p className="mt-6 text-foreground">
+          {business.name} is a {categoryName.toLowerCase()} specialist
+          {business.city ? ` in ${business.city}` : " in the DMV area"}.
+          {hours.length > 0
+            ? ` They are open ${hours.length} days a week.`
+            : ""}
+          {" "}Claim this listing on Krowned to add services, photos, and accept online bookings.
+        </p>
+      ) : null}
 
       {/* Badges */}
       {Array.isArray(business.badges) && business.badges.length > 0 && (
@@ -340,6 +386,7 @@ export default async function BusinessProfilePage({
                       {bookable && (
                         <Link
                           href={`/book/${business.booking_link_token}?source=marketplace&service=${s.id}`}
+                          rel="nofollow"
                           className="shrink-0 rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
                         >
                           Book
@@ -348,6 +395,22 @@ export default async function BusinessProfilePage({
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : typicalServices.length > 0 ? (
+              <div>
+                <p className="mb-3 text-sm text-muted-foreground">
+                  This listing hasn&apos;t added their service menu yet. {categoryName} specialists typically offer:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {typicalServices.map((svc) => (
+                    <span
+                      key={svc}
+                      className="rounded-full border border-border bg-muted/50 px-3 py-1.5 text-sm text-foreground"
+                    >
+                      {svc}
+                    </span>
+                  ))}
+                </div>
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">No services listed yet.</p>
@@ -549,6 +612,52 @@ export default async function BusinessProfilePage({
           ) : null}
         </div>
       </div>
+
+      {/* Other stylists nearby — internal linking */}
+      {nearbyBusinesses.length > 0 && (
+        <section className="mt-12 border-t border-border pt-8">
+          <h2 className="text-xl font-bold text-foreground">
+            Other {categoryName ?? "textured-hair"} stylists{business.city ? ` near ${business.city}` : ""}
+          </h2>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {nearbyBusinesses.map((nb) => {
+              const nbImage = resolveCardImage(nb as Parameters<typeof resolveCardImage>[0]);
+              return (
+                <Link
+                  key={nb.slug}
+                  href={`/b/${nb.slug}`}
+                  className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md hover:-translate-y-0.5"
+                >
+                  {nbImage ? (
+                    <Image
+                      src={nbImage}
+                      alt={nb.name}
+                      width={56}
+                      height={56}
+                      className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-lg font-bold text-primary">
+                      {nb.name.charAt(0)}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                      {nb.name}
+                    </p>
+                    {nb.city && (
+                      <p className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        {nb.city}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

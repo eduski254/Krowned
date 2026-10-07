@@ -1,18 +1,32 @@
 import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 import { ExploreClient } from "./explore-client";
 import type { ExploreBusiness } from "@/lib/explore/actions";
 import { resolveCardImage } from "@/lib/explore/utils";
 import { JsonLd, breadcrumbSchema } from "@/lib/schema";
+import { SERVICE_LANDINGS } from "@/lib/service-landing-data";
+import { CITY_PAGES } from "@/lib/cities-data";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
 
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; city?: string }>;
+  searchParams: Promise<{ category?: string; city?: string; q?: string }>;
 }): Promise<Metadata> {
   const params = await searchParams;
+  const hasFilters = !!(params.q || params.category || params.city);
+
+  // All filtered explore URLs canonicalize to /explore and are noindexed
+  const base: Partial<Metadata> = hasFilters
+    ? {
+        robots: { index: false, follow: true },
+        alternates: { canonical: `${SITE_URL}/explore` },
+      }
+    : {
+        alternates: { canonical: `${SITE_URL}/explore` },
+      };
 
   if (params.category) {
     const supabase = await createClient();
@@ -27,6 +41,7 @@ export async function generateMetadata({
       return {
         title: `${cat.name} Stylists in ${city}`,
         description: `Find and book ${cat.name.toLowerCase()} specialists in ${city}. Browse verified stylists, see real availability, and book instantly on Krowned.`,
+        ...base,
       };
     }
   }
@@ -35,6 +50,7 @@ export async function generateMetadata({
     title: "Hair Braiders & Stylists Near Me in DC, MD & VA",
     description:
       "Find hair braiders near me, loc retwist near me, and textured-hair stylists in DC, Maryland, and Northern Virginia. Filter by style, location, and availability. Book instantly on Krowned.",
+    ...base,
   };
 }
 
@@ -206,6 +222,37 @@ export default async function ExplorePage({
       isLoggedIn={!!user}
       hasMapKey={!!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
     />
+
+    {/* Find by specialty — internal links for SEO */}
+    <section className="border-t border-border bg-muted/30">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+        <h2 className="text-lg font-bold text-foreground">Find by specialty</h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {SERVICE_LANDINGS.map((landing) => {
+            const topCities = Object.entries(CITY_PAGES).slice(0, 4);
+            return (
+              <div key={landing.slug}>
+                <h3 className="text-sm font-semibold text-foreground capitalize">
+                  {landing.plural}
+                </h3>
+                <ul className="mt-2 space-y-1.5 text-sm">
+                  {topCities.map(([citySlug, city]) => (
+                    <li key={citySlug}>
+                      <Link
+                        href={`/${landing.slug}/${citySlug}`}
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {city.name}, {city.region}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
     </>
   );
 }

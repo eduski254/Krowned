@@ -5,79 +5,84 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin, ArrowRight } from "lucide-react";
 import { resolveCardImage } from "@/lib/explore/utils";
-import { JsonLd, breadcrumbSchema, faqPageSchema } from "@/lib/schema";
+import {
+  JsonLd,
+  breadcrumbSchema,
+  faqPageSchema,
+  itemListSchema,
+} from "@/lib/schema";
 import { StarRating } from "@/components/star-rating";
 import { CITY_PAGES } from "@/lib/cities-data";
-import { getStylePage, STYLE_PAGES } from "@/lib/styles-data";
+import {
+  SERVICE_LANDINGS,
+  getServiceLanding,
+  getServiceLandingCities,
+  interpolateFaqs,
+} from "@/lib/service-landing-data";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://krowned.app";
-
-/** Minimum listings to generate a page (below this → noindex) */
 const MIN_LISTINGS = 3;
 
-/**
- * Build static params for every city × style combo.
- * Pages below the listing threshold will be noindexed at render time.
- */
 export function generateStaticParams() {
-  const params: Array<{ city: string; style: string }> = [];
-  for (const citySlug of Object.keys(CITY_PAGES)) {
-    for (const s of STYLE_PAGES) {
-      params.push({ city: citySlug, style: s.slug });
-    }
-  }
-  return params;
+  return getServiceLandingCities();
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ city: string; style: string }>;
+  params: Promise<{ service: string; city: string }>;
 }): Promise<Metadata> {
-  const { city: citySlug, style: styleSlug } = await params;
+  const { service: serviceSlug, city: citySlug } = await params;
+  const landing = getServiceLanding(serviceSlug);
   const cityPage = CITY_PAGES[citySlug];
-  const stylePage = getStylePage(styleSlug);
-  if (!cityPage || !stylePage) return { title: "Not Found" };
+  if (!landing || !cityPage) return { title: "Not Found" };
 
-  const styleName = stylePage.h1.replace(" in the DMV", "");
-  const title = `${styleName} in ${cityPage.name}, ${cityPage.region}`;
-  const description = `Find ${styleName.toLowerCase()} stylists in ${cityPage.name}, ${cityPage.region}. Browse verified professionals, check real-time availability, and book on Krowned.`;
+  const cityLabel = cityPage.name.includes(cityPage.region)
+    ? cityPage.name
+    : `${cityPage.name}, ${cityPage.region}`;
+  const title = `${landing.plural.charAt(0).toUpperCase() + landing.plural.slice(1)} in ${cityLabel}`;
+  const description = landing.metaDescriptionTemplate.replace(
+    /\{city\}/g,
+    cityLabel,
+  );
 
   return {
     title,
     description: description.slice(0, 155),
     alternates: {
-      canonical: `${SITE_URL}/explore/${citySlug}/${styleSlug}`,
+      canonical: `${SITE_URL}/${serviceSlug}/${citySlug}`,
     },
     openGraph: {
       title,
       description: description.slice(0, 155),
-      url: `${SITE_URL}/explore/${citySlug}/${styleSlug}`,
-      images: [{ url: `${SITE_URL}/brand/hero-salon.png`, width: 1200, height: 630 }],
+      url: `${SITE_URL}/${serviceSlug}/${citySlug}`,
+      images: [
+        { url: `${SITE_URL}/brand/hero-salon.png`, width: 1200, height: 630 },
+      ],
     },
   };
 }
 
-export default async function StyleCityPage({
+export default async function ServiceCityLandingPage({
   params,
 }: {
-  params: Promise<{ city: string; style: string }>;
+  params: Promise<{ service: string; city: string }>;
 }) {
-  const { city: citySlug, style: styleSlug } = await params;
+  const { service: serviceSlug, city: citySlug } = await params;
+  const landing = getServiceLanding(serviceSlug);
   const cityPage = CITY_PAGES[citySlug];
-  const stylePage = getStylePage(styleSlug);
-  if (!cityPage || !stylePage) notFound();
+  if (!landing || !cityPage) notFound();
 
   const supabase = await createClient();
 
-  // Get parent category
-  const { data: cat } = await supabase
+  // Get category IDs for this service type
+  const { data: cats } = await supabase
     .from("service_categories")
     .select("id, name, slug")
-    .eq("slug", stylePage.categorySlug)
-    .maybeSingle();
+    .in("slug", landing.categorySlugs);
 
-  if (!cat) notFound();
+  const catIds = (cats ?? []).map((c) => c.id);
+  if (catIds.length === 0) notFound();
 
   // Fetch businesses in this city AND category
   const [bizRes, reviewRes] = await Promise.all([
@@ -88,7 +93,7 @@ export default async function StyleCityPage({
       )
       .eq("is_published", true)
       .eq("verification_status", "verified")
-      .eq("primary_category_id", cat.id)
+      .in("primary_category_id", catIds)
       .in("city", cityPage.dbMatches)
       .order("is_featured", { ascending: false })
       .limit(60),
@@ -112,29 +117,33 @@ export default async function StyleCityPage({
     }
   }
 
-  const styleName = stylePage.h1.replace(" in the DMV", "");
   const isThin = businesses.length < MIN_LISTINGS;
+  const cityName = cityPage.name.includes(cityPage.region)
+    ? cityPage.name
+    : `${cityPage.name}, ${cityPage.region}`;
+  const pluralCap =
+    landing.plural.charAt(0).toUpperCase() + landing.plural.slice(1);
 
-  // Build an intro specific to this city
-  const cityIntro =
+  const introText =
     businesses.length > 0
-      ? `Browse ${businesses.length} verified ${styleName.toLowerCase()} ${businesses.length === 1 ? "stylist" : "stylists"} in ${cityPage.name}, ${cityPage.region}. Check real-time availability and book your appointment on Krowned.`
-      : `No ${styleName.toLowerCase()} stylists listed in ${cityPage.name} yet. Check back soon or browse nearby cities.`;
+      ? `Browse ${businesses.length} verified ${landing.plural} in ${cityName}. Check real-time availability, compare reviews, and book your appointment online on Krowned.`
+      : `No ${landing.plural} listed in ${cityName} yet. Check back soon or browse nearby cities.`;
 
-  // Nearby cities that have the same style category
+  const faqs = interpolateFaqs(landing.faqs, cityName);
+
+  // Nearby cities for this service
   const nearbyCities = Object.entries(CITY_PAGES)
     .filter(([s]) => s !== citySlug)
     .slice(0, 6);
 
-  // Sibling styles for this city
-  const siblingStyles = STYLE_PAGES.filter((s) => s.slug !== styleSlug);
+  // Other service types for cross-linking
+  const siblingServices = SERVICE_LANDINGS.filter(
+    (s) => s.slug !== serviceSlug,
+  );
 
   return (
     <div>
-      {/* noindex thin pages */}
-      {isThin && (
-        <meta name="robots" content="noindex, follow" />
-      )}
+      {isThin && <meta name="robots" content="noindex, follow" />}
 
       <JsonLd
         data={breadcrumbSchema([
@@ -145,14 +154,23 @@ export default async function StyleCityPage({
             url: `${SITE_URL}/explore/${citySlug}`,
           },
           {
-            name: styleName,
-            url: `${SITE_URL}/explore/${citySlug}/${styleSlug}`,
+            name: pluralCap,
+            url: `${SITE_URL}/${serviceSlug}/${citySlug}`,
           },
         ])}
       />
-      {stylePage.faqs.length > 0 && (
-        <JsonLd data={faqPageSchema(stylePage.faqs)} />
+      {businesses.length > 0 && (
+        <JsonLd
+          data={itemListSchema(
+            businesses.map((biz, i) => ({
+              name: biz.name,
+              url: `${SITE_URL}/b/${biz.slug}`,
+              position: i + 1,
+            })),
+          )}
+        />
       )}
+      {faqs.length > 0 && <JsonLd data={faqPageSchema(faqs)} />}
 
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-16 text-center">
@@ -175,10 +193,10 @@ export default async function StyleCityPage({
             </Link>
           </div>
           <h1 className="text-3xl font-bold font-heading sm:text-4xl text-foreground">
-            {styleName} in {cityPage.name}
+            {pluralCap} in {cityPage.name}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            {cityIntro}
+            {introText}
           </p>
         </div>
       </section>
@@ -186,7 +204,7 @@ export default async function StyleCityPage({
       {/* Stylist grid */}
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <h2 className="text-xl font-bold text-foreground sm:text-2xl">
-          {styleName} Stylists in {cityPage.name}
+          {pluralCap} in {cityPage.name}
           <span className="ml-2 text-base font-normal text-muted-foreground">
             ({businesses.length})
           </span>
@@ -244,53 +262,56 @@ export default async function StyleCityPage({
         ) : (
           <div className="mt-8 rounded-xl border border-border bg-card p-8 text-center">
             <p className="text-muted-foreground">
-              No {styleName.toLowerCase()} stylists listed in {cityPage.name}{" "}
-              yet.
+              No {landing.plural} listed in {cityPage.name} yet.
             </p>
             <Link
-              href={`/styles/${stylePage.categorySlug}/${styleSlug}`}
+              href="/explore"
               className="mt-4 inline-block rounded-lg bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
             >
-              Browse all {styleName.toLowerCase()} stylists
+              Browse all stylists
             </Link>
           </div>
         )}
       </section>
 
-      {/* Other styles in this city */}
-      {siblingStyles.length > 0 && (
-        <section className="border-t border-border bg-muted/30">
-          <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-            <h2 className="text-lg font-bold text-foreground">
-              More styles in {cityPage.name}
+      {/* FAQs */}
+      {faqs.length > 0 && (
+        <section className="border-t border-border">
+          <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
+            <h2 className="text-xl font-bold text-foreground sm:text-2xl">
+              Frequently Asked Questions
             </h2>
-            <div className="mt-4 flex flex-wrap gap-3">
-              {siblingStyles.slice(0, 7).map((s) => (
-                <Link
-                  key={s.slug}
-                  href={`/explore/${citySlug}/${s.slug}`}
-                  className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+            <div className="mt-6 space-y-4">
+              {faqs.map((faq) => (
+                <details
+                  key={faq.q}
+                  className="group rounded-xl border border-border bg-card"
                 >
-                  {s.h1.replace(" in the DMV", "")}
-                </Link>
+                  <summary className="cursor-pointer px-5 py-4 font-medium text-foreground hover:text-primary transition-colors">
+                    {faq.q}
+                  </summary>
+                  <div className="border-t border-border px-5 py-4 text-sm text-muted-foreground">
+                    {faq.a}
+                  </div>
+                </details>
               ))}
             </div>
           </div>
         </section>
       )}
 
-      {/* Nearby cities */}
+      {/* Same service in nearby cities */}
       {nearbyCities.length > 0 && (
-        <section className="border-t border-border">
+        <section className="border-t border-border bg-muted/30">
           <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
             <h2 className="text-lg font-bold text-foreground">
-              {styleName} in nearby areas
+              {pluralCap} in nearby areas
             </h2>
             <div className="mt-4 flex flex-wrap gap-3">
               {nearbyCities.map(([slug, city]) => (
                 <Link
                   key={slug}
-                  href={`/explore/${slug}/${styleSlug}`}
+                  href={`/${serviceSlug}/${slug}`}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
                 >
                   <MapPin className="h-3.5 w-3.5" />
@@ -303,16 +324,38 @@ export default async function StyleCityPage({
         </section>
       )}
 
+      {/* Other service types in this city */}
+      {siblingServices.length > 0 && (
+        <section className="border-t border-border">
+          <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+            <h2 className="text-lg font-bold text-foreground">
+              More stylists in {cityPage.name}
+            </h2>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {siblingServices.map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/${s.slug}/${citySlug}`}
+                  className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  {s.plural.charAt(0).toUpperCase() + s.plural.slice(1)}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* CTA */}
       <section className="border-t border-border px-4 py-12 text-center">
         <h2 className="text-xl font-bold text-foreground">
-          Find your stylist in {cityPage.name}
+          Find your {landing.singular} in {cityPage.name}
         </h2>
         <p className="mt-2 text-muted-foreground">
           See real-time availability on the map and book instantly.
         </p>
         <Link
-          href={`/explore?city=${encodeURIComponent(cityPage.name)}&category=${cat.slug}`}
+          href={`/explore?city=${encodeURIComponent(cityPage.name)}&category=${landing.categorySlugs[0]}`}
           className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
         >
           Open map view <ArrowRight className="h-4 w-4" />

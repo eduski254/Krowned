@@ -1,14 +1,14 @@
 import Link from "next/link";
 
 const SEO_LINKS = [
-  { label: "Braiders in DC", href: "/explore?q=braids&city=Washington" },
-  { label: "Loc techs in Silver Spring", href: "/explore?q=locs&city=Silver+Spring" },
-  { label: "Barbers in Baltimore", href: "/explore?q=barber&city=Baltimore" },
-  { label: "Knotless braids in Arlington", href: "/explore?q=knotless+braids&city=Arlington" },
-  { label: "Silk press in Bethesda", href: "/explore?q=silk+press&city=Bethesda" },
-  { label: "Locs in Bowie", href: "/explore?q=locs&city=Bowie" },
-  { label: "Braiders in Hyattsville", href: "/explore?q=braids&city=Hyattsville" },
-  { label: "Fades in Largo", href: "/explore?q=fade&city=Largo" },
+  { label: "Braiders in DC", href: "/braiders/washington-dc" },
+  { label: "Locticians in Silver Spring", href: "/locticians/silver-spring-md" },
+  { label: "Barbers in Arlington", href: "/barbers/arlington-va" },
+  { label: "Hair extensions in DC", href: "/hair-extensions/washington-dc" },
+  { label: "Locticians in Bowie", href: "/locticians/bowie-md" },
+  { label: "Braiders in Hyattsville", href: "/braiders/hyattsville-md" },
+  { label: "Barbers in Largo", href: "/barbers/largo-md" },
+  { label: "Braiders in Lanham", href: "/braiders/lanham-md" },
 ];
 
 function InstagramIcon({ className }: { className?: string }) {

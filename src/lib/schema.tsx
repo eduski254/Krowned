@@ -244,6 +244,22 @@ export function blogPostingSchema(post: {
   return schema;
 }
 
+/** ItemList schema for landing pages with business listings */
+export function itemListSchema(
+  items: Array<{ name: string; url: string; position: number }>,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: items.map((item) => ({
+      "@type": "ListItem",
+      position: item.position,
+      url: item.url,
+      name: item.name,
+    })),
+  };
+}
+
 /** BreadcrumbList schema */
 export function breadcrumbSchema(
   items: Array<{ name: string; url: string }>,

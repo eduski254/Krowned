@@ -96,6 +96,7 @@ export async function createSubscriptionCheckout(planTier: string): Promise<{
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: "subscription",
+    payment_method_collection: "if_required",
     line_items: [
       {
         price: plan.stripe_price_id,
@@ -175,10 +176,18 @@ export async function createCustomerPortal(): Promise<{
     // Create a checkout session so the user can start a real subscription.
     const plan = business.plans as unknown as { tier: string; stripe_price_id: string | null } | null;
     if (plan?.stripe_price_id) {
+      // Count active staff for seat-based pricing
+      const { count: portalSeatCount } = await admin
+        .from("staff")
+        .select("id", { count: "exact", head: true })
+        .eq("business_id", business.id)
+        .eq("status", "active");
+
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
         mode: "subscription",
-        line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
+        payment_method_collection: "if_required",
+        line_items: [{ price: plan.stripe_price_id, quantity: Math.max(portalSeatCount ?? 1, 1) }],
         subscription_data: {
           trial_period_days: 14,
           metadata: { business_id: business.id, plan_id: business.plan_id, plan_tier: plan.tier },
@@ -267,12 +276,16 @@ export async function changePlan(newTier: string): Promise<{
     const itemId = stripeSub.items.data[0]?.id;
     if (!itemId) return { error: "Subscription has no items." };
 
+    // Preserve current seat quantity when changing plans
+    const currentQuantity = stripeSub.items.data[0]?.quantity ?? 1;
+
     // Update the subscription — swap the price, prorate immediately
     await stripe.subscriptions.update(sub.stripe_subscription_id, {
       items: [
         {
           id: itemId,
           price: newPlan.stripe_price_id,
+          quantity: currentQuantity,
         },
       ],
       proration_behavior: "create_prorations",
@@ -298,5 +311,55 @@ export async function changePlan(newTier: string): Promise<{
   } catch (err: any) {
     console.error("[changePlan] Stripe error:", err.message);
     return { error: err.message ?? "Failed to change plan." };
+  }
+}
+
+/**
+ * Sync the Stripe subscription quantity to match the current active staff count.
+ * Call this after adding, removing, activating, or deactivating staff.
+ * No-op if the business has no active Stripe subscription.
+ */
+export async function syncSeatCount(businessId: string): Promise<void> {
+  if (!isStripeConfigured()) return;
+
+  const admin = createAdminClient();
+
+  // Get active subscription
+  const { data: sub } = await admin
+    .from("subscriptions")
+    .select("stripe_subscription_id")
+    .eq("business_id", businessId)
+    .in("status", ["active", "trialing", "past_due"])
+    .single();
+
+  if (!sub?.stripe_subscription_id) return;
+
+  // Count active staff
+  const { count } = await admin
+    .from("staff")
+    .select("id", { count: "exact", head: true })
+    .eq("business_id", businessId)
+    .eq("status", "active");
+
+  const newQuantity = Math.max(count ?? 1, 1);
+
+  const stripe = getStripe();
+  try {
+    const stripeSub = await stripe.subscriptions.retrieve(sub.stripe_subscription_id);
+    const item = stripeSub.items.data[0];
+    if (!item || item.quantity === newQuantity) return;
+
+    await stripe.subscriptions.update(sub.stripe_subscription_id, {
+      items: [{ id: item.id, quantity: newQuantity }],
+      proration_behavior: "create_prorations",
+    });
+
+    // Update local record
+    await admin
+      .from("subscriptions")
+      .update({ seat_count: newQuantity })
+      .eq("business_id", businessId);
+  } catch (err: any) {
+    console.error("[syncSeatCount] Stripe error:", err.message);
   }
 }

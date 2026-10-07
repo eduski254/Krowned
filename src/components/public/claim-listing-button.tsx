@@ -17,6 +17,7 @@ export function ClaimListingButton({
     return (
       <a
         href={`/signup?type=professional&claim=${businessId}&redirect=${encodeURIComponent(claimUrl)}`}
+        rel="nofollow"
         className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10 transition-colors"
       >
         <ShieldCheck className="h-4 w-4" />
@@ -28,6 +29,7 @@ export function ClaimListingButton({
   return (
     <a
       href={claimUrl}
+      rel="nofollow"
       className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10 transition-colors"
     >
       <ShieldCheck className="h-4 w-4" />

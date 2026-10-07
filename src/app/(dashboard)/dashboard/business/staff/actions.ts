@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { staffInviteSchema } from "@/lib/validations/service";
 import { sendEmail } from "@/lib/email/resend";
 import { staffInvitationEmail } from "@/lib/email/templates";
+import { syncSeatCount } from "@/lib/stripe/subscription";
 
 export type StaffFormState = {
   error?: string;
@@ -121,6 +122,9 @@ export async function inviteStaff(
   });
   sendEmail({ to: email, ...mail }).catch(() => {});
 
+  // Sync seat count with Stripe (fire-and-forget)
+  syncSeatCount(business.id).catch(() => {});
+
   redirect("/dashboard/business/staff");
 }
 
@@ -162,6 +166,9 @@ export async function deactivateStaff(formData: FormData) {
     .eq("id", staffId)
     .eq("business_id", business.id);
 
+  // Sync seat count with Stripe (fire-and-forget)
+  syncSeatCount(business.id).catch(() => {});
+
   redirect("/dashboard/business/staff");
 }
 
@@ -191,6 +198,9 @@ export async function reactivateStaff(formData: FormData) {
     .update({ status: "active" as const })
     .eq("id", staffId)
     .eq("business_id", business.id);
+
+  // Sync seat count with Stripe (fire-and-forget)
+  syncSeatCount(business.id).catch(() => {});
 
   redirect(`/dashboard/business/staff/${staffId}`);
 }
@@ -261,6 +271,9 @@ export async function deleteStaff(formData: FormData) {
   if (error) {
     return { error: `Could not delete: ${error.message}` };
   }
+
+  // Sync seat count with Stripe (fire-and-forget)
+  syncSeatCount(business.id).catch(() => {});
 
   redirect("/dashboard/business/staff");
 }
